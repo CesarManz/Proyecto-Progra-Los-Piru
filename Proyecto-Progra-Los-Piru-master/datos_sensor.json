@@ -1,0 +1,11 @@
+{
+  "datos": [
+    {"id": 1,"sueloHumedad": 46.8},
+    {"id": 2,"nitrógeno": 24},
+    {"id": 3,"fósforo": 21},
+    {"id": 4,"potasio": 144},
+    {"id": 5,"vitaminaA": 37},
+    {"id": 6,"vitaminaC": 53},
+    {"id": 7,"phSuelo": 6.9}
+  ]
+}
