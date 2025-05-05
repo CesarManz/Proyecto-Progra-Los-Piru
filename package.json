@@ -1,5 +1,12 @@
 {
   "dependencies": {
+<<<<<<< HEAD
     "mongodb": "^6.16.0"
+=======
+    "bcrypt": "^5.1.1",
+    "express": "^5.1.0",
+    "mongodb": "^6.16.0",
+    "mongoose": "^8.14.1"
+>>>>>>> b1f687a14334a706fc092f95180e484f36d1503c
   }
 }
