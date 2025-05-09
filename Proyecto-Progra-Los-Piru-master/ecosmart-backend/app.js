@@ -1,17 +1,21 @@
 const express = require('express');
 const cors = require('cors');
-const conectarDB = require('./conexion-basededatos');
-const Usuario = require('./autenticacion-usuario/crear-usuario');
-const verificarUsuario = require('./autenticacion-usuario/verificar-usuario');
+const conectarDB = require('./Controllers/conexion-basededatos');
+const Usuario = require('./subirDatos/crear-usuario');
+const verificarUsuario = require('./subirDatos/verificar-usuario');
+const rutasClima = require('./Rutas/rutaClima');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Middlewares
 app.use(cors());
 app.use(express.json());
 
+// Conexión a la base de datos
 conectarDB();
 
+// Ruta base
 app.get('/', (req, res) => {
   res.send('Servidor funcionando y conectado a MongoDB Atlas');
 });
@@ -36,9 +40,13 @@ app.post('/api/usuarios', async (req, res) => {
   }
 });
 
-// Login de usuario (verificación)
+// Login de usuario
 app.post('/api/login', verificarUsuario);
 
+// Clima: obtener y guardar datos
+app.use('/api', rutasClima); // <-- nuevo
+
+// Iniciar servidor
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`🌍 Servidor corriendo en http://localhost:${PORT}`);
 });

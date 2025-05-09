@@ -8,11 +8,11 @@ const conectarDB = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log('✅ Conectado a MongoDB Atlas con Mongoose');
+    console.log('Conectado a MongoDB');
 
     console.log('Conexión exitosa a la base de datos.');
   } catch (error) {
-    console.error('❌ Error al conectar con MongoDB Atlas:', error);
+    console.error('Error al conectar con MongoDB Atlas:', error);
     process.exit(1);
   }
 };
