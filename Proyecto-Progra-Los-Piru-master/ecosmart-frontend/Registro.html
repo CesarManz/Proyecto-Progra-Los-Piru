@@ -45,8 +45,13 @@
             });
 
             const data = await res.json();
-            respuesta.textContent = data.mensaje || 'Usuario creado';
-            respuesta.style.color = res.ok ? 'green' : 'red';
+            if (res.ok) {
+                // Redirigir al login después del registro exitoso
+                window.location.href = 'Login.html';
+            } else {
+                respuesta.textContent = data.mensaje;
+                respuesta.style.color = 'red';
+            }
         } catch (error) {
             respuesta.textContent = 'Error al conectar con el servidor';
             respuesta.style.color = 'red';
