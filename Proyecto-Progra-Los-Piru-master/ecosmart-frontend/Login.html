@@ -38,8 +38,16 @@
 
             const data = await res.json();
             if (res.ok) {
-                // Redirigir inmediatamente si el login es exitoso
-                window.location.href = 'Pagina-principal.html';
+                const trabajo = data.usuario.trabajo?.toLowerCase(); // Aquí usamos 'trabajo'
+                if (trabajo === 'agronomo') {
+                    window.location.href = 'Principal-agronomo.html';
+                } else if (trabajo === 'tecnico') {
+                    window.location.href = 'Principal-tecnico.html';
+                } else if (trabajo === 'agricultor') {
+                    window.location.href = 'Principal-agricultor.html';
+                } else {
+                    respuesta.textContent = 'Trabajo no reconocido: ' + trabajo;
+                }
             } else {
                 respuesta.textContent = data.mensaje;
             }
