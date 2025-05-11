@@ -3,19 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <title>Login de Usuario</title>
+    <link rel="stylesheet" href="Estilo-login.css">
 </head>
 <body>
-<h3>Hola! Ingrese su correo electrónico y contraseña</h3>
+<div class="logo-container">
+    <img src="public/Ecosmart-logo.jpeg" alt="EcoSmart Logo" class="logo">
+    <h1 class="eco-title"><span class="eco">Eco</span><span class="smart">Smart</span></h1>
+</div>
+
 <form id="loginForm">
-    <label>Email:<br><input type="email" name="correo" required></label><br><br>
-    <label>Contraseña:<br><input type="password" name="contraseña" required></label><br><br>
-    <button type="submit">Comenzar</button>
+    <h3>Hola! Ingrese su correo electronico y contraseña!</h3>
+    <input type="email" name="correo" placeholder="email" required>
+    <input type="password" name="contraseña" placeholder="contraseña" required>
+    <button type="submit" class="btn-login">Comenzar</button>
+    <button type="button" class="btn-register" onclick="window.location.href='Registro.html'">Crear Cuenta</button>
 </form>
 
-<br>
-<button onclick="window.location.href='Registro.html'">Crear Cuenta</button>
-
-<p id="respuesta" style="color:red;"></p>
+<p id="respuesta"></p>
 
 <script>
     const form = document.getElementById('loginForm');
@@ -38,7 +42,7 @@
 
             const data = await res.json();
             if (res.ok) {
-                const trabajo = data.usuario.trabajo?.toLowerCase(); // Aquí usamos 'trabajo'
+                const trabajo = data.usuario.trabajo?.toLowerCase();
                 if (trabajo === 'agronomo') {
                     window.location.href = 'Principal-agronomo.html';
                 } else if (trabajo === 'tecnico') {
@@ -46,7 +50,7 @@
                 } else if (trabajo === 'agricultor') {
                     window.location.href = 'Principal-agricultor.html';
                 } else {
-                    respuesta.textContent = 'Trabajo no reconocido: ' + trabajo;
+                    respuesta.textContent = 'Trabajo no reconocido';
                 }
             } else {
                 respuesta.textContent = data.mensaje;
@@ -58,4 +62,5 @@
 </script>
 </body>
 </html>
+
 
