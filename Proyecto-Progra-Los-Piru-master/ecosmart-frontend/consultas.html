@@ -12,7 +12,7 @@
     <img class= "ecosmart" src="public/EcoSmart2.png" >
     </img></div>
   <nav>
-    <a href="#">Pagina principal</a>
+    <a href="#" onclick="redirigirAPrincipal()">Página principal</a>
     <a href="#">Clima</a>
     <a href="#">Inventario</a>
     <a href="consultas.html">Preguntas</a>
@@ -98,6 +98,21 @@ async function sendMessage() {
     chat.lastChild.textContent = botResponse;
 }
 
+</script>
+<script>
+  function redirigirAPrincipal() {
+    const trabajo = localStorage.getItem('trabajo');
+
+    if (trabajo === 'agronomo') {
+      window.location.href = 'Principal-agronomo.html';
+    } else if (trabajo === 'tecnico') {
+      window.location.href = 'Principal-tecnico.html';
+    } else if (trabajo === 'agricultor') {
+      window.location.href = 'Principal-agricultor.html';
+    } else {
+      alert('No se encontró información del usuario. Inicie sesión nuevamente.');
+    }
+  }
 </script>
 
 </body>
