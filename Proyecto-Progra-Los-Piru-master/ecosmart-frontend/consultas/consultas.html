@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>EcoSmart - Preguntas Frecuentes</title>
+  <link rel="stylesheet" href="consultas.css">
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <img class= "ecosmart" src="../public/EcoSmart2.png" >
+    </img></div>
+  <nav>
+    <a href="#">Pagina principal</a>
+    <a href="../Clima/clima.html">Clima</a>
+    <a href="#">Inventario</a>
+    <a href="../consultas/consultas.html">Preguntas</a>
+    <input class= "busqueda" type="search" placeholder="Buscar">
+  </nav>
+</header>
+
+<div class="faq-container">
+  <h2>Preguntas Frecuentes</h2>
+  <div class="faq-grid">
+    <div class="faq-item">
+
+      <h3><img src="../public/planta.png"><br>¿Qué factores afectan el rendimiento de un cultivo?</h3>
+      <p>El clima, tipo de suelo, manejo agronómico, riego, nutrición y control de plagas son los factores principales.</p>
+    </div>
+    <div class="faq-item">
+      <h3><img src="../public/planta%20(1).png"><br>¿Qué enfermedades y plagas pueden afectar los cultivos?</h3>
+      <p>Cada cultivo tiene plagas y enfermedades específicas. Se debe vigilar hongos, insectos y virus, y aplicar manejo integrado.</p>
+    </div>
+    <div class="faq-item">
+      <h3><img src="../public/planta.png"><br>¿Qué tan importante es la rotación de cultivos?</h3>
+      <p>Muy importante. Mejora la salud del suelo, reduce enfermedades y aumenta la fertilidad del terreno.</p>
+    </div>
+    <div class="faq-item">
+      <h3><img src="../public/planta%20(1).png"><br>¿Qué tipo de suelo es el más adecuado para cultivar?</h3>
+      <p>Suelos fértiles, bien drenados y con materia orgánica. El pH ideal varía, pero suele ser entre 6 y 7.</p>
+    </div>
+  </div>
+</div>
+
+<div class="chatbot" id="chatbot">
+  <div class="chat-header">
+    <img class="deepseeklogo" src="../public/deepseeklogo.png">
+    </img>
+  </div>
+  <div class="chat-messages" id="chatMessages"></div>
+  <div class="chat-input">
+    <input type="text" id="chatInput" placeholder="Escriba su mensaje">
+    <button onclick="sendMessage()">➤</button>
+  </div>
+</div>
+
+<script>
+  async function askDeepSeek(prompt) {
+    const response = await fetch('http://127.0.0.1:5000/api/generate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'deepseek-coder',
+        prompt: prompt,
+        stream: false
+      })
+    });
+
+    const data = await response.json();
+    return data.response;
+  }
+
+  function appendMessage(sender, text) {
+    const chat = document.getElementById('chatMessages');
+    const msg = document.createElement('div');
+    msg.className = sender === 'user' ? 'msg user' : 'msg bot';
+    msg.textContent = text;
+    chat.appendChild(msg);
+  }
+
+async function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const userText = input.value.trim();
+    if (userText === '') return;
+
+    appendMessage('user', userText);
+    input.value = '';
+
+    appendMessage('bot', 'Estoy procesando tu pregunta sobre cultivos... 🌱');
+
+    const botResponse = await askDeepSeek(userText);
+
+    // Reemplaza el mensaje de "procesando" por la respuesta real
+    const chat = document.getElementById('chatMessages');
+    chat.lastChild.textContent = botResponse;
+}
+
+</script>
+<script>
+  function redirigirAPrincipal() {
+    const trabajo = localStorage.getItem('trabajo');
+
+    if (trabajo === 'agronomo') {
+      window.location.href = 'Principal-agronomo.html';
+    } else if (trabajo === 'tecnico') {
+      window.location.href = 'Principal-tecnico.html';
+    } else if (trabajo === 'agricultor') {
+      window.location.href = 'Principal-agricultor.html';
+    } else {
+      alert('No se encontró información del usuario. Inicie sesión nuevamente.');
+    }
+  }
+</script>
+
+</body>
+</html>

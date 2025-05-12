@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login de Usuario</title>
+    <link rel="stylesheet" href="Estilo-login.css">
+</head>
+<body>
+<div class="logo-container">
+    <img src="public/EcoSmart2.png" alt="EcoSmart Logo" class="logo">
+    <h1 class="eco-title"><span class="eco">Eco</span><span class="smart">Smart</span></h1>
+</div>
+
+<form id="loginForm">
+    <h3>Hola! Ingrese su correo electronico y contraseña!</h3>
+    <input type="email" name="correo" placeholder="email" required>
+    <input type="password" name="contraseña" placeholder="contraseña" required>
+    <button type="submit" class="btn-login">Comenzar</button>
+    <button type="button" class="btn-register" onclick="window.location.href='Registro.html'">Crear Cuenta</button>
+</form>
+
+<p id="respuesta"></p>
+
+<script>
+    const form = document.getElementById('loginForm');
+    const respuesta = document.getElementById('respuesta');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const datos = {
+            correo: form.correo.value,
+            contraseña: form.contraseña.value
+        };
+
+        try {
+            const res = await fetch('http://localhost:5000/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datos)
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                const trabajo = data.usuario.trabajo?.toLowerCase();
+                if (trabajo === 'agronomo') {
+                    window.location.href = 'Principal-agronomo.html';
+                } else if (trabajo === 'tecnico') {
+                    window.location.href = 'Principal-tecnico.html';
+                } else if (trabajo === 'agricultor') {
+                    window.location.href = 'Principal-agricultor.html';
+                } else {
+                    respuesta.textContent = 'Trabajo no reconocido';
+                }
+            } else {
+                respuesta.textContent = data.mensaje;
+            }
+        } catch (error) {
+            respuesta.textContent = 'Error al conectar con el servidor';
+        }
+    });
+</script>
+</body>
+</html>
+
+
