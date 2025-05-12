@@ -18,10 +18,15 @@ body {
 }
 header {
     background-color: #1D2A10;
-    padding: 10px 20px;
+    padding: 20px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     color: #CD8A39;
     height: 70px;
+}
+nav a {
+    margin: 0 10px;
+    color: #CD8A39;
+    text-decoration: none;
 }
