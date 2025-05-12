@@ -12,33 +12,21 @@ body {
 }
 
 .logo-container {
-    margin-top: 20px;
+    margin-top: 10px;
+    margin-left: -1100px;
     text-align: center;
 }
 
 .logo {
-    height: 80px;
-}
-
-.eco-title {
-    margin: 0;
-    font-size: 2em;
-}
-
-.eco {
-    color: #3f541f;
-}
-
-.smart {
-    color: #c95211;
+    height: 160px;
 }
 
 form {
-    background-color: #dba14e;
-    padding: 30px 20px;
+    background-color: #DBA14E;
+    padding: 30px 25px;
     border-radius: 15px;
     width: 300px;
-    margin-top: 20px;
+    margin-top: -40px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     text-align: center;
 }
