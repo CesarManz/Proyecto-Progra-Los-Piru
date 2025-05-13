@@ -1,0 +1,148 @@
+/* Fondo general y fuente */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), #c1d36b), url("../public/Fondo.png");
+  background-size: cover;
+  background-attachment: fixed;
+  color: #1D2A10;
+}
+
+/* Cabecera */
+header {
+  background-color: #1D2A10;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #CD8A39;
+  height: 70px;
+}
+
+.logo img.ecosmart {
+  width: 150px;
+  height: auto;
+}
+
+nav a {
+  margin: 0 10px;
+  color: #CD8A39;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.busqueda {
+  background-color: #CD8A39;
+  border: none;
+  padding: 6px;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+/* Contenedor del contenido principal */
+.contenedor-clima {
+  background: rgba(255, 255, 205, 0.3);
+  margin: 50px auto;
+  padding: 20px;
+  width: 80%;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Título */
+.contenedor-clima h2 {
+  font-size: 28px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #1D2A10;
+  display: inline-block;
+  padding-bottom: 5px;
+}
+
+/* Formulario */
+.form-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.form-row input {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #aaa;
+  width: 220px;
+}
+
+.form-row button {
+  padding: 8px 16px;
+  border: none;
+  background: #CD8A39;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.form-row button:hover {
+  background-color: #b5772e;
+}
+
+/* Widget del clima */
+#widgetClima {
+  display: none;
+}
+
+.widget-clima {
+  background-color: rgba(255, 255, 205, 0.7);
+  border: 2px solid #CD8A39;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 25px;
+  display: inline-block;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: all 0.3s ease-in-out;
+}
+
+.widget-clima h3 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.widget-clima p {
+  margin: 5px 0 0;
+  font-weight: bold;
+}
+
+.widget-clima img {
+  width: 60px;
+  height: 60px;
+  margin-top: 5px;
+}
+
+/* Gráfico */
+canvas {
+  max-width: 100%;
+  margin-top: 30px;
+}
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .form-row input {
+    width: 90%;
+  }
+
+  .form-row button {
+    width: 50%;
+  }
+
+  .contenedor-clima {
+    width: 90%;
+  }
+}
