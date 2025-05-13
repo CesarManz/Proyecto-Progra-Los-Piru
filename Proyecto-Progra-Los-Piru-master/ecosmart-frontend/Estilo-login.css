@@ -27,7 +27,6 @@ header {
     left: 0;             /* <-- Pegado a la izquierda */
     width: 100%;         /* <-- Que ocupe todo el ancho de la pantalla */
 }
-
 .logo-container {
     margin-top: 20px;
     text-align: center;
