@@ -22,33 +22,40 @@ header {
     align-items: center;
     color: #CD8A39;
     height: 70px;
-    margin: 0;           /* <-- Asegúrate de que no tenga margen */
+    margin: 0;           /* <-- AsegÃºrate de que no tenga margen */
     position: relative;  /* <-- Esto es por si necesitas posicionarlo */
     left: 0;             /* <-- Pegado a la izquierda */
     width: 100%;         /* <-- Que ocupe todo el ancho de la pantalla */
 }
 
 .logo-container {
-    margin-top: 10px;
-    margin-left: -1100px;
+    margin-top: 20px;
     text-align: center;
 }
 
 .logo {
-    height: 160px;
+    height: 80px;
+}
+
+.eco-title {
+    margin: 0;
+    font-size: 2em;
+}
+
+.eco {
+    color: #3f541f;
+}
+
+.smart {
+    color: #c95211;
 }
 
 form {
-<<<<<<< HEAD
-    background-color: #DBA14E;
-    padding: 30px 25px;
-=======
     background-color: #dba14e;
     padding: 30px 70px;
->>>>>>> b54e40e2ac6af9d3a2bb472abcd40b8a1c629616
     border-radius: 15px;
     width: 300px;
-    margin-top: -40px;
+    margin-top: 20px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     text-align: center;
 }
