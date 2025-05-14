@@ -58,3 +58,5 @@ app.use('/api', rutaPronosticos);
 const climaActualRoute = require('./Rutas/ClimaActual');
 app.use('/api', climaActualRoute);
 
+const rutaSensores = require('./Rutas/sensores');
+app.use('/api', rutaSensores);
