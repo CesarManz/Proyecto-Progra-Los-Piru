@@ -1,25 +1,33 @@
-const axios = require('axios');
-const Clima = require('../modelos/modeloClima'); // Asegúrate de que la ruta sea correcta
-
-const API_KEY = 'ecc68a458ae172200dcc2cf155918a3b'; // ← Reemplaza con tu API real
-
-const guardarBusqueda = async (req, res) => {
-  const { ciudad } = req.params;
+const express = require("express");
+const axios = require("axios");
+const router = express.Router();
+const API_KEY = "ecc68a458ae172200dcc2cf155918a3b";
+router.get("/:lat/:lon", async (req, res) => {
+  const { lat, lon } = req.params;
   try {
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${ciudad}&appid=${API_KEY}&units=metric&lang=es`;
-    const { data } = await axios.get(url);
-
-    await Clima.create({
-      ciudad: data.name,
-      temperatura: data.main.temp,
-      descripcion: data.weather[0].description
+    const response = await axios.get("https://api.openweathermap.org/data/2.5/weather", {
+      params: {
+        lat,
+        lon,
+        appid: API_KEY,
+        units: "metric",
+        lang: "es"
+      }
     });
 
-    res.json(data);
-  } catch (error) {
-    console.error('❌ Error al obtener clima actual:', error.message);
-    res.status(500).json({ error: 'No se pudo obtener ni guardar el clima' });
-  }
-};
+    const data = response.data;
+    const resultado = {
+      temperatura: data.main.temp,
+      descripcion: data.weather[0].description,
+      humedad: data.main.humidity,
+      viento: data.wind.speed
+    };
 
-module.exports = { guardarBusqueda };
+    res.json(resultado);
+  } catch (error) {
+    console.error("❌ Error al obtener clima actual:", error.message);
+    res.status(500).json({ error: "Error al obtener clima" });
+  }
+});
+
+module.exports = router;

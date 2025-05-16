@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Crear Parcela</title>
+  <link rel="stylesheet" href="../Estilo-prin.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), #c1d36b), url("../public/Fondo.png");
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      font-family: 'Segoe UI', sans-serif;
+      color: #1D2A10;
+    }
+
+    header {
+      background-color: #1D2A10;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #CD8A39;
+      height: 70px;
+    }
+    .busqueda {
+      background-color: #CD8A39;
+      padding: 5px;
+      border: none;
+      border-radius: 4px;
+      width: 160px;
+      max-width: 100%;
+}
+      nav {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .logo img {
+        width: 150px;
+        height: auto;
+      }
+
+    nav a {
+      color: #CD8A39;
+      text-decoration: none;
+      font-weight: bold;
+      margin: 0 10px;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    nav a:visited {
+      color: #CD8A39;
+    }
+
+    .busqueda {
+      background-color: #CD8A39;
+      padding: 5px;
+      border: none;
+      border-radius: 4px;
+    }
+
+    main {
+     background-color: rgba(205, 138, 57, 0.9); 
+     backdrop-filter: none;
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 700px;
+      margin: 2rem auto;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    #map {
+      height: 300px;
+      border: 2px solid #1D2A10;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 1rem;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 0.5rem;
+      border-radius: 6px;
+      margin-top: 0.5rem;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #1D2A10;
+      color: white;
+      font-weight: bold;
+      margin-top: 1.5rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #CD8A39;
+      color: #1D2A10;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <img class="ecosmart" src="../public/EcoSmart2.png" />
+    </div>
+    <nav>
+      <a href="../index.html">Página principal</a>
+      <a href="listar-parcelas.html">Parcelas</a>
+      <a href="#">Inventario</a>
+      <a href="../consultas.html">Preguntas</a>
+      <input type="search" class="busqueda" placeholder="Buscar" />
+    </nav>
+  </header>
+
+  <main>
+    <h2>Crear Nueva Parcela</h2>
+    <form id="formParcela">
+      <label>Nombre:</label>
+      <input type="text" id="nombre" required>
+
+      <label>Ubicación (click en el mapa):</label>
+      <div id="map"></div>
+
+      <div style="display: flex; gap: 10px; margin-top: 10px;">
+        <input type="text" id="lat" placeholder="Latitud" required readonly>
+        <input type="text" id="lon" placeholder="Longitud" required readonly>
+      </div>
+
+      <label>Sensores:</label>
+      <select multiple id="sensores">
+        <option value="humedad">Humedad</option>
+        <option value="ph">pH</option>
+        <option value="nitrógeno">Nitrógeno</option>
+        <option value="potasio">Potasio</option>
+        <option value="vitaminaA">Vitamina A</option>
+        <option value="vitaminaC">Vitamina C</option>
+      </select>
+
+      <button type="submit">Crear Parcela</button>
+    </form>
+  </main>
+
+  <script>
+    const latInput = document.getElementById("lat");
+    const lonInput = document.getElementById("lon");
+
+    const map = L.map('map').setView([-35.4, -71.6], 7);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+
+    let marker;
+    map.on('click', function (e) {
+      const { lat, lng } = e.latlng;
+      latInput.value = lat.toFixed(5);
+      lonInput.value = lng.toFixed(5);
+      if (marker) marker.setLatLng(e.latlng);
+      else marker = L.marker(e.latlng).addTo(map);
+    });
+
+    document.getElementById("formParcela").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const nombre = document.getElementById("nombre").value.trim();
+      const lat = parseFloat(latInput.value);
+      const lon = parseFloat(lonInput.value);
+      const sensores = Array.from(document.getElementById("sensores").selectedOptions).map(o => o.value);
+
+      const parcela = { nombre, coordenadas: { lat, lon }, sensores };
+
+      try {
+        const res = await fetch("http://localhost:5001/api/parcelas", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(parcela)
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert("✅ Parcela creada");
+          e.target.reset();
+          if (marker) marker.remove();
+        } else {
+          alert("❌ Error: " + (data?.mensaje || "Parcela no creada"));
+        }
+      } catch (err) {
+        console.error(err);
+        alert("❌ Error de conexión");
+      }
+    });
+  </script>
+</body>
+</html>

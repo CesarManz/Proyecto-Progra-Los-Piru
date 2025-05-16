@@ -13,7 +13,7 @@
     </img></div>
   <nav>
     <a href="#">Pagina principal</a>
-    <a href="Clima/clima.html">Clima</a>
+    <a href="../ecosmart-frontend/parcelas/listar-parcelas.html">Parcelas</a>
     <a href="#">Inventario</a>
     <a href="../consultas/consultas.html">Preguntas</a>
     <input class= "busqueda" type="search" placeholder="Buscar">
@@ -57,7 +57,7 @@
 
 <script>
   async function askDeepSeek(prompt) {
-    const response = await fetch('http://127.0.0.1:5000/api/generate', {
+    const response = await fetch('http://127.0.0.1:5001/api/generate', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
