@@ -46,6 +46,8 @@
             const data = await res.json();
             if (res.ok) {
                 const trabajo = data.usuario.trabajo?.toLowerCase();
+                localStorage.setItem('trabajo', trabajo); // <-- guarda el trabajo en localStorage
+
                 if (trabajo === 'agronomo') {
                     window.location.href = 'Principal-agronomo.html';
                 } else if (trabajo === 'tecnico') {
@@ -55,7 +57,8 @@
                 } else {
                     respuesta.textContent = 'Trabajo no reconocido';
                 }
-            } else {
+            }
+            else {
                 respuesta.textContent = data.mensaje;
             }
         } catch (error) {
