@@ -12,10 +12,26 @@
     <nav>
         <a href="#" onclick="redirigirPaginaPrincipal()">Pagina principal</a>
         <a href="../ecosmart-frontend/parcelas/listar-parcelas.html">Parcelas</a>
-        <a href="#">Inventario</a>
+        <a href="Inventario.html">Inventario</a>
         <a href="consultas.html">Preguntas</a>
         <input class= "busqueda" type="search" placeholder="Buscar">
     </nav>
 </header>
+<body>
+<script>
+    function redirigirPaginaPrincipal() {
+        const trabajo = localStorage.getItem('trabajo');
 
+        if (trabajo === 'agronomo') {
+            window.location.href = 'Principal-agronomo.html';
+        } else if (trabajo === 'tecnico') {
+            window.location.href = 'Principal-tecnico.html';
+        } else if (trabajo === 'agricultor') {
+            window.location.href = 'Principal-agricultor.html';
+        } else {
+            alert('No se reconoce el trabajo del usuario.');
+        }
+    }
+</script>
+</body>
 <html/>
