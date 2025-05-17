@@ -10,7 +10,7 @@
         <img class= "ecosmart" src="public/EcoSmart2.png" >
         </img></div>
     <nav>
-        <a href="#">Pagina principal</a>
+        <a href="#" onclick="redirigirPaginaPrincipal()">Pagina principal</a>
         <a href="../ecosmart-frontend/parcelas/listar-parcelas.html">Parcelas</a>
         <a href="#">Inventario</a>
         <a href="consultas.html">Preguntas</a>
@@ -22,6 +22,20 @@
     <div class="contenedor" >
     </div>
 </form>
+<script>
+    function redirigirPaginaPrincipal() {
+        const trabajo = localStorage.getItem('trabajo');
 
+        if (trabajo === 'agronomo') {
+            window.location.href = 'Principal-agronomo.html';
+        } else if (trabajo === 'tecnico') {
+            window.location.href = 'Principal-tecnico.html';
+        } else if (trabajo === 'agricultor') {
+            window.location.href = 'Principal-agricultor.html';
+        } else {
+            alert('No se reconoce el trabajo del usuario.');
+        }
+    }
+</script>
 </body>
 </html>
