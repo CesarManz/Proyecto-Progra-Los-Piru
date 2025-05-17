@@ -1,6 +1,8 @@
 html {
     font-size: 1em;
     line-height: 1.4;
+    background: url("public\FondoLoginRegistro.png");
+    background-size: cover;
 }
 body {
     font-family: 'Arial', sans-serif;
@@ -28,6 +30,13 @@ header {
     align-self: flex-start; /* <<< clave */
 }
 
+.email::placeholder{
+    color: #CD8A39;
+}
+.contraseña::placeholder{
+    color: #CD8A39;
+}
+
 .logo-container {
     display: flex;
     align-items: center;
@@ -52,7 +61,7 @@ header {
 
 form {
     background-color: #dba14e;
-    padding: 30px 70px;
+    padding: 70px 60px;
     border-radius: 15px;
     width: 300px;
     margin-top: 20px;
@@ -61,7 +70,8 @@ form {
 }
 
 form h3 {
-    margin-bottom: 20px;
+
+    margin-bottom: 25px;
     font-weight: normal;
 }
 
@@ -89,9 +99,19 @@ button {
     cursor: pointer;
 }
 
+.textoregistro{
+    font-size: 16px;
+}
+.registro:hover{
+    color: #2e4d18;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+
 .btn-login {
     background-color: #1d2a10;
-    color: white;
+    color: #CD8A39;
 }
 
 .btn-login:hover {

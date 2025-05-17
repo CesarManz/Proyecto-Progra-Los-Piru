@@ -14,10 +14,14 @@
 </header>
 <form id="loginForm">
     <h3>Hola! Ingrese su correo electronico y contraseña!</h3>
-    <input type="email" name="correo" placeholder="email" required>
-    <input type="password" name="contraseña" placeholder="contraseña" required autocomplete="off">
+    <input type="email" class="email" name="correo" placeholder="email" required>
+    <input type="password" class="contraseña" name="contraseña" placeholder="contraseña" required autocomplete="off">
     <button type="submit" class="btn-login">Comenzar</button>
-    <button type="button" class="btn-register" onclick="window.location.href='Registro.html'">Crear Cuenta</button>
+    <div class = "textoregistro">
+        <span>¿No tienes una cuenta? </span>
+        <span class="registro" onclick="window.location.href='Registro.html'">¡Registrate aquí!</span>
+    </div>
+
 </form>
 <div class="rectangulo-bajo">
     <p></p>
