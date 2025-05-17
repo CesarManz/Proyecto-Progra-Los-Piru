@@ -12,9 +12,10 @@
     <img class= "ecosmart" src="public/EcoSmart2.png" >
     </img></div>
   <nav>
-    <a href="#">Clima</a>
+    <a href="#">Pagina principal</a>
+    <a href="../ecosmart-frontend/parcelas/listar-parcelas.html">Parcelas</a>
     <a href="#">Inventario</a>
-    <a href="#">Preguntas</a>
+    <a href="../consultas/consultas.html">Preguntas</a>
     <input class= "busqueda" type="search" placeholder="Buscar">
   </nav>
 </header>
@@ -56,7 +57,7 @@
 
 <script>
   async function askDeepSeek(prompt) {
-    const response = await fetch('http://127.0.0.1:5000/api/generate', {
+    const response = await fetch('http://127.0.0.1:5001/api/generate', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -97,6 +98,21 @@ async function sendMessage() {
     chat.lastChild.textContent = botResponse;
 }
 
+</script>
+<script>
+  function redirigirAPrincipal() {
+    const trabajo = localStorage.getItem('trabajo');
+
+    if (trabajo === 'agronomo') {
+      window.location.href = 'Principal-agronomo.html';
+    } else if (trabajo === 'tecnico') {
+      window.location.href = 'Principal-tecnico.html';
+    } else if (trabajo === 'agricultor') {
+      window.location.href = 'Principal-agricultor.html';
+    } else {
+      alert('No se encontró información del usuario. Inicie sesión nuevamente.');
+    }
+  }
 </script>
 
 </body>

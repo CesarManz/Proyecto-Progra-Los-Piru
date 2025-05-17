@@ -1,7 +1,10 @@
+html {
+    font-size: 1em;
+    line-height: 1.4;
+}
 body {
     font-family: 'Arial', sans-serif;
     background-color: #5b5f2c;
-    background-image: url('fondo.png'); /* Cambia a tu imagen de fondo si tienes */
     background-size: cover;
     background-repeat: no-repeat;
     padding: 0;
@@ -11,9 +14,23 @@ body {
     align-items: center;
 }
 
+header {
+    background-color: #1D2A10;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #CD8A39;
+    height: 150px;
+    width: 75%;
+    border-bottom-right-radius: 300px;
+    box-sizing: border-box;
+    align-self: flex-start; /* <<< clave */
+}
+
 .logo-container {
-    margin-top: 20px;
-    text-align: center;
+    display: flex;
+    align-items: center;
 }
 
 .logo {
@@ -35,7 +52,7 @@ body {
 
 form {
     background-color: #dba14e;
-    padding: 30px 20px;
+    padding: 30px 70px;
     border-radius: 15px;
     width: 300px;
     margin-top: 20px;
@@ -57,7 +74,10 @@ input {
     background-color: #fff1d8;
     font-size: 14px;
 }
-
+.ecosmart {
+    width: 200px;
+    height: auto;
+}
 button {
     width: 100%;
     padding: 10px;
@@ -97,4 +117,15 @@ button {
     width: 150px;
     display: block;
     margin: 0 auto 20px auto;
+}
+.rectangulo-bajo {
+    background-color: #dba14e;
+    padding: 20px;
+    margin-top: 20px;
+    width: 300px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    font-size: 14px;
+    color: #333;
 }

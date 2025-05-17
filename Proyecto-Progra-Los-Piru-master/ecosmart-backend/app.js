@@ -1,52 +1,34 @@
 const express = require('express');
 const cors = require('cors');
-const conectarDB = require('./Controllers/conexion-basededatos');
-const Usuario = require('./subirDatos/crear-usuario');
-const verificarUsuario = require('./subirDatos/verificar-usuario');
-const rutasClima = require('./Rutas/rutaClima');
-
+const mongoose = require('mongoose');
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = 5001;
 
-// Middlewares
+// Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.static('public'));
 
-// Conexión a la base de datos
-conectarDB();
+// Conexión a MongoDB
+mongoose.connect('mongodb+srv://xAshura3x:omWSvOUHLYUR0ttE@cluster0.vlf79yu.mongodb.net/test?retryWrites=true&w=majority')
+  .then(() => console.log('✅ Conectado a MongoDB Atlas'))
+  .catch(err => console.error('❌ Error de conexión:', err.message));
 
-// Ruta base
-app.get('/', (req, res) => {
-  res.send('Servidor funcionando y conectado a MongoDB Atlas');
-});
+// Importar y usar rutas
+app.use('/api/parcelas', require('./Rutas/parcelas'));
+app.use('/api/lecturas', require('./Rutas/lecturas'));
+app.use('/api/clima', require('./Rutas/rutaClima')); // OpenWeatherMap por ciudad
+app.use('/api', require('./Rutas/ClimaActual'));     // OpenWeatherMap por lat/lon
+app.use('/api', require('./Rutas/rutaPronosticos')); // Pronóstico por lat/lon
+app.use('/api/usuarios', require('./Rutas/Usuarios')); // Registro/login
 
-// Registro de usuarios
-app.post('/api/usuarios', async (req, res) => {
-  try {
-    const { nombre, correo, contraseña, trabajo } = req.body;
-
-    const usuarioExistente = await Usuario.findOne({ correo });
-    if (usuarioExistente) {
-      return res.status(400).json({ mensaje: 'El correo ya está registrado' });
-    }
-
-    const nuevoUsuario = new Usuario({ nombre, correo, contraseña, trabajo });
-    await nuevoUsuario.save();
-
-    res.status(201).json({ mensaje: 'Usuario creado correctamente' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ mensaje: 'Error al crear usuario' });
-  }
-});
-
-// Login de usuario
-app.post('/api/login', verificarUsuario);
-
-// Clima: obtener y guardar datos
-app.use('/api', rutasClima); // <-- nuevo
-
-// Iniciar servidor
+/////
+const climaActual = require('./Rutas/ClimaActual');
+const pronostico = require('./Rutas/rutaPronosticos');
+const parcelas = require('./Rutas/parcelas');
+const lecturas = require('./Rutas/lecturas');
+const usuarios = require('./Rutas/Usuarios');
+/////
 app.listen(PORT, () => {
-  console.log(`🌍 Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
 });

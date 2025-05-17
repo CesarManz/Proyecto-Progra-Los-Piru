@@ -5,11 +5,13 @@
     <title>Crear Usuario - Test</title>
     <link rel="stylesheet" href="Estilo-login.css">
 </head>
+
 <body>
-<div class="logo-container">
-    <img src="public/EcoSmart2.png" alt="EcoSmart Logo" class="logo">
-    <h1 class="eco-title"><span class="eco">Eco</span><span class="smart">Smart</span></h1>
-</div>
+<header>
+    <div class="logo-container">
+        <img class= "ecosmart" src="public/EcoSmart2.png" alt="Logo Ecosmart" />
+    </div>
+</header>
 <form id="registroForm">
     <h2>Formulario de Registro</h2>
     <label>Nombre:<br><input type="text" name="nombre" required></label><br><br>
@@ -25,7 +27,9 @@
     </label><br><br>
     <button type="submit">Registrar</button>
 </form>
-
+<div class="rectangulo-bajo">
+    <p></p>
+</div>
 <p id="respuesta"></p>
 
 <script>
@@ -43,7 +47,7 @@
         };
 
         try {
-            const res = await fetch('http://localhost:5000/api/usuarios', {
+            const res = await fetch('http://localhost:5001/api/usuarios', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(datos)

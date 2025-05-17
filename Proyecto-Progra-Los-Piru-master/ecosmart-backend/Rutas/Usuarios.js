@@ -1,0 +1,36 @@
+const express = require('express');
+const router = express.Router();
+const Usuario = require('../subirDatos/crear-usuario');
+const verificarUsuario = require('../subirDatos/verificar-usuario');
+
+// ✅ Registro de nuevo usuario
+router.post('/', async (req, res)  => {
+  try {
+    const { nombre, correo, contraseña, trabajo } = req.body;
+
+    // Validación mínima
+    if (!nombre || !correo || !contraseña || !trabajo) {
+      return res.status(400).json({ mensaje: 'Todos los campos son obligatorios' });
+    }
+
+    // Verificar si el correo ya está registrado
+    const existente = await Usuario.findOne({ correo });
+    if (existente) {
+      return res.status(400).json({ mensaje: 'El correo ya está registrado' });
+    }
+
+    // Crear y guardar nuevo usuario
+    const nuevo = new Usuario({ nombre, correo, contraseña, trabajo });
+    await nuevo.save();
+
+    res.status(201).json({ mensaje: 'Usuario creado correctamente' });
+  } catch (err) {
+    console.error('❌ Error al registrar usuario:', err.message);
+    res.status(500).json({ mensaje: 'Error al registrar usuario' });
+  }
+});
+
+// ✅ Login de usuario
+router.post('/login', verificarUsuario);
+
+module.exports = router;
