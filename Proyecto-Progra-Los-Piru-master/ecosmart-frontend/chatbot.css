@@ -1,0 +1,294 @@
+html {
+    font-size: 1em;
+    line-height: 1.4;
+}
+body {
+    margin: 0;
+    height: 100vh;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), #c1d36b), url("public/Fondo.png");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    font-family: Arial, sans-serif;
+    color: white;
+}
+.ecosmart{
+    width: 125px;
+    height: auto;
+}
+
+header {
+    background-color: #1D2A10;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #CD8A39;
+    height: 40px;
+}
+
+.logo {
+    font-weight: bold;
+}
+
+.busqueda{
+    background-color: #CD8A39;
+}
+
+nav a {
+    margin: 0 10px;
+    color: #CD8A39;
+    text-decoration: none;
+}
+
+.faq-container {
+    background: rgba(255, 255, 205, 0.3);
+    margin-right: auto;
+    padding: 10px;
+    width: 70%;
+    border-radius: 12px;
+    margin-left: 50px;
+    margin-top: 50px;
+    text-align: center;
+    color: #1D2A10;
+}
+
+.faq-container h2 {
+    font-size: 32px;
+    margin-bottom: 20px;
+    border-bottom: 3px solid #1D2A10;
+    display: inline-block;
+}
+
+.faq-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.faq-item {
+    padding: 15px;
+    border-radius: 10px;
+    text-align: left;
+}
+
+.faq-container img{
+    width: 60px;
+    height: auto;
+    margin-left: 40%;
+    margin-right: auto;
+}
+
+.faq-item h3 {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.faq-item p {
+    font-size: 14px;
+}
+
+/*
+CSS Principal
+ */
+
+/* Layout principal */
+.principal {
+    display: flex;
+    height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #e7ecd9;
+}
+
+/* Columna izquierda */
+.columnaIzquierda {
+    width: 20%;
+    background-color: #CD8A39;
+}
+
+/* Chatbot derecho */
+.chatbot {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: transparent;
+}
+
+/* Encabezado */
+.deepseeklogo{
+    width: 125px;
+    height: auto;
+}
+
+.chat-header {
+    background-color: #1D2A10;
+    color: white;
+    padding: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    border-bottom: 1px solid #444;
+}
+
+/* Área de mensajes */
+.chat-messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #595D2B;
+    width: auto;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Estilo de mensaje general */
+.msg {
+    max-width: 75%;
+    padding: 12px 16px;
+    border-radius: 16px;
+    font-size: 15px;
+    line-height: 1.4;
+    background-color: #CD8A39;
+    white-space: pre-wrap;
+}
+
+/* Mensaje del usuario */
+.msg.user {
+    background-color: #CD8A39;
+    color: #1D2A10;
+    align-self: flex-end;
+    border-bottom-right-radius: 0;
+}
+
+/* Mensaje del bot */
+.msg.bot {
+    background-color: #1D2A10;
+    color: #CD8A39;
+    align-self: flex-start;
+    border-bottom-left-radius: 0;
+    height: auto;
+    width: auto;
+}
+
+/* Input del chat */
+.chat-input {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 30%;
+    max-width: 600px;
+    padding: 10px;
+
+    background-color: #1D2A10;
+    border-radius: 20px;
+
+    margin: 15px auto;
+}
+
+.chat-input input {
+    width: 60%; /* o usa 300px si prefieres tamaño fijo */
+    padding: 10px;
+    border: none;
+    border-radius: 12px 0 0 12px;
+    background-color: #B2A872;
+    outline: none;
+    font-size: 14px;
+}
+
+.chat-input button {
+    padding: 15px 15px;
+    background-color: #CD8A39;
+    border: none;
+    color: #1D2A10;
+    border-radius: 0 12px 12px 0;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+
+/* Contenedor interior centrado */
+.chat-input input {
+    width: 60%; /* Ajusta según lo que necesites (puedes usar 300px si prefieres) */
+    padding: 12px;
+    border: none;
+    border-radius: 12px 0 0 12px;
+    font-size: 14px;
+    background-color: #B2A872;
+    outline: none;
+}
+
+.chat-input button {
+    padding: 10px 16px;
+    background-color: #CD8A39;
+    border: none;
+    border-radius: 0 12px 12px 0;
+    cursor: pointer;
+    font-size: 16px;
+    color: #1D2A10;
+}
+
+
+::-moz-selection {
+    background: #b3d4fc;
+    text-shadow: none;
+}
+.msg.bot::selection{
+    background: #FFCC8A;
+    text-shadow: none;
+}
+.msg.user::selection {
+    background: #CD8A39;
+    text-shadow: none;
+}
+
+.message.bot.loading {
+    background-color: white;
+    color: white;
+    margin-left: 50px;
+    border-radius: 16px;
+    padding: 10px 10px;
+    max-width: 60%;
+    width: 10px;
+    height: 20px;
+    display: inline-block;
+    max-height: fit-content;
+}
+
+.typing-dots {
+    text-align: left;
+    display: inline-flex;
+    gap: 4px;
+    height: auto;
+    width: auto;
+}
+
+.typing-dots span {
+    width: 6px;
+    height: 6px;
+    background-color: #CD8A39;
+    border-radius: 50%;
+    animation: blink 1.2s infinite ease-in-out;
+}
+
+.typing-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+.typing-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes blink {
+    0%, 80%, 100% {
+        transform: scale(0);
+        opacity: 0.3;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
