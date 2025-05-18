@@ -8,6 +8,7 @@ const PORT = 5001;
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
+app.use('/api/usuarios', require('./Rutas/Usuarios'));
 
 // Conexión a MongoDB
 mongoose.connect('mongodb+srv://xAshura3x:omWSvOUHLYUR0ttE@cluster0.vlf79yu.mongodb.net/test?retryWrites=true&w=majority')
@@ -21,6 +22,7 @@ app.use('/api/clima', require('./Rutas/rutaClima')); // OpenWeatherMap por ciuda
 app.use('/api', require('./Rutas/ClimaActual'));     // OpenWeatherMap por lat/lon
 app.use('/api', require('./Rutas/rutaPronosticos')); // Pronóstico por lat/lon
 app.use('/api/usuarios', require('./Rutas/Usuarios')); // Registro/login
+
 
 /////
 const climaActual = require('./Rutas/ClimaActual');

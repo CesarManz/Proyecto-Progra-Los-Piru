@@ -18,24 +18,77 @@
     </nav>
 </header>
 <body>
-<form id="loginForm">
-    <div class="contenedor" >
-    </div>
-</form>
-<script>
-    function redirigirPaginaPrincipal() {
-        const trabajo = localStorage.getItem('trabajo');
+    <h2>Actualizar Usuario</h2>
+<form id="updateUserForm">
+    <label for="oldEmail">Correo actual del usuario:</label>
+    <input type="email" id="oldEmail" name="oldEmail" required>
 
-        if (trabajo === 'agronomo') {
-            window.location.href = 'Principal-agronomo.html';
-        } else if (trabajo === 'tecnico') {
-            window.location.href = 'Principal-tecnico.html';
-        } else if (trabajo === 'agricultor') {
-            window.location.href = 'Principal-agricultor.html';
-        } else {
-            alert('No se reconoce el trabajo del usuario.');
+    <label for="newName">Nuevo nombre:</label>
+    <input type="text" id="newName" name="newName" required>
+
+    <label for="newEmail">Nuevo correo:</label>
+    <input type="email" id="newEmail" name="newEmail" required>
+    <button type="submit">Actualizar Usuario</button>
+</form>
+    <h2>Eliminar Usuario</h2>
+    <form id="deleteUserForm">
+        <label for="deleteEmail">Correo del usuario:</label>
+        <input type="email" id="deleteEmail" name="correo" required>
+        <button type="submit">Eliminar Usuario</button>
+    </form>
+
+
+<script>
+    document.getElementById('updateUserForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const oldEmail = document.getElementById('oldEmail').value;
+        const newName = document.getElementById('newName').value;
+        const newEmail = document.getElementById('newEmail').value;
+
+        try {
+            const response = await fetch('http://localhost:5001/api/usuarios/actualizar', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    oldEmail,
+                    newName,
+                    newEmail
+                })
+            });
+
+            const data = await response.json();
+            alert(data.mensaje);
+        } catch (err) {
+            alert('Error al actualizar el usuario');
+            console.error(err);
         }
-    }
+    });
+    document.getElementById('deleteUserForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const correo = document.getElementById('deleteEmail').value;
+
+        const confirmacion = confirm(`¿Estás seguro de eliminar el usuario con correo ${correo}?`);
+        if (!confirmacion) return;
+
+        try {
+            const response = await fetch('http://localhost:5001/api/usuarios/eliminar', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ correo })
+            });
+
+            const data = await response.json();
+            alert(data.mensaje);
+        } catch (err) {
+            alert('Error al eliminar el usuario');
+            console.error(err);
+        }
+    });
 </script>
 </body>
 </html>
