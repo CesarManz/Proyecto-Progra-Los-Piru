@@ -1,0 +1,50 @@
+html {
+    font-size: 1em;
+    line-height: 1.4;
+}
+body {
+    margin: 0;
+    height: 100vh;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), #c1d36b), url("../public/Fondo.png");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    font-family: Arial, sans-serif;
+    color: white;
+}
+.ecosmart{
+    width: 150px;
+    height: auto;
+}
+.contenedor {
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin-bottom: 100px;
+    background-color: #dba14e;
+    border-radius: 8px;
+}
+header {
+    background-color: #1D2A10;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #CD8A39;
+    height: 50px;
+}
+form {
+    background-color: #dba14e;
+    padding:  30px 20px;
+    border-radius: 15px;
+    height: 60px;
+    margin: 20px auto;
+    position: relative;
+    width: 90%;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    text-align: center;
+}
+nav a {
+    margin: 0 10px;
+    color: #CD8A39;
+    text-decoration: none;
+}

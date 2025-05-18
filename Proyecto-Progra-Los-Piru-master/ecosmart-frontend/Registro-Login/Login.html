@@ -9,7 +9,7 @@
 <body>
 <header>
     <div class="logo-container">
-        <img class= "ecosmart" src="public/EcoSmart2.png" alt="Logo Ecosmart" />
+        <img class= "ecosmart" src="../public/EcoSmart2.png" alt="Logo Ecosmart" />
     </div>
 </header>
  <form id="loginForm">
@@ -53,11 +53,11 @@
                 localStorage.setItem('trabajo', trabajo); // <-- guarda el trabajo en localStorage
 
                 if (trabajo === 'agronomo') {
-                    window.location.href = 'Principal-agronomo.html';
+                    window.location.href = '../Principales/Principal-agronomo.html';
                 } else if (trabajo === 'tecnico') {
-                    window.location.href = 'Principal-tecnico.html';
+                    window.location.href = '../Principales/Principal-tecnico.html';
                 } else if (trabajo === 'agricultor') {
-                    window.location.href = 'Principal-agricultor.html';
+                    window.location.href = '../Principales/Principal-agricultor.html';
                 } else {
                     respuesta.textContent = 'Trabajo no reconocido';
                 }

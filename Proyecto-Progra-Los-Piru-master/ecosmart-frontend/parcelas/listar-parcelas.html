@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Parcelas Registradas</title>
-  <link rel="stylesheet" href="../Estilo-prin.css" />
+  <link rel="stylesheet" href="../Principales/Estilo-prin.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <style>
@@ -129,7 +129,7 @@
     <a href="#" onclick="redirigirPaginaPrincipal()">Pagina principal</a>
     <a href="listar-parcelas.html">Parcelas</a>
     <a href="#">Inventario</a>
-    <a href="../consultas.html">Preguntas</a>
+    <a href="../Deepseek/consultas.html">Preguntas</a>
     <input type="search" class="busqueda" placeholder="Buscar" />
   </nav>
 </header>
@@ -227,11 +227,11 @@ window.onload = cargarParcelas;
     const trabajo = localStorage.getItem('trabajo');
 
     if (trabajo === 'agronomo') {
-      window.location.href = '../Principal-agronomo.html';
+      window.location.href = '../Principales/Principal-agronomo.html';
     } else if (trabajo === 'tecnico') {
-      window.location.href = '../Principal-tecnico.html';
+      window.location.href = '../Principales/Principal-tecnico.html';
     } else if (trabajo === 'agricultor') {
-      window.location.href = '../Principal-agricultor.html';
+      window.location.href = '../Principales/Principal-agricultor.html';
     } else {
       alert('No se reconoce el trabajo del usuario.');
     }
