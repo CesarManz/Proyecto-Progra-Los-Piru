@@ -5,9 +5,11 @@
     <title>Página del Agricultor</title>
     <link rel="stylesheet" href="Estilo-prin.css">
 </head>
+
+<body>
 <header>
     <div class="logo">
-    <img class= "ecosmart" src="public/EcoSmart2.png" />
+        <img class= "ecosmart" src="public/EcoSmart2.png" />
     </div>
     <nav>
         <a href="#" onclick="redirigirPaginaPrincipal()">Pagina principal</a>
@@ -16,7 +18,9 @@
         <input class= "busqueda" type="search" placeholder="Buscar">
     </nav>
 </header>
-<body>
+<div class="Cuadrado-transparente">
+
+</div>
 <script>
     function redirigirPaginaPrincipal() {
         const trabajo = localStorage.getItem('trabajo');
