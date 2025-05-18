@@ -30,7 +30,58 @@ router.post('/', async (req, res)  => {
   }
 });
 
+// Eliminar usuario por correo
+router.delete('/eliminar', async (req, res) => {
+  try {
+    const { correo } = req.body;
+
+    if (!correo) {
+      return res.status(400).json({ mensaje: 'El correo es obligatorio' });
+    }
+
+    const resultado = await Usuario.deleteOne({ correo });
+
+    if (resultado.deletedCount === 0) {
+      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+    }
+
+    res.json({ mensaje: 'Usuario eliminado correctamente' });
+  } catch (err) {
+    console.error('Error al eliminar usuario:', err.message);
+    res.status(500).json({ mensaje: 'Error al eliminar usuario' });
+  }
+});
+
+// Actualizar nombre y correo del usuario
+router.put('/actualizar', async (req, res) => {
+  try {
+    const { oldEmail, newName, newEmail } = req.body;
+
+    if (!oldEmail || !newName || !newEmail) {
+      return res.status(400).json({ mensaje: 'Todos los campos son obligatorios' });
+    }
+
+    const usuario = await Usuario.findOne({ correo: oldEmail });
+
+    if (!usuario) {
+      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+    }
+
+    usuario.nombre = newName;
+    usuario.correo = newEmail;
+
+    await usuario.save();
+
+    res.json({ mensaje: 'Usuario actualizado correctamente' });
+  } catch (err) {
+    console.error('Error al actualizar usuario:', err.message);
+    res.status(500).json({ mensaje: 'Error al actualizar usuario' });
+  }
+});
+
 // ✅ Login de usuario
 router.post('/login', verificarUsuario);
+
+
 
 module.exports = router;
