@@ -24,7 +24,7 @@ def generate():
       #11434 = Puerto/HOST que usa OLLAMA por defecto
         'http://127.0.0.1:11434/api/generate',
         json={
-            "model": "deepseek-r1",
+            "model": "tinyllama",
             "prompt": prompt,
             "stream": False
         }
