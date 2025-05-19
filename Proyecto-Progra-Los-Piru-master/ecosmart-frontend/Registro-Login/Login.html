@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login de Usuario</title>
+    <link rel="stylesheet" href="Estilo-login.css">
+</head>
+
+<body>
+<header>
+    <div class="logo-container">
+        <img class= "ecosmart" src="../public/EcoSmart2.png" alt="Logo Ecosmart" />
+    </div>
+</header>
+ <form id="loginForm">
+    <h3 class="mensajePrincipio">Hola! Ingrese su correo electronico y contraseña!</h3>
+    <input type="email" class="email" name="correo" placeholder="Email" required>
+    <input type="password" class="contraseña" name="contraseña" placeholder="Contraseña" required autocomplete="off">
+    <button type="submit" class="btn-login">Comenzar</button>
+    <div class = "textoregistro">
+        <span>¿No tienes una cuenta? </span>
+        <span class="registro" onclick="window.location.href='Registro.html'">¡Registrate aquí!</span>
+    </div>
+
+</form>
+
+
+<div class="rectangulo-bajo">
+    <p id="respuesta"></p>
+</div>
+
+<script>
+    const form = document.getElementById('loginForm');
+    const respuesta = document.getElementById('respuesta');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const datos = {
+            correo: form.correo.value,
+            contraseña: form.contraseña.value
+        };
+
+        try {
+            const res = await fetch('http://localhost:5001/api/usuarios/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datos)
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                const trabajo = data.usuario.trabajo?.toLowerCase();
+
+                // Guardar en localStorage
+                localStorage.setItem('trabajo', trabajo);
+                localStorage.setItem('correo', data.usuario.correo);
+
+                if (trabajo === 'agronomo') {
+                    window.location.href = '../Principales/Principal-agronomo.html';
+                } else if (trabajo === 'tecnico') {
+                    window.location.href = '../Principales/Principal-tecnico.html';
+                } else if (trabajo === 'agricultor') {
+                    window.location.href = '../Principales/Principal-agricultor.html';
+                } else {
+                    respuesta.textContent = 'Trabajo no reconocido';
+                }
+            }
+
+            else {
+                respuesta.textContent = data.mensaje;
+            }
+        } catch (error) {
+            respuesta.textContent = 'Error al conectar con el servidor';
+        }
+    });
+
+</script>
+
+</body>
+</html>
+
+

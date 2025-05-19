@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Usuario - Test</title>
+    <link rel="stylesheet" href="Estilo-login.css">
+</head>
+
+<body>
+<header>
+    <div class="logo-container">
+        <img class="ecosmart" src="../public/EcoSmart2.png" alt="Logo Ecosmart" />
+    </div>
+</header>
+
+<form id="registroForm">
+    <h3 class="mensajePrincipio">¡Bienvenido! Complete sus datos para registrarse</h3>
+
+    <input type="text" class="email" name="nombre" placeholder="Nombre" required>
+    <input type="email" class="email" name="correo" placeholder="Email" required>
+    <input type="password" class="contraseña" name="contraseña" placeholder="Contraseña" required>
+
+    <div class="dropdown">
+        <div class="dropdown-selected" onclick="toggleDropdown()">Seleccione su ocupación ⬎</div>
+        <div class="dropdown-options">
+            <div class="dropdown-option" data-value="agronomo">👨‍🌾 Agrónomo</div>
+            <div class="dropdown-option" data-value="tecnico">🔧 Técnico</div>
+            <div class="dropdown-option" data-value="agricultor">🌾 Agricultor</div>
+        </div>
+        <input type="hidden" name="trabajo" id="selectedValue" required>
+    </div>
+
+    <button type="submit" class="btn-login">Registrar</button>
+
+    <div class="textoregistro">
+        <span>¿Ya tienes una cuenta? </span>
+        <span class="registro" onclick="window.location.href='Login.html'">¡Inicia sesión aquí!</span>
+    </div>
+</form>
+
+<div class="rectangulo-bajo">
+    <p></p>
+</div>
+
+<p id="respuesta"></p>
+
+</body>
+</html>
+
+
+<script>
+    function toggleDropdown() {
+        document.querySelector('.dropdown-options').classList.toggle('show');
+    }
+
+    document.querySelectorAll('.dropdown-option').forEach(option => {
+        option.addEventListener('click', function () {
+            const selectedText = this.innerText;
+            const selectedValue = this.getAttribute('data-value');
+
+            document.querySelector('.dropdown-selected').innerText = selectedText;
+            document.getElementById('selectedValue').value = selectedValue;
+
+            document.querySelector('.dropdown-options').classList.remove('show');
+        });
+    });
+
+    // Cerrar si se hace clic fuera del dropdown
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('.dropdown')) {
+            document.querySelector('.dropdown-options').classList.remove('show');
+        }
+    });
+
+    // Envío del formulario
+    const form = document.getElementById('registroForm');
+    const respuesta = document.getElementById('respuesta');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const datos = {
+            nombre: form.nombre.value,
+            correo: form.correo.value,
+            contraseña: form.contraseña.value,
+            trabajo: form.trabajo.value
+        };
+
+        if (!datos.trabajo) {
+            respuesta.textContent = 'Por favor seleccione una ocupación.';
+            respuesta.style.color = 'red';
+            return;
+        }
+
+        try {
+            const res = await fetch('http://localhost:5001/api/usuarios', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datos)
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                window.location.href = 'Login.html';
+            } else {
+                respuesta.textContent = data.mensaje;
+                respuesta.style.color = 'red';
+            }
+        } catch (error) {
+            respuesta.textContent = 'Error al conectar con el servidor';
+            respuesta.style.color = 'red';
+        }
+    });
+</script>
+</body>
+</html>

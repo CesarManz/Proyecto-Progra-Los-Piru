@@ -6,14 +6,12 @@ const verificarUsuario = async (req, res) => {
 
   try {
     const usuario = await Usuario.findOne({ correo });
-
     if (!usuario) {
       return res.status(400).json({ mensaje: 'Correo no registrado' });
     }
 
-    const contraseñaValida = await bcrypt.compare(contraseña, usuario.contraseña);
-
-    if (!contraseñaValida) {
+    const esValida = await bcrypt.compare(contraseña, usuario.contraseña);
+    if (!esValida) {
       return res.status(401).json({ mensaje: 'Contraseña incorrecta' });
     }
 
@@ -24,8 +22,8 @@ const verificarUsuario = async (req, res) => {
     };
 
     res.status(200).json({ mensaje: 'Login exitoso', usuario: usuarioSinContraseña });
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    console.error('❌ Error en login:', err.message);
     res.status(500).json({ mensaje: 'Error en el login' });
   }
 };

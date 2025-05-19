@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Inventario</title>
+    <link rel="stylesheet" href="../Inventario/Estilo-inv.css">
+</head>
+<header>
+    <div class="logo">
+        <img class= "ecosmart" src="../public/EcoSmart2.png"/>
+    </div>
+    <nav>
+        <a href="#" onclick="redirigirPaginaPrincipal()">Pagina principal</a>
+        <a href="../parcelas/listar-parcelas.html">Parcelas</a>
+        <a href="../Inventario/Inventario.html">Inventario</a>
+        <a href="../Deepseek/consultas.html">Preguntas</a>
+        <input class= "busqueda" type="search" placeholder="Buscar">
+    </nav>
+</header>
+<body>
+<script>
+    function redirigirPaginaPrincipal() {
+        const trabajo = localStorage.getItem('trabajo');
+
+        if (trabajo === 'agronomo') {
+            window.location.href = '../Principales/Principal-agronomo.html';
+        } else if (trabajo === 'tecnico') {
+            window.location.href = '../Principales/Principal-tecnico.html';
+        } else if (trabajo === 'agricultor') {
+            window.location.href = '../Principales/Principal-agricultor.html';
+        } else {
+            alert('No se reconoce el trabajo del usuario.');
+        }
+    }
+</script>
+</body>
+
+<html/>
