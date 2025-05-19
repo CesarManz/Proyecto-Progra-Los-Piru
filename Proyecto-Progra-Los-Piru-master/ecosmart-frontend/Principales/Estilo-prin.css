@@ -55,24 +55,26 @@ nav a {
     border: none;
     border-radius: 4px;
 }
-.fo-perfil{
-    width: 60px;
-    height: 60px;
-}
+
 .Fondo-fo-perfil{
     background: rgba(205, 138, 57, 0.3);
     text-align: right;
     border-radius: 50%;
 }
+
 .Fondo-fo-perfil {
     display: inline-block;
     position: relative;
     cursor: pointer;
 }
 
-.fo-perfil {
-    width: 50px;
-    height: 50px;
+.fo-perfil{
+    margin-top: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+    align-items: center;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
 }
 
