@@ -50,11 +50,21 @@ nav a {
     border: none;
     border-radius: 4px;
 }
-.fo-perfil{
-    width: 60px;
-    height: 60px;
+.Foto-perfil{
+    width: 200px;
+    height: 200px;
 }
-.Fondo-fo-perfil{
+.Fondo-Foto-perfil{
+    background: rgba(205, 138, 57, 0.3);
+    text-align: left;
+    border-radius: 50%;
+}
+.Fondo-Foto-perfil {
+    display: inline-block;
+    position: relative;
+}
+
+.Fondo-fo-perfil {
     background: rgba(205, 138, 57, 0.3);
     text-align: right;
     border-radius: 50%;
