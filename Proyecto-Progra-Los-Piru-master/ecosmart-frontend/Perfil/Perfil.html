@@ -31,6 +31,13 @@
     <div class="Fondo-Foto-perfil">
         <img class="Foto-perfil" src="../public/Foto perfil.png">
     </div>
+    <div class="datos-usuario">
+        <p id="nombreUsuario">Nombre: Cargando...</p>
+        <p id="correoUsuario">Correo: Cargando...</p>
+        <p id="trabajoUsuario">Trabajo: Cargando...</p>
+    </div>
+
+
 </div>
 
 <script>
@@ -60,6 +67,31 @@
         menu.style.display = 'none';
     });
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const correo = localStorage.getItem('correo');
+        if (!correo) {
+            alert('No se encontró correo en el almacenamiento local');
+            return;
+        }
+
+        fetch(`http://localhost:5001/api/usuarios/correo/${encodeURIComponent(correo)}`)
+            .then(res => {
+                if (!res.ok) throw new Error('Usuario no encontrado');
+                return res.json();
+            })
+            .then(data => {
+                document.getElementById('nombreUsuario').textContent = `Nombre: ${data.nombre}`;
+                document.getElementById('correoUsuario').textContent = `Correo: ${data.correo}`;
+                document.getElementById('trabajoUsuario').textContent = `Trabajo: ${data.trabajo}`;
+            })
+            .catch(err => {
+                console.error('Error al obtener datos del usuario:', err);
+            });
+    });
+</script>
+
+
 </body>
 
 <html/>

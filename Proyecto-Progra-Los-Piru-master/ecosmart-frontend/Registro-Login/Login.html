@@ -24,6 +24,7 @@
 
 </form>
 
+
 <div class="rectangulo-bajo">
     <p id="respuesta"></p>
 </div>
@@ -50,7 +51,10 @@
             const data = await res.json();
             if (res.ok) {
                 const trabajo = data.usuario.trabajo?.toLowerCase();
-                localStorage.setItem('trabajo', trabajo); // <-- guarda el trabajo en localStorage
+
+                // Guardar en localStorage
+                localStorage.setItem('trabajo', trabajo);
+                localStorage.setItem('correo', data.usuario.correo);
 
                 if (trabajo === 'agronomo') {
                     window.location.href = '../Principales/Principal-agronomo.html';
@@ -62,6 +66,7 @@
                     respuesta.textContent = 'Trabajo no reconocido';
                 }
             }
+
             else {
                 respuesta.textContent = data.mensaje;
             }
@@ -69,7 +74,9 @@
             respuesta.textContent = 'Error al conectar con el servidor';
         }
     });
+
 </script>
+
 </body>
 </html>
 
