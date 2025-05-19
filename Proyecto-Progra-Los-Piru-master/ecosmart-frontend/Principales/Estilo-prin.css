@@ -64,3 +64,38 @@ nav a {
     text-align: right;
     border-radius: 50%;
 }
+.Fondo-fo-perfil {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+}
+
+.fo-perfil {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.menu-perfil {
+    display: none;
+    position: absolute;
+    top: 60px;
+    right: 0;
+    background: rgba(205, 138, 57, 0.5);
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    width: 150px;
+    z-index: 100;
+}
+
+.menu-perfil a {
+    display: block;
+    padding: 10px;
+    color: #333;
+    text-decoration: none;
+}
+
+.menu-perfil a:hover {
+    background: rgba(205, 138, 57, 0.9);
+    border-radius: 10px;
+}
