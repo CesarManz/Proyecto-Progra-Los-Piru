@@ -22,10 +22,9 @@ header {
     align-items: center;
     color: #CD8A39;
     height: 70px;
-    margin: 0;           /* <-- Asegúrate de que no tenga margen */
-    position: relative;  /* <-- Esto es por si necesitas posicionarlo */
-    left: 0;             /* <-- Pegado a la izquierda */
-    width: 100%;         /* <-- Que ocupe todo el ancho de la pantalla */
+    margin: 0;
+    position: relative;
+    width: 50%;
 }
 
 .logo-container {
@@ -41,15 +40,6 @@ header {
     margin: 0;
     font-size: 2em;
 }
-
-.eco {
-    color: #3f541f;
-}
-
-.smart {
-    color: #c95211;
-}
-
 form {
     background-color: #dba14e;
     padding: 30px 70px;
