@@ -29,6 +29,9 @@ header {
   align-items: center;
   color: #CD8A39;
   height: 40px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  position: relative;
 }
 .logo {
   font-weight: bold;
@@ -134,7 +137,7 @@ nav a {
   padding: 10px;
   border-radius: 0 0 0 10px;
   outline: none;
-  background-color: white;
+  background-color: #B2A872;
 }
 
 .chat-input button {
@@ -255,6 +258,31 @@ hr {
   margin: 1em 0;
   padding: 0;
 }
+
+::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+
+::-webkit-scrollbar-track {
+  background: linear-gradient(145deg, #2b3217, #1d2a10);
+  border-radius: 10px;
+  margin: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(145deg, #cd8a39, #e6a656);
+  border-radius: 10px;
+  border: 3px solid #1d2a10;
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.2);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(145deg, #e6a656, #f0b66a);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
 
 /*
  * Remove the gap between audio, canvas, iframes,

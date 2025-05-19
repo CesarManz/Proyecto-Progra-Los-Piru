@@ -11,6 +11,8 @@ body {
     background-attachment: fixed;
     font-family: Arial, sans-serif;
     color: white;
+    display: flex;
+    flex-direction: column;
 }
 .ecosmart{
     width: 125px;
@@ -25,7 +27,11 @@ header {
     align-items: center;
     color: #CD8A39;
     height: 40px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6), 0 2px 6px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    position: relative;
 }
+
 
 .logo {
     font-weight: bold;
@@ -99,13 +105,13 @@ CSS Principal
     display: flex;
     height: 100vh;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #e7ecd9;
+    background-color: #595D2B;
 }
 
 /* Columna izquierda */
 .columnaIzquierda {
     width: 20%;
-    background-color: #CD8A39;
+    background-color: #1D2A10;
 }
 
 /* Chatbot derecho */
@@ -113,13 +119,13 @@ CSS Principal
     width: 80%;
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    flex: 1;
     background-color: transparent;
 }
 
 /* Encabezado */
 .deepseeklogo{
-    width: 125px;
+    width: 130px;
     height: auto;
 }
 
@@ -129,21 +135,24 @@ CSS Principal
     padding: 15px;
     font-size: 18px;
     font-weight: bold;
-    border-bottom: 1px solid #444;
+    height: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6), 0 1px 3px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    position: relative;
 }
 
 /* Área de mensajes */
 .chat-messages {
     flex: 1;
+    height: 100%;
     padding: 20px;
     overflow-y: auto;
     background-color: #595D2B;
-    width: auto;
-    height: 100vh;
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
+
 
 /* Estilo de mensaje general */
 .msg {
@@ -176,22 +185,25 @@ CSS Principal
 
 /* Input del chat */
 .chat-input {
+    bottom: 20px;
+    left: 45%; /* compensar la columna izquierda */
+    width: 30%; /* espacio usable del chat */
+    max-width: none;
+    margin-left: 35%;
+    margin-bottom: 1%;
     display: flex;
     justify-content: center;
     align-items: center;
-
-    width: 30%;
-    max-width: 600px;
     padding: 10px;
-
-    background-color: #1D2A10;
+    border: 0.2px solid #3B3D1C;
+    background-color: #595D2B;
     border-radius: 20px;
-
-    margin: 15px auto;
+    z-index: 100;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .chat-input input {
-    width: 60%; /* o usa 300px si prefieres tamaño fijo */
+    width: 60%;
     padding: 10px;
     border: none;
     border-radius: 12px 0 0 12px;
@@ -210,10 +222,9 @@ CSS Principal
     font-size: 20px;
 }
 
-
 /* Contenedor interior centrado */
 .chat-input input {
-    width: 60%; /* Ajusta según lo que necesites (puedes usar 300px si prefieres) */
+    width: 60%;
     padding: 12px;
     border: none;
     border-radius: 12px 0 0 12px;
@@ -247,25 +258,38 @@ CSS Principal
 }
 
 .message.bot.loading {
-    background-color: white;
     color: white;
-    margin-left: 50px;
+    margin-left: 10px;
     border-radius: 16px;
-    padding: 10px 10px;
-    max-width: 60%;
-    width: 10px;
-    height: 20px;
+    padding: 0px;
+    max-width: fit-content;
+    width: fit-content;
+    height: fit-content;
     display: inline-block;
-    max-height: fit-content;
 }
 
 .typing-dots {
-    text-align: left;
     display: inline-flex;
-    gap: 4px;
-    height: auto;
-    width: auto;
+    gap: 10px;
+    margin-left: -30px;
+    margin-top: auto;
+    margin-bottom: -30px;
+    width: fit-content;
+    height: fit-content;
 }
+
+
+.typing-container {
+    padding: 0;
+    margin: 0;
+    width: fit-content;
+    height: fit-content;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
 
 .typing-dots span {
     width: 6px;
@@ -291,4 +315,35 @@ CSS Principal
         transform: scale(1);
         opacity: 1;
     }
+}
+
+/* Scrollbar global elegante */
+::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+}
+
+::-webkit-scrollbar-track {
+    background: linear-gradient(145deg, #2b3217, #1d2a10); /* fondo con profundidad */
+    border-radius: 10px;
+    margin: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(145deg, #cd8a39, #e6a656);
+    border-radius: 10px;
+    border: 3px solid #1d2a10; /* crea espacio alrededor */
+    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.2);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(145deg, #e6a656, #f0b66a);
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Firefox (estilo básico, menos personalizable) */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #cd8a39 #1d2a10;
 }
