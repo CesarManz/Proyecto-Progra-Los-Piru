@@ -108,3 +108,10 @@ nav a {
     width: 150px;
     height: auto;
 }
+.datos-usuario {
+    display: inline-block;
+    vertical-align: top;
+    margin-left: 20px;
+    font-size: 16px;
+    color: black;
+}
