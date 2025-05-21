@@ -3,239 +3,343 @@
 <head>
   <meta charset="UTF-8" />
   <title>Parcelas Registradas</title>
-  <link rel="stylesheet" href="../Principales/Estilo-prin.css" />
+  <link rel="stylesheet" href="../Estilo-prin.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
-      margin: 0;
-      height: 100vh;
-      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), #c1d36b), url("../public/Fondo.png");
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
-      font-family: 'Segoe UI', sans-serif;
-      color: #1D2A10;
-    }
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), #c1d36b), url("../public/Fondo.png");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: #1D2A10;
+}
 
-    header {
-      background-color: #1D2A10;
-      padding: 10px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: #CD8A39;
-      height: 70px;
-    }
+header {
+  background-color: #1D2A10;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #CD8A39;
+  height: 70px;
+}
 
-    .logo img {
-      width: 150px;
-      height: auto;
-    }
+.logo img {
+  width: 150px;
+  height: auto;
+}
 
-    nav a {
-      color: #CD8A39;
-      text-decoration: none;
-      font-weight: bold;
-      margin: 0 10px;
-    }
+nav a {
+  color: #CD8A39;
+  text-decoration: none;
+  font-weight: bold;
+  margin: 0 10px;
+}
 
-    nav a:hover {
-      text-decoration: underline;
-    }
+nav a:hover {
+  text-decoration: underline;
+}
 
-    .busqueda {
-      background-color: #CD8A39;
-      padding: 5px;
-      border: none;
-      border-radius: 4px;
-    }
+.busqueda {
+  background-color: #CD8A39;
+  padding: 5px;
+  border: none;
+  border-radius: 4px;
+}
 
-    main {
-      background-color: rgba(205, 138, 57, 0.9);
-      border-radius: 16px;
-      padding: 24px;
-      max-width: 1200px;
-      margin: 2rem auto;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    }
+main {
+  background-color: rgba(205, 138, 57, 0.9);
+  backdrop-filter: none;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 1200px;
+  margin: 2rem auto;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
 
-    .tarjeta {
-      background-color: #fff;
-      border: 2px solid #1D2A10;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 30px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      color: #1D2A10;
-    }
+h2 {
+  font-size: 1.6rem;
+  color: #1D2A10;
+  margin-bottom: 1rem;
+}
 
-    .mapa {
-      height: 200px;
-      margin: 10px 0;
-      border-radius: 10px;
-    }
+.tarjeta {
+  background-color: #fff;
+  border: 2px solid #1D2A10;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  color: #1D2A10;
+}
 
-    .clima-widget {
-      background: #f9f9f9;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      padding: 10px 15px;
-      margin: 15px 0;
-    }
+.mapa {
+  height: 200px;
+  margin: 10px 0;
+  border-radius: 10px;
+}
 
-    .acciones {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-    }
+.clima-widget {
+  background: #f9f9f9;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px 15px;
+  margin: 15px 0;
+}
 
-    .acciones button {
-      background-color: #1D2A10;
-      color: white;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-    }
+.clima-widget p {
+  margin: 4px 0;
+  font-size: 15px;
+}
 
-    .acciones button:last-child {
-      background-color: #b22222;
-    }
+.acciones {
+  margin-top: 12px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
 
-    .top-buttons {
-      display: flex;
-      justify-content: flex-end;
-      margin-bottom: 20px;
-    }
+.acciones button {
+  background-color: #1D2A10;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
 
-    .top-buttons a {
-      background-color: #1D2A10;
-      color: white;
-      padding: 10px 16px;
-      border-radius: 6px;
-      text-decoration: none;
-      font-weight: bold;
-    }
+.acciones button:hover {
+  background-color: #CD8A39;
+  color: #1D2A10;
+}
+
+.top-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.top-buttons a {
+  background-color: #1D2A10;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.top-buttons a:hover {
+  background-color: #CD8A39;
+  color: #1D2A10;
+}
+
   </style>
 </head>
 <body>
-<header>
-  <div class="logo">
-    <img src="../public/EcoSmart2.png" />
-  </div>
-  <nav>
-    <a href="#" onclick="redirigirPaginaPrincipal()">Pagina principal</a>
-    <a href="listar-parcelas.html">Parcelas</a>
-    <a href="#">Inventario</a>
-    <a href="../Deepseek/consultas.html">Preguntas</a>
-    <input type="search" class="busqueda" placeholder="Buscar" />
-  </nav>
-</header>
+  <header>
+    <div class="logo">
+      <img class="ecosmart" src="../public/EcoSmart2.png" />
+    </div>
+    <nav>
+      <a href="../index.html">Página principal</a>
+      <a href="./listar-parcelas.html">Parcelas</a>
+      <a href="#">Inventario</a>
+      <a href="../consultas.html">Preguntas</a>
+      <input class="busqueda" type="search" placeholder="Buscar" />
+    </nav>
+  </header>
 
-<main>
-  <div class="top-buttons">
-    <a href="crear-parcela.html">+ Crear nueva parcela</a>
-  </div>
-  <h2>Parcelas registradas</h2>
-  <div id="contenedorParcelas"></div>
-</main>
+  <main>
+    <div class="top-buttons">
+      <a href="crear-parcela.html">+ Crear nueva parcela</a>
+    </div>
+    <h2>Parcelas Registradas</h2>
+    <div id="contenedorParcelas"></div>
+  </main>
 
-<script>
-async function cargarParcelas() {
+  <script>
+   async function cargarParcelas() {
   const res = await fetch("http://localhost:5001/api/parcelas");
   const parcelas = await res.json();
   const contenedor = document.getElementById("contenedorParcelas");
   contenedor.innerHTML = "";
 
   for (const p of parcelas) {
-    const clima = await obtenerClima(p.coordenadas.lat, p.coordenadas.lon);
-    const idMapa = "map-" + p._id;
+    // Usar coordenadas si existen, si no, usar el primer punto
+    let lat = null;
+    let lon = null;
+
+    if (p.coordenadas && p.coordenadas.lat && p.coordenadas.lon) {
+      lat = p.coordenadas.lat;
+      lon = p.coordenadas.lon;
+    } else if (p.puntos && p.puntos.length > 0) {
+      lat = p.puntos[0].lat;
+      lon = p.puntos[0].lng;
+    }
+
+    if (lat === null || lon === null) continue;
+
+    const clima = await obtenerClima(lat, lon);
+    const sensores = await obtenerLecturas(p.nombre);
+    const pronostico = await obtenerPronostico(lat, lon);
+
+    const idMapa = `map-${p._id}`;
+    const idGrafico = `grafico-${p._id}`;
+
     const div = document.createElement("div");
     div.className = "tarjeta";
-    div.innerHTML =
-      '<h3>🌿 ' + p.nombre + '</h3>' +
-      '<p><strong>📍 Coordenadas:</strong> ' + p.coordenadas.lat + ', ' + p.coordenadas.lon + '</p>' +
-      '<div id="' + idMapa + '" class="mapa"></div>' +
-      '<div class="clima-widget">' +
-        '<p>☁️ Clima: ' + clima.descripcion + ' - ' + clima.temperatura + '°C</p>' +
-        '<p>💧 Humedad: ' + clima.humedad + '% | 🌬 Viento: ' + clima.viento + ' km/h</p>' +
-      '</div>' +
-      '<p><strong>📊 Últimas lecturas:</strong></p>' +
-      '<ul id="lecturas_' + p._id + '"></ul>' +
-      '<div class="acciones">' +
-        '<button onclick="verHistorial(\'' + p.nombre + '\')">📈 Ver historial</button>' +
-        '<button onclick="eliminarParcela(\'' + p._id + '\')">🗑 Eliminar</button>' +
-      '</div>';
+    div.innerHTML = `
+      <h3>🌿 ${p.nombre}</h3>
+      <p><strong>📍 Coordenadas:</strong> ${lat}, ${lon}</p>
+      <div id="${idMapa}" class="mapa"></div>
+
+      <div class="clima-widget">
+        <p>☁️ <strong>Clima:</strong> ${clima.desc} – ${clima.temp}°C</p>
+        <p>💧 <strong>Humedad:</strong> ${clima.humedad}% | 🌬 <strong>Viento:</strong> ${clima.viento} km/h</p>
+      </div>
+
+      <p><strong>📊 Últimas lecturas:</strong></p>
+      <ul style="margin-left: 20px;">
+        ${sensores.map(s => `<li>${s.tipo}: ${s.valor} (${new Date(s.fecha).toLocaleTimeString()})</li>`).join("")}
+      </ul>
+
+      <canvas id="${idGrafico}" height="100"></canvas>
+
+      <div class="acciones">
+        <button onclick="verHistorial('${p.nombre}')">📈 Ver Historial</button>
+        <button onclick="window.location.href='editar-parcela.html?id=${p._id}'">✏️ Editar</button>
+        <button onclick="eliminarParcela('${p._id}')">🗑 Eliminar</button>
+      </div>
+    `;
+
     contenedor.appendChild(div);
-
-    const mapa = L.map(idMapa).setView([p.coordenadas.lat, p.coordenadas.lon], 13);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap'
-    }).addTo(mapa);
-    L.marker([p.coordenadas.lat, p.coordenadas.lon]).addTo(mapa);
-
-    cargarLecturas(p._id);
+    iniciarMapa(idMapa, lat, lon);
+    renderizarGrafico(idGrafico, pronostico);
   }
+}
+
+    function verHistorial(nombre) {
+      window.location.href = `historial-parcela.html?nombre=${encodeURIComponent(nombre)}`;
+    }
+
+    function editarParcela(id) {
+      window.location.href = `editar-parcela.html?id=${id}`;
+    }
+
+    async function eliminarParcela(id) {
+      if (confirm("¿Estás seguro de eliminar esta parcela?")) {
+        const res = await fetch(`http://localhost:5001/api/parcelas/${id}`, { method: "DELETE" });
+        if (res.ok) {
+          alert("✅ Parcela eliminada");
+          cargarParcelas();
+        } else {
+          alert("❌ No se pudo eliminar");
+        }
+      }
+    }
+
+    function iniciarMapa(id, lat, lon) {
+      const mapa = L.map(id).setView([lat, lon], 13);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(mapa);
+      L.marker([lat, lon]).addTo(mapa);
+    }
+
+function renderizarGrafico(id, datos) {
+  const ctx = document.getElementById(id).getContext("2d");
+
+  new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: datos.map(d => d.dia), // Lunes, Martes...
+      datasets: [{
+        label: "Temperatura (°C)",
+        data: datos.map(d => d.temp),
+        borderColor: "#CD8A39",
+        backgroundColor: "rgba(205, 138, 57, 0.2)",
+        tension: 0.4,
+        fill: true,
+        pointRadius: 5,
+        pointBackgroundColor: "#1D2A10",
+        pointBorderColor: "#fff",
+        pointHoverRadius: 7,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: context => `${context.label}: ${context.parsed.y}°C`
+          }
+        }
+      },
+      scales: {
+        y: {
+          title: {
+            display: true,
+            text: 'Temperatura °C'
+          }
+        }
+      }
+    }
+  });
 }
 
 async function obtenerClima(lat, lon) {
   try {
-    const res = await fetch("http://localhost:5001/api/climaActual?lat=" + lat + "&lon=" + lon);
-    return await res.json();
+    const res = await fetch(`http://localhost:5001/api/climaActual?lat=${lat}&lon=${lon}`);
+    const data = await res.json();
+    return {
+      temp: data.temperatura,
+      desc: data.descripcion,
+      humedad: data.humedad,
+      viento: (data.viento * 3.6).toFixed(1) // convertir m/s a km/h si quieres
+    };
   } catch {
-    return { descripcion: "N/D", temperatura: "?", humedad: "?", viento: "?" };
+    return { temp: "?", desc: "No disponible", humedad: "?", viento: "?" };
   }
 }
 
-function verHistorial(nombre) {
-  window.location.href = "historial-parcela.html?nombre=" + encodeURIComponent(nombre);
-}
 
-async function eliminarParcela(id) {
-  if (!confirm("¿Eliminar esta parcela?")) return;
-  const res = await fetch("http://localhost:5001/api/parcelas/" + id, { method: "DELETE" });
-  if (res.ok) {
-    alert("✅ Parcela eliminada");
-    cargarParcelas();
-  } else {
-    alert("❌ No se pudo eliminar");
-  }
-}
-
-async function cargarLecturas(parcelaId) {
+ async function obtenerPronostico(lat, lon) {
   try {
-    const res = await fetch("http://localhost:5001/api/lecturas/" + parcelaId);
-    const datos = await res.json();
-    const ul = document.getElementById("lecturas_" + parcelaId);
-    ul.innerHTML = "";
-    datos.slice(0, 4).forEach(lectura => {
-      const li = document.createElement("li");
-      li.textContent = lectura.tipo + ": " + lectura.valor + " (" + new Date(lectura.fecha).toLocaleTimeString() + ")";
-      ul.appendChild(li);
-    });
-  } catch (err) {
-    console.error("Error al cargar lecturas:", err);
+    const res = await fetch(`http://localhost:5001/api/pronostico?lat=${lat}&lon=${lon}`);
+    const data = await res.json();
+
+    const diasSemana = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+
+    return data.list
+      .filter((_, i) => i % 8 === 0) // 1 por día (cada 3h x 8 = 24h)
+      .slice(0, 5)
+      .map(p => ({
+        dia: diasSemana[new Date(p.dt * 1000).getDay()],
+        temp: Math.round(p.main.temp)
+      }));
+  } catch {
+    return [];
   }
 }
 
-window.onload = cargarParcelas;
-</script>
-<script>
-  function redirigirPaginaPrincipal() {
-    const trabajo = localStorage.getItem('trabajo');
 
-    if (trabajo === 'agronomo') {
-      window.location.href = '../Principales/Principal-agronomo.html';
-    } else if (trabajo === 'tecnico') {
-      window.location.href = '../Principales/Principal-tecnico.html';
-    } else if (trabajo === 'agricultor') {
-      window.location.href = '../Principales/Principal-agricultor.html';
-    } else {
-      alert('No se reconoce el trabajo del usuario.');
+    async function obtenerLecturas(nombre) {
+      try {
+        const res = await fetch(`http://localhost:5001/api/lecturas/historial/nombre/${encodeURIComponent(nombre)}`);
+        const data = await res.json();
+        return data.slice(0, 4);
+      } catch {
+        return [];
+      }
     }
-  }
-</script>
+
+    cargarParcelas();
+  </script>
 </body>
 </html>

@@ -2,18 +2,18 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Crear Parcela</title>
+  <title>Editar Parcela</title>
   <link rel="stylesheet" href="../Principales/Estilo-prin.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <style>
     body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
       background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), #c1d36b), url("../public/Fondo.png");
       background-size: cover;
       background-attachment: fixed;
-      font-family: 'Segoe UI', sans-serif;
       color: #1D2A10;
-      margin: 0;
     }
 
     main {
@@ -47,11 +47,9 @@
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     }
 
-    .error-msg {
-      color: red;
-      font-size: 0.9rem;
-      margin-top: 4px;
-      display: none;
+    input:read-only {
+      background-color: #f4f4f4;
+      color: #555;
     }
 
     button {
@@ -79,6 +77,13 @@
       border-radius: 10px;
       margin-top: 0.5rem;
     }
+
+    .error-msg {
+      color: red;
+      font-size: 0.9rem;
+      margin-top: 4px;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -96,15 +101,14 @@
   </header>
 
   <main>
-    <h2>Crear Nueva Parcela</h2>
-    <form id="formParcela">
+    <h2>Editar Parcela</h2>
+    <form id="formEditar">
       <label>Nombre:</label>
       <input type="text" id="nombre" required />
       <div id="errorNombre" class="error-msg">* El nombre es obligatorio</div>
 
-      <label>Ubicación (haz clic en el mapa):</label>
+      <label>Ubicación (opcional: haz clic en el mapa para cambiar):</label>
       <div id="mapa"></div>
-      <div id="errorUbicacion" class="error-msg">* Debes seleccionar una ubicación en el mapa</div>
 
       <label>Latitud:</label>
       <input type="text" id="lat" readonly />
@@ -112,7 +116,7 @@
       <label>Longitud:</label>
       <input type="text" id="lon" readonly />
 
-      <label>Sensores disponibles:</label>
+      <label>Sensores (opcional):</label>
       <select id="sensores" multiple>
         <option value="Humedad del suelo">💧 Humedad del suelo</option>
         <option value="pH">🧪 pH del suelo</option>
@@ -120,50 +124,74 @@
         <option value="Temperatura del suelo">🌡️ Temperatura del suelo</option>
         <option value="Humedad ambiente">💧 Humedad ambiente</option>
       </select>
-      <div id="errorSensores" class="error-msg">* Selecciona al menos un sensor</div>
 
-      <button type="submit">Crear Parcela</button>
+      <button type="submit">Guardar Cambios</button>
     </form>
   </main>
 
   <script>
+    const params = new URLSearchParams(window.location.search);
+    const idParcela = params.get("id");
+
     const map = L.map("mapa").setView([-34.6, -71.2], 14);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
 
     let marcador = null;
+    let nombreOriginal = "";
+    let ubicacionModificada = false;
+
+    function normalizarTexto(texto) {
+      return texto.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+    }
+
     map.on("click", function (e) {
       const { lat, lng } = e.latlng;
       if (marcador) map.removeLayer(marcador);
       marcador = L.marker([lat, lng]).addTo(map);
       document.getElementById("lat").value = lat.toFixed(6);
       document.getElementById("lon").value = lng.toFixed(6);
-      document.getElementById("errorUbicacion").style.display = "none";
+      ubicacionModificada = true;
     });
 
-    function normalizarTexto(texto) {
-      return texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+    async function cargarParcela() {
+      const res = await fetch(`http://localhost:5001/api/parcelas/${idParcela}`);
+      const data = await res.json();
+      nombreOriginal = data.nombre;
+      document.getElementById("nombre").value = data.nombre;
+      document.getElementById("lat").value = data.coordenadas.lat;
+      document.getElementById("lon").value = data.coordenadas.lon;
+      marcador = L.marker([data.coordenadas.lat, data.coordenadas.lon]).addTo(map);
+      map.setView([data.coordenadas.lat, data.coordenadas.lon], 15);
+
+      const sensoresSelect = document.getElementById("sensores");
+      if (data.sensores && Array.isArray(data.sensores)) {
+        for (const option of sensoresSelect.options) {
+          if (data.sensores.includes(option.value)) {
+            option.selected = true;
+          }
+        }
+      }
     }
 
     async function existeParcela(nombre) {
       const res = await fetch("http://localhost:5001/api/parcelas");
       const parcelas = await res.json();
-      return parcelas.some(p => normalizarTexto(p.nombre) === normalizarTexto(nombre));
+      return parcelas.some(p => normalizarTexto(p.nombre) === normalizarTexto(nombre) && p._id !== idParcela);
     }
 
-    document.getElementById("formParcela").addEventListener("submit", async (e) => {
+    cargarParcela();
+
+    document.getElementById("formEditar").addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const nombre = document.getElementById("nombre").value.trim();
-      const lat = parseFloat(document.getElementById("lat").value);
-      const lon = parseFloat(document.getElementById("lon").value);
-      const sensores = Array.from(document.getElementById("sensores").selectedOptions).map(opt => opt.value);
+      const sensoresSeleccionados = Array.from(document.getElementById("sensores").selectedOptions).map(opt => opt.value);
+
+      let datos = { nombre };
 
       // Validaciones
       document.getElementById("errorNombre").style.display = nombre ? "none" : "block";
-      document.getElementById("errorUbicacion").style.display = isNaN(lat) || isNaN(lon) ? "block" : "none";
-      document.getElementById("errorSensores").style.display = sensores.length > 0 ? "none" : "block";
-
-      if (!nombre || isNaN(lat) || isNaN(lon) || sensores.length === 0) return;
+      if (!nombre) return;
 
       if (await existeParcela(nombre)) {
         document.getElementById("errorNombre").innerText = "* Ya existe una parcela con ese nombre";
@@ -171,25 +199,24 @@
         return;
       }
 
-      const datos = {
-        nombre,
-        puntos: [{ lat, lng: lon }],
-        sensores
-      };
+      if (ubicacionModificada) {
+        const lat = parseFloat(document.getElementById("lat").value);
+        const lon = parseFloat(document.getElementById("lon").value);
+        datos.coordenadas = { lat, lon };
+      }
 
-      const res = await fetch("http://localhost:5001/api/parcelas", {
-        method: "POST",
+      if (sensoresSeleccionados.length > 0) {
+        datos.sensores = sensoresSeleccionados;
+      }
+
+      await fetch(`http://localhost:5001/api/parcelas/${idParcela}`, {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(datos)
       });
 
-      if (res.ok) {
-        alert("✅ Parcela creada correctamente");
-        document.getElementById("formParcela").reset();
-        if (marcador) map.removeLayer(marcador);
-      } else {
-        alert("❌ Error al crear la parcela");
-      }
+      alert("✅ Parcela actualizada con éxito");
+      window.location.href = "listar-parcelas.html";
     });
   </script>
 </body>

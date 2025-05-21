@@ -1,113 +1,85 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Historial de Sensores por Parcela</title>
+  <meta charset="UTF-8" />
+  <title>Historial de Parcela</title>
   <link rel="stylesheet" href="../Principales/Estilo-prin.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    html {
-      font-size: 1em;
-      line-height: 1.4;
-    }
-
     body {
+      font-family: 'Rubik', sans-serif;
       margin: 0;
-      height: 100vh;
-      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), #c1d36b), url("../public/Fondo.png");
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), #c1d36b), url("../public/Fondo.png");
       background-size: cover;
-      background-position: center;
       background-attachment: fixed;
-      font-family: 'Segoe UI', sans-serif;
       color: #1D2A10;
-    }
-
-    header {
-      background-color: #1D2A10;
-      padding: 10px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: #CD8A39;
-      height: 70px;
-    }
-
-    .logo img {
-      width: 150px;
-      height: auto;
-    }
-
-    nav a {
-      color: #CD8A39;
-      text-decoration: none;
-      font-weight: bold;
-      margin: 0 10px;
-    }
-
-    nav a:hover {
-      text-decoration: underline;
-    }
-
-    nav a:visited {
-      color: #CD8A39;
-    }
-
-    .busqueda {
-      background-color: #CD8A39;
-      padding: 5px;
-      border: none;
-      border-radius: 4px;
     }
 
     main {
-      background-color: rgba(205, 138, 57, 0.9); /* Naranja EcoSmart sólido/transparente */
-      backdrop-filter: none;
-      border-radius: 16px;
-      padding: 24px;
-      max-width: 900px;
+      max-width: 1200px;
       margin: 2rem auto;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      padding: 2rem;
+      background-color: rgba(255, 255, 255, 0.96);
+      border-radius: 16px;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
     }
 
     h2 {
-      font-size: 1.5rem;
+      font-size: 2rem;
+      text-align: center;
       margin-bottom: 1rem;
-      color: #1D2A10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
     }
 
-    .entrada {
-      border: 2px solid #CD8A39;
-      padding: 12px;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      background: #ffffff;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    h2::before {
+      content: "\1F33F";
+      font-size: 1.5rem;
     }
 
-    .entrada span {
-      font-weight: bold;
-      color: #1D2A10;
+    #graficosContainer {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 1.5rem;
     }
 
-    #formHistorial input {
-      flex: 1;
-      padding: 10px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
+    .tarjeta-grafico {
+      background: #fff;
+      border: 2px solid #1D2A10;
+      border-radius: 16px;
+      padding: 1rem;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
     }
 
-    #formHistorial button {
+    .tarjeta-grafico:hover {
+      transform: translateY(-4px);
+    }
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
       background-color: #1D2A10;
       color: white;
-      padding: 10px 20px;
-      border-radius: 6px;
       border: none;
+      border-radius: 8px;
       font-weight: bold;
       cursor: pointer;
+      margin-bottom: 1.5rem;
     }
 
-    #formHistorial button:hover {
+    button:hover {
       background-color: #CD8A39;
       color: #1D2A10;
+    }
+
+    canvas {
+      max-width: 100%;
     }
   </style>
 </head>
@@ -117,59 +89,109 @@
       <img class="ecosmart" src="../public/EcoSmart2.png" />
     </div>
     <nav>
-      <a href="../index.html">Página principal</a>
-      <a href="../parcelas/listar-parcelas.html">Parcelas</a>
+      <a href="../index.html">Principal</a>
+      <a href="listar-parcelas.html">Parcelas</a>
       <a href="#">Inventario</a>
-      <a href="../Deepseek/consultas.html">Preguntas</a>
+      <a href="../consultas.html">Preguntas</a>
       <input class="busqueda" type="search" placeholder="Buscar" />
     </nav>
   </header>
 
   <main>
-    <h2>Consultar historial de sensores por <u>nombre</u> de parcela</h2>
-    <form id="formHistorial" style="display: flex; gap: 10px; margin-bottom: 20px;">
-      <input id="nombreParcela" placeholder="Ej: Curicó" required />
-      <button type="submit">Buscar</button>
-    </form>
-
-    <div id="resultados"></div>
+    <h2 id="tituloParcela">Historial de Parcela</h2>
+    <button onclick="descargarCSV()">📥 Descargar historial CSV</button>
+    <div id="graficosContainer"></div>
   </main>
 
   <script>
-    document.getElementById("formHistorial").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const nombre = document.getElementById("nombreParcela").value.trim();
-      const contenedor = document.getElementById("resultados");
-      contenedor.innerHTML = "<p>⏳ Buscando lecturas...</p>";
+    const params = new URLSearchParams(window.location.search);
+    const nombreParcela = params.get("nombre");
+    document.getElementById("tituloParcela").innerText = "Historial de " + (nombreParcela || "Parcela");
 
-      try {
-        const res = await fetch(`http://localhost:5001/api/lecturas/historial/nombre/${encodeURIComponent(nombre)}`);
-        if (!res.ok) throw new Error("No se pudo obtener el historial");
-        const datos = await res.json();
+    let datosTotales = [];
 
-        if (!datos.length) {
-          contenedor.innerHTML = "<p>⚠ No hay lecturas para esta parcela.</p>";
-          return;
-        }
+    async function obtenerHistorial(nombre) {
+      const res = await fetch(`http://localhost:5001/api/lecturas/historial/nombre/${encodeURIComponent(nombre)}`);
+      const data = await res.json();
+      datosTotales = data;
+      return data;
+    }
 
-        contenedor.innerHTML = `<p>✅ Se encontraron ${datos.length} lecturas:</p>`;
-        datos.forEach(l => {
-          const div = document.createElement("div");
-          div.className = "entrada";
-          div.innerHTML = `
-            <p><span>Sensor:</span> ${l.tipo}</p>
-            <p><span>Valor:</span> ${l.valor}</p>
-            <p><span>Fecha:</span> ${new Date(l.fecha).toLocaleString()}</p>
-          `;
-          contenedor.appendChild(div);
+    function agruparPorTipo(lecturas) {
+      const grupos = {};
+      lecturas.forEach(d => {
+        if (!grupos[d.tipo]) grupos[d.tipo] = [];
+        grupos[d.tipo].push(d);
+      });
+      return grupos;
+    }
+
+    function graficarPorTipo(grupos) {
+      const container = document.getElementById("graficosContainer");
+      container.innerHTML = "";
+
+      for (const tipo in grupos) {
+        const tarjeta = document.createElement("div");
+        tarjeta.className = "tarjeta-grafico";
+
+        const titulo = document.createElement("h3");
+        titulo.innerText = tipo;
+        tarjeta.appendChild(titulo);
+
+        const canvas = document.createElement("canvas");
+        tarjeta.appendChild(canvas);
+        container.appendChild(tarjeta);
+
+        const ultimas = grupos[tipo].slice(-10);
+        const etiquetas = ultimas.map(d => new Date(d.fecha).toLocaleTimeString());
+        const valores = ultimas.map(d => d.valor);
+
+        new Chart(canvas.getContext("2d"), {
+          type: "line",
+          data: {
+            labels: etiquetas,
+            datasets: [{
+              label: tipo,
+              data: valores,
+              borderColor: "#CD8A39",
+              backgroundColor: "rgba(205,138,57,0.2)",
+              pointBackgroundColor: "#1D2A10",
+              fill: true,
+              tension: 0.4
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            animation: { duration: 800 }
+          }
         });
-
-      } catch (err) {
-        console.error(err);
-        alert("Error al obtener el historial");
-        contenedor.innerHTML = "";
       }
-    });
+    }
+
+    function descargarCSV() {
+      if (!datosTotales.length) {
+        alert("No hay datos para exportar.");
+        return;
+      }
+      const encabezado = "Tipo,Valor,Fecha\n";
+      const filas = datosTotales.map(d => `${d.tipo},${d.valor},${new Date(d.fecha).toISOString()}`).join("\n");
+      const csv = encabezado + filas;
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `historial-${nombreParcela}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    if (nombreParcela) {
+      obtenerHistorial(nombreParcela).then(lecturas => {
+        const grupos = agruparPorTipo(lecturas);
+        graficarPorTipo(grupos);
+      });
+    }
   </script>
 </body>
 </html>

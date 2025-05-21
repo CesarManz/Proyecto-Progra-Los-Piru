@@ -4,33 +4,33 @@ const mongoose = require('mongoose');
 const app = express();
 const PORT = 5001;
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.static('public'));
-app.use('/api/usuarios', require('./Rutas/Usuarios'));
-
 // Conexión a MongoDB
 mongoose.connect('mongodb+srv://xAshura3x:omWSvOUHLYUR0ttE@cluster0.vlf79yu.mongodb.net/test?retryWrites=true&w=majority')
   .then(() => console.log('✅ Conectado a MongoDB Atlas'))
   .catch(err => console.error('❌ Error de conexión:', err.message));
 
-// Importar y usar rutas
-app.use('/api/parcelas', require('./Rutas/parcelas'));
-app.use('/api/lecturas', require('./Rutas/lecturas'));
-app.use('/api/clima', require('./Rutas/rutaClima')); // OpenWeatherMap por ciudad
-app.use('/api', require('./Rutas/ClimaActual'));     // OpenWeatherMap por lat/lon
-app.use('/api', require('./Rutas/rutaPronosticos')); // Pronóstico por lat/lon
-app.use('/api/usuarios', require('./Rutas/Usuarios')); // Registro/login
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(express.static('public'));
 
+// Importar rutas
+const rutaUsuarios = require('./Rutas/Usuarios');
+const rutaParcelas = require('./Rutas/parcelas');
+const rutaLecturas = require('./Rutas/lecturas');
+const rutaClimaCiudad = require('./Rutas/rutaClima');         // Por ciudad
+const rutaClimaCoord = require('./Rutas/ClimaActual');        // Por coordenadas
+const rutaPronostico = require('./Rutas/rutaPronosticos');    // Pronóstico
 
-/////
-const climaActual = require('./Rutas/ClimaActual');
-const pronostico = require('./Rutas/rutaPronosticos');
-const parcelas = require('./Rutas/parcelas');
-const lecturas = require('./Rutas/lecturas');
-const usuarios = require('./Rutas/Usuarios');
-/////
+// Usar rutas
+app.use('/api/usuarios', rutaUsuarios);
+app.use('/api/parcelas', rutaParcelas);
+app.use('/api/lecturas', rutaLecturas);
+app.use('/api/clima', rutaClimaCiudad);      // ejemplo: /api/clima/santiago
+app.use('/api', rutaClimaCoord);             // ejemplo: /api/climaActual?lat=...&lon=...
+app.use('/api', rutaPronostico);             // ejemplo: /api/pronostico?lat=...&lon=...
+
+// Iniciar servidor
 app.listen(PORT, () => {
   console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
 });

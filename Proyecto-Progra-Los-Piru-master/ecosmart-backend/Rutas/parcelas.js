@@ -12,6 +12,17 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Obtener una parcela por ID
+router.get('/:id', async (req, res) => {
+  try {
+    const parcela = await Parcela.findById(req.params.id);
+    if (!parcela) return res.status(404).json({ mensaje: 'Parcela no encontrada' });
+    res.json(parcela);
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error al obtener la parcela' });
+  }
+});
+
 // Crear nueva parcela
 router.post('/', async (req, res) => {
   try {
@@ -23,6 +34,7 @@ router.post('/', async (req, res) => {
   }
 });
 
+// Eliminar parcela
 router.delete('/:id', async (req, res) => {
   try {
     const eliminada = await Parcela.findByIdAndDelete(req.params.id);
@@ -35,5 +47,17 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// ✅ NUEVA RUTA: Editar parcela
+router.put('/:id', async (req, res) => {
+  try {
+    const actualizada = await Parcela.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!actualizada) {
+      return res.status(404).json({ mensaje: 'Parcela no encontrada' });
+    }
+    res.json(actualizada);
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error al actualizar la parcela' });
+  }
+});
 
 module.exports = router;
