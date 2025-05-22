@@ -101,3 +101,10 @@ nav a {
     background: rgba(205, 138, 57, 0.9);
     border-radius: 10px;
 }
+.Tareas-pendientes{
+    text-align: left;
+}
+.Tareas{
+    width: 150px;
+    height: auto;
+}
