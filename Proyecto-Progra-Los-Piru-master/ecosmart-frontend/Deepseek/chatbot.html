@@ -13,7 +13,7 @@
     </div>
   </a>
   <nav>
-    <a href="#" onclick="redirigirPaginaPrincipal()">Pagina principal</a>
+    <a href="../Principales/Pagina-Principal.html">Pagina principal</a>
     <a href="../parcelas/listar-parcelas.html">Parcelas</a>
     <a href="#">Inventario</a>
     <a href="../Deepseek/consultas.html">Preguntas</a>
@@ -95,20 +95,6 @@
   }
 
 </script>
-<script>
-  function redirigirPaginaPrincipal() {
-    const trabajo = localStorage.getItem('trabajo');
 
-    if (trabajo === 'agronomo') {
-      window.location.href = '../Principales/Principal-agronomo.html';
-    } else if (trabajo === 'tecnico') {
-      window.location.href = '../Principales/Principal-tecnico.html';
-    } else if (trabajo === 'agricultor') {
-      window.location.href = '../Principales/Principal-agricultor.html';
-    } else {
-      alert('No se reconoce el trabajo del usuario.');
-    }
-  }
-</script>
 </body>
 </html>
