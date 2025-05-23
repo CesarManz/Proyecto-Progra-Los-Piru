@@ -101,10 +101,29 @@ nav a {
     background: rgba(205, 138, 57, 0.9);
     border-radius: 10px;
 }
-.Tareas-pendientes{
-    text-align: left;
+.Tareas-pendientes {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
 }
-.Tareas{
+
+.texto {
+    flex: 1;
+    color: #1D2A10;
+    text-align: left;
+    padding-left: 0;
+    margin-left: 0;
+}
+
+
+.imagenes {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.Tareas, .Alertas {
     width: 150px;
     height: auto;
 }
