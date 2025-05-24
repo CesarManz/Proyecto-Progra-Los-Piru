@@ -152,5 +152,47 @@ nav a {
 .alertas {
     background: #F06D6D;
 }
+.Ver-parcelas {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
 
+.parcela {
 
+    border-radius: 10px;
+    padding: 15px;
+    background-color: #A9B147;
+    width: 300px;
+}
+
+.contenido-parcela {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.img-parcela {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.info-parcela h3, .info-parcela p {
+    margin: 0;
+    color: #4B5320;
+}
+.tit-parcelas{
+    color: #1D2A10;
+}
+button{
+
+    background-color: #1D2A10;
+    color: #CD8A39;
+    padding:20px 40px;
+    border-radius: 20px;
+    font-weight: bold;
+}
