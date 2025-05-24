@@ -42,12 +42,16 @@
                 <h5>Alertas</h5>
             </div>
         </div>
-
-
     </div>
 
-</div>
+    <h1 class="tit-parcelas">Parcelas</h1>
+    <div class="Ver-parcelas" id="parcelasContainer"></div>
+    <br><br/>
+    <button onclick="window.location.href='../parcelas/listar-parcelas.html'">
+        Ver Parcelas
+    </button>
 
+</div>
 
 <script>
     function toggleMenu(event) {
@@ -110,6 +114,37 @@
     }
 
 </script>
+<script>
+    async function cargarParcelas() {
+        try {
+            const response = await fetch('http://localhost:5001/api/parcelas'); // Ajusta la ruta según tu backend
+            const parcelas = await response.json();
+
+            const container = document.getElementById('parcelasContainer');
+            container.innerHTML = '';
+
+            parcelas.slice(0, 3).forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'parcela';
+                div.innerHTML = `
+                <div class="contenido-parcela">
+                    <img src="../public/Planta-parcela.png" alt="Imagen de parcela" class="img-parcela">
+                    <div class="info-parcela">
+                        <h3>${p.nombre}</h3>
+                    </div>
+                </div>
+            `;
+                container.appendChild(div);
+            });
+        } catch (error) {
+            console.error('Error al cargar parcelas:', error);
+        }
+    }
+
+
+    cargarParcelas();
+</script>
+
 </body>
 </html>
 
