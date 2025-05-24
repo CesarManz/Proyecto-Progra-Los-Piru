@@ -33,7 +33,7 @@ header {
 }
 
 .Cuadrado-transparente {
-    background: rgba(255, 255, 205, 0.3);
+    background: rgba(205, 138, 57, 0.4);
     margin-right: auto;
     padding: 10px;
     width: 70%;
@@ -119,11 +119,38 @@ nav a {
 
 .imagenes {
     display: flex;
-    flex-direction: row;
-    gap: 10px;
+    gap: 20px;
+    justify-content: center;
 }
 
-.Tareas, .Alertas {
-    width: 150px;
+.item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 30px;
+    padding: 10px 10px;
+    width: 100px;
+    background: #ccc; /* color por defecto, se sobrescribe abajo */
+    color: white;
+    text-align: center;
+}
+
+.item img {
+    width: 100%;
     height: auto;
 }
+
+.item h5 {
+    margin-top: 20px;
+    font-size: 16px;
+}
+
+.tareas {
+    background: #A9B147;
+}
+
+.alertas {
+    background: #F06D6D;
+}
+
+
