@@ -5,7 +5,7 @@ html {
 body {
     margin: 0;
     height: 100vh;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), #c1d36b), url("../public/Fondo.png");
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), #c1d36b), url("../Public/Fondo.png");
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -26,18 +26,6 @@ header {
     color: #CD8A39;
     height: 50px;
 }
-
-.Cuadrado-transparente {
-    background: rgba(255, 255, 205, 0.3);
-    margin-right: auto;
-    padding: 10px;
-    width: 70%;
-    border-radius: 12px;
-    margin-left: 50px;
-    margin-top: 50px;
-    text-align: center;
-    color: #CD8A39;
-}
 nav a {
     color: #CD8A39;
     text-decoration: none;
@@ -50,37 +38,19 @@ nav a {
     border: none;
     border-radius: 4px;
 }
-.Foto-perfil{
-    width: 200px;
-    height: 200px;
-}
-.Fondo-Foto-perfil{
-    background: rgba(205, 138, 57, 0.3);
-    text-align: left;
-    border-radius: 50%;
-}
-.Fondo-Foto-perfil {
-    display: inline-block;
-    position: relative;
-}
-
 .Fondo-fo-perfil {
     background: rgba(205, 138, 57, 0.3);
     text-align: right;
     border-radius: 50%;
-}
-.Fondo-fo-perfil {
     display: inline-block;
     position: relative;
     cursor: pointer;
 }
-
 .fo-perfil {
     width: 50px;
     height: 50px;
     border-radius: 50%;
 }
-
 .menu-perfil {
     display: none;
     position: absolute;
@@ -92,14 +62,12 @@ nav a {
     width: 150px;
     z-index: 100;
 }
-
 .menu-perfil a {
     display: block;
     padding: 10px;
     color: #333;
     text-decoration: none;
 }
-
 .menu-perfil a:hover {
     background: rgba(205, 138, 57, 0.9);
     border-radius: 10px;
@@ -108,10 +76,79 @@ nav a {
     width: 150px;
     height: auto;
 }
+
+/* CSS Principal de la pagina*/
+
+/* Contenedor principal: foto de perfil + datos */
+.Cuadrado-transparente {
+    background: rgba(255, 255, 205, 0.3);
+    padding: 20px;
+    width: 70%;
+    height: 15%;
+    border-radius: 12px;
+    margin: 25px auto 25% auto;
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+/* Circulo que va detrás de la foto de perfil */
+.Fondo-Foto-perfil {
+    background: rgba(205, 138, 57, 0.3);
+    border-radius: 50%;
+    padding: 0.25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Tamaño de la foto de perfil */
+.Foto-perfil {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+/* Al pasar el cursor por la imagen de perfil cambia a el cursor a puntero */
+#fotoPerfil{
+    cursor: pointer;
+}
+
+/* CSS de la foto seleccionada al cambiarla */
+#selectorFoto{
+    width: 100px;
+    height: auto;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* Datos del usuario */
 .datos-usuario {
-    display: inline-block;
-    vertical-align: top;
-    margin-left: 20px;
     font-size: 16px;
     color: black;
+    text-align: left;
+    padding-bottom: 10px;
+    flex: 1; /* Toma el espacio disponible */
+}
+
+/* Nombre del usuario */
+#nombreUsuario{
+    font-weight: bold;
+    font-size: 25px;
+}
+
+/* Contener de la foto de perfil y del icono del lado para remover la imagen */
+.fotoPerfilContenedor{
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Estilo de la imagen que permite remover la imagen de perfil */
+.removeImage{
+    width: 25px;
+    height: auto;
+    margin-top: 75px;
+    margin-right: 0px;
+    cursor: pointer;
 }
