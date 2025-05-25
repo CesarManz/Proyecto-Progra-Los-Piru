@@ -2,27 +2,29 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>EcoSmart - Chat Bot</title>
+  <title>DeepSeek</title>
+  <link rel="icon" href="../Public/EcoSmart%20MiniLogo.png" type="image/png">
   <link rel="stylesheet" href="../Deepseek/chatbot.css">
 </head>
 <body>
 <header>
-  <a href= "paginaPrincipal.html">
-    <div class="logo">
-      <img class= "ecosmart" src="../Public/EcoSmart2.png"></img>
-    </div>
-  </a>
-  <nav>
-    <a href="../Principales/Pagina-Principal.html">Pagina principal</a>
-    <a href="../parcelas/listar-parcelas.html">Parcelas</a>
-    <a href="#">Inventario</a>
-    <a href="../Deepseek/consultas.html">Preguntas</a>
-    <input class= "busqueda" type="search" placeholder="Buscar">
-  </nav>
 </header>
 
 <div class="principal">
   <div class="columnaIzquierda">
+    <!--
+    Logo Ecosmart en la columna izquierda
+    Tiene que redireccionar a la pagina principal
+    -->
+    <a href= "../Deepseek/consultas.html">
+      <div class="logo">
+        <img class= "ecosmart" src="../Public/EcoSmart3.png">
+      </div>
+    </a>
+
+    <div class="chats">
+
+    </div>
 
   </div>
 
@@ -35,26 +37,85 @@
 
     <div class="chat-input">
       <input type="text" id="chatInput" placeholder="Escriba su mensaje">
-      <button onclick="sendMessage()">➤</button>
+      <button onclick="nuevoChat()">+</button>
     </div>
 
 </div>
 </div>
 
 <script>
+  let chatActualId = null;
+
+  function getChats() {
+    return JSON.parse(localStorage.getItem("chats")) || [];
+  }
+
+  function saveChats(chats) {
+    localStorage.setItem("chats", JSON.stringify(chats));
+  }
+
+  function nuevoChat(nombre = "Chat sin título") {
+    const chats = getChats();
+    const id = `chat-${Date.now()}`;
+    const nuevo = { id, nombre, mensajes: [] };
+    chats.push(nuevo);
+    saveChats(chats);
+    cargarListaChats();
+    seleccionarChat(id);
+  }
+
+  function cargarListaChats() {
+    const contenedor = document.querySelector('.chats');
+    contenedor.innerHTML = '';
+
+    const chats = getChats();
+    chats.forEach(chat => {
+      const div = document.createElement('div');
+      div.className = 'chat-preview';
+      div.innerText = chat.nombre || 'Chat sin título';
+      div.onclick = () => seleccionarChat(chat.id);
+
+      const eliminar = document.createElement('button');
+      eliminar.className = 'eliminar';
+      eliminar.innerText = 'x'
+      eliminar.onclick = (e) => {
+        e.stopPropagation();
+        eliminarChat(chat.id);
+      };
+
+      div.appendChild(eliminar);
+      contenedor.appendChild(div);
+    });
+  }
+
+  function seleccionarChat(id) {
+    chatActualId = id;
+    mostrarMensajes();
+  }
+
+  function mostrarMensajes() {
+    const chat = getChats().find(c => c.id === chatActualId);
+    const contenedor = document.getElementById('chatMessages');
+    contenedor.innerHTML = '';
+    if (!chat) return;
+    chat.mensajes.forEach(msg => appendMessage(msg.sender, msg.text));
+  }
+
+  function eliminarChat(id) {
+    let chats = getChats();
+    chats = chats.filter(c => c.id !== id);
+    saveChats(chats);
+    chatActualId = null;
+    document.getElementById('chatMessages').innerHTML = '';
+    cargarListaChats();
+  }
+
   async function askDeepSeek(prompt) {
     const response = await fetch('http://127.0.0.1:5000/api/generate', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: 'deepseek-coder',
-        prompt: prompt,
-        stream: false
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'deepseek-coder', prompt: prompt, stream: false })
     });
-
     const data = await response.json();
     return data.response;
   }
@@ -72,29 +133,66 @@
     const userText = input.value.trim();
     if (userText === '') return;
 
+    // Crear un nuevo chat si no hay uno activo
+    if (!chatActualId) {
+      const nombre = userText.length > 30 ? userText.slice(0, 30) + '...' : userText;
+      nuevoChat(nombre);
+    }
+
     appendMessage('user', userText);
     input.value = '';
 
-
-    const chat = document.getElementById('chatMessages');
+    const chatBox = document.getElementById('chatMessages');
     const loadingBubble = document.createElement('div');
     loadingBubble.className = 'msg bot';
     loadingBubble.innerHTML = `
-        <span class="typing-dots">
-            <span></span><span></span><span></span>
-        </span>
+      <span class="typing-dots">
+        <span></span><span></span><span></span>
+      </span>
     `;
-    chat.appendChild(loadingBubble);
+    chatBox.appendChild(loadingBubble);
 
-    // Obtener respuesta real
     const botResponse = await askDeepSeek(userText);
 
-    // Reemplazar la burbuja de carga con la respuesta real
-    loadingBubble.classList.remove('loading');
+    const chats = getChats();
+    const chat = chats.find(c => c.id === chatActualId);
+
+    if (!chat.nombre || chat.nombre === 'Chat sin título') {
+      chat.nombre = userText.length > 30 ? userText.slice(0, 30) + '...' : userText;
+    }
+
+    chat.mensajes.push({ sender: 'user', text: userText });
+    chat.mensajes.push({ sender: 'bot', text: botResponse });
+    saveChats(chats);
+    cargarListaChats();
+
     loadingBubble.innerHTML = botResponse;
   }
 
+  window.onload = () => {
+    cargarListaChats();
+
+    const input = document.getElementById('chatInput');
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+  };
 </script>
+
+
+<!--
+  const chats = {
+    id: "1234",
+    nombre: "",
+    mensajes: [
+      { sender: "user", text: "Hola" },
+      { sender: "bot", text: "¡Hola, humano vegetal!" }
+    ]
+  }
+-->
 
 </body>
 </html>
