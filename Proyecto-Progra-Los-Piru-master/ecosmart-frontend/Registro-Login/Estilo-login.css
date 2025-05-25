@@ -128,7 +128,7 @@ form {
     padding: 70px 60px;
     border-radius: 15px;
     width: 300px;
-    margin-top: 20px;
+    margin-top: 50px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     text-align: center;
     align-items: center;
@@ -213,7 +213,7 @@ button {
     background-color: #dba14e;
     padding: 20px;
     margin-top: 20px;
-    width: 300px;
+    width: 380px;
     border-radius: 15px;
     text-align: center;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
