@@ -8,18 +8,22 @@
 <body>
 
 <header>
-  <a href= "paginaPrincipal.html">
-    <div class="logo">
-      <img class= "ecosmart" src="../Public/EcoSmart2.png"></img>
-    </div>
-  </a>
-  <nav>
-    <a href="../Principales/Pagina-Principal.html">Pagina principal</a>
-    <a href="../parcelas/listar-parcelas.html">Parcelas</a>
-    <a href="#">Inventario</a>
-    <a href="../Deepseek/consultas.html">Preguntas</a>
-    <input class= "busqueda" type="search" placeholder="Buscar">
+  <div class="logo">
+    <img class="ecosmart" src="../Public/EcoSmart2.png" alt="Logo Ecosmart">
+  </div>
+
+  <nav id="menu">
+    <!-- Links se insertan dinámicamente según el rol -->
+    <input class="busqueda" type="search" placeholder="Buscar">
   </nav>
+
+  <div class="Fondo-fo-perfil" onclick="toggleMenu(event)">
+    <img class="fo-perfil" src="../Public/user.png" alt="Foto de perfil">
+    <div id="menuPerfil" class="menu-perfil">
+      <a href="../Perfil/Perfil.html">Perfil</a>
+      <a href="#" onclick="logout()">Cerrar sesión</a>
+    </div>
+  </div>
 </header>
 
 <div class="faq-container">
@@ -112,6 +116,65 @@ async function sendMessage() {
 }
 
 </script>
+<script>
+  function toggleMenu(event) {
+    event.stopPropagation();
+    const menu = document.getElementById('menuPerfil');
+    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+  }
 
+  document.addEventListener('click', function () {
+    const menu = document.getElementById('menuPerfil');
+    menu.style.display = 'none';
+  });
+
+  function logout() {
+    localStorage.clear();
+    window.location.href = '../Registro-Login/Login.html';
+  }
+
+  // Lógica para personalizar según el trabajo
+  const trabajo = localStorage.getItem('trabajo');
+  const correo = localStorage.getItem('correo');
+  const menu = document.getElementById('menu');
+
+  if (!trabajo || !correo) {
+    window.location.href = '../Registro-Login/Login.html';
+  }
+
+  const linksPorRol = {
+    tecnico: [
+      { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
+      { texto: "Parcelas", href: "../parcelas/listar-parcelas.html" },
+      { texto: "Administrar usuarios", href: "../Administrar-Usuarios/Administrar-usuarios.html" },
+      { texto: "Preguntas", href: "../Deepseek/consultas.html" },
+    ],
+    agronomo: [
+      { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
+      { texto: "Parcelas", href: "../parcelas/listar-parcelas.html" },
+      { texto: "Preguntas", href: "../Deepseek/consultas.html" },
+      { texto: "Inventario", href: "../Inventario/Inventario.html"},
+    ],
+    agricultor: [
+      { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
+      { texto: "Parcelas", href: "../parcelas/listar-parcelas.html" },
+      { texto: "Preguntas", href: "../Deepseek/consultas.html" },
+    ]
+  };
+
+  const enlaces = linksPorRol[trabajo];
+
+  if (enlaces) {
+    enlaces.forEach(link => {
+      const a = document.createElement('a');
+      a.href = link.href;
+      a.textContent = link.texto;
+      menu.insertBefore(a, menu.querySelector('.busqueda'));
+    });
+  } else {
+    alert('Rol desconocido');
+  }
+
+</script>
 </body>
 </html>
