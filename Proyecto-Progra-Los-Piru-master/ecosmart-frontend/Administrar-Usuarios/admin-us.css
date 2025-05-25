@@ -86,7 +86,38 @@ button {
     cursor: pointer;
 }
 nav a {
-    margin: 0 10px;
     color: #CD8A39;
     text-decoration: none;
+    font-weight: bold;
+    margin: 0 10px;
+}
+.menu-perfil {
+    display: none;
+    position: absolute;
+    top: 60px;
+    right: 0;
+    background: rgba(205, 138, 57, 0.5);
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    width: 150px;
+    z-index: 100;
+}
+.Fondo-fo-perfil {
+    background: rgba(205, 138, 57, 0.3);
+    text-align: right;
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+}
+.fo-perfil {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+.busqueda {
+    background-color: #CD8A39;
+    padding: 5px;
+    border: none;
+    border-radius: 4px;
 }
