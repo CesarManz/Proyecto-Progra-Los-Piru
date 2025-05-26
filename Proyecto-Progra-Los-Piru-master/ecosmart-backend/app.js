@@ -21,6 +21,7 @@ const rutaLecturas = require('./Rutas/lecturas');
 const rutaClimaCiudad = require('./Rutas/rutaClima');         // Por ciudad
 const rutaClimaCoord = require('./Rutas/ClimaActual');        // Por coordenadas
 const rutaPronostico = require('./Rutas/rutaPronosticos');    // Pronóstico
+const rutaChat = require('./Rutas/chat');
 
 // Usar rutas
 app.use('/api/usuarios', rutaUsuarios);
@@ -29,6 +30,7 @@ app.use('/api/lecturas', rutaLecturas);
 app.use('/api/clima', rutaClimaCiudad);      // ejemplo: /api/clima/santiago
 app.use('/api', rutaClimaCoord);             // ejemplo: /api/climaActual?lat=...&lon=...
 app.use('/api', rutaPronostico);             // ejemplo: /api/pronostico?lat=...&lon=...
+app.use('/api/chat', rutaChat); // Ruta POST: /api/chat
 
 // Iniciar servidor
 app.listen(PORT, () => {
