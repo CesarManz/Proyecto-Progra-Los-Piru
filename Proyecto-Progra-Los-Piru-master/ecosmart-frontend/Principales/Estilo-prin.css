@@ -128,9 +128,7 @@ nav a {
     flex-direction: column;
     align-items: center;
     border-radius: 30px;
-    padding: 10px 10px;
-    width: 100px;
-    background: #ccc; /* color por defecto, se sobrescribe abajo */
+    width: 150px;
     color: white;
     text-align: center;
 }
