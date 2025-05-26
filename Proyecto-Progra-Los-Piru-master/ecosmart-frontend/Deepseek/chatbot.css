@@ -208,8 +208,13 @@ CSS Principal
 }
 
 .eliminar {
-    background-color: #CD8A39;
-    color: #c95211;
+    background-image: url("../Public/remove.png");
+    background-size: cover; /* Esto sí hace lo que esperabas con object-fit */
+    background-position: center;
+    background-repeat: no-repeat;
+
+    width: 15px;
+    height: 15px;
     border-radius: 50%;
     border: none;
     text-align: center;
@@ -220,12 +225,31 @@ CSS Principal
 }
 
 .eliminar:hover {
-    background-color: #c95211;
-    color: #CD8A39;
+    background-image: url("../Public/remove2.png");
+    background-size: cover; /* Esto sí hace lo que esperabas con object-fit */
+    background-position: center;
+    background-repeat: no-repeat;
+
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    border: none;
+    text-align: center;
+    align-items: center;
+    font-size: 15px;
+    margin-left: 5px;
+    cursor: pointer;
 
     transform: scale(1.1);
 }
 
+.chat-preview{
+    color: #81873E;
+}
+
+.chat-preview:hover{
+    color: #060D08;
+}
 
 ::-moz-selection {
     background: #b3d4fc;
