@@ -19,3 +19,17 @@
 .tarjeta ul {
   padding-left: 20px;
 }
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 30px;
+  width: 150px;
+  color: white;
+  text-align: center;
+}
+
+.item img {
+  width: 100%;
+  height: auto;
+}
