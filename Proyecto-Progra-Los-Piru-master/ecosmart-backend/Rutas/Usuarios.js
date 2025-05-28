@@ -79,21 +79,13 @@ router.put('/actualizar', async (req, res) => {
 });
 
 // Obtener usuario por correo
-router.get('/correo/:correo', async (req, res) => {
+router.get('/correos', async (req, res) => {
   try {
-    const correo = req.params.correo;
-
-    const usuario = await Usuario.findOne({ correo }).select('nombre correo trabajo');
+    const usuarios = await Usuario.find({}, 'correo');
     res.json(usuarios);
-
-
-    if (!usuario) {
-      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
-    }
-
-    res.json(usuario);
-  } catch (error) {
-    res.status(500).json({ mensaje: 'Error del servidor', error: error.message });
+  } catch (err) {
+    console.error('❌ Error al obtener correos:', err.message);
+    res.status(500).json({ mensaje: 'Error al obtener correos' });
   }
 });
 
