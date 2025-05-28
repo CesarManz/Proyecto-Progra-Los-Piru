@@ -31,7 +31,7 @@
 
 <form id="ActualizarForm">
     <h2>Actualizar Usuario</h2>
-    <input type="email"  id="oldEmail" name="oldEmail" placeholder= "Correo actual del usuario" class="recuadros" required>
+    <select type="email"  id="oldEmail" name="oldEmail" placeholder= "Correo actual del usuario" class="recuadros" required></select>
     <input type="text" id="newName" name="newName" placeholder= "Nuevo nombre" class="recuadros" required>
     <input type="email" id="newEmail" name="newEmail" placeholder= "Nuevo correo" class="recuadros" required>
     <button type="submit" class="btn-act">Actualizar Usuario</button>
@@ -39,7 +39,7 @@
 
 <form id="EliminarForm">
     <h2>Eliminar Usuario</h2>
-    <input type="email" id="deleteEmail" name="correo" placeholder= "Correo del usuario" class="recuadros" required>
+    <select type="email" id="deleteEmail" name="correo" placeholder= "Correo del usuario" class="recuadros" required></select>
     <button type="submit" class="btn-act">Eliminar Usuario</button>
 </form>
 
@@ -95,6 +95,31 @@
             console.error(err);
         }
     });
+    async function cargarUsuarios() {
+        try {
+            const response = await fetch('http://localhost:5001/api/usuarios');
+            const usuarios = await response.json();
+
+            const oldEmailSelect = document.getElementById('oldEmail');
+            const deleteEmailSelect = document.getElementById('deleteEmail');
+
+            usuarios.forEach(usuario => {
+                const option = document.createElement('option');
+                option.value = usuario.email;
+                option.textContent = `${usuario.nombre} (${usuario.email})`;
+
+                // Clona para usar en ambos selects si es necesario
+                const option2 = option.cloneNode(true);
+
+                oldEmailSelect.appendChild(option);
+                deleteEmailSelect.appendChild(option2);
+            });
+        } catch (err) {
+            console.error('Error al cargar los usuarios:', err);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', cargarUsuarios);
 </script>
 </body>
 </html>
