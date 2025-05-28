@@ -31,10 +31,9 @@
 
 <form id="ActualizarForm">
     <h2>Actualizar Usuario</h2>
-    <label for="updateEmail">Selecciona el correo del usuario:</label>
-    <select id="updateEmail" name="correoActual" required>
-        <option value="">Cargando correos...</option>
-    </select>
+
+    <select class="dropdown-option" id="updateEmail" name="correoActual" required></select>
+
     <input type="text" id="newName" name="newName" placeholder= "Nuevo nombre" class="recuadros" required>
     <input type="email" id="newEmail" name="newEmail" placeholder= "Nuevo correo" class="recuadros" required>
     <button type="submit" class="btn-act">Actualizar Usuario</button>
@@ -42,10 +41,7 @@
 
 <form id="EliminarForm">
     <h2>Eliminar Usuario</h2>
-    <label for="deleteEmail">Selecciona el correo:</label>
-    <select id="deleteEmail" name="correo" required>
-        <option value="">Cargando correos...</option>
-    </select>
+    <select class="dropdown-option" id="deleteEmail" name="correo" required></select>
     <button type="submit" class="btn-act">Eliminar Usuario</button>
 </form>
 
