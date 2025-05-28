@@ -52,26 +52,25 @@ router.delete('/eliminar', async (req, res) => {
   }
 });
 
-// Actualizar nombre y correo del usuario
+// Actualizar usuario por correo
 router.put('/actualizar', async (req, res) => {
+  const { correoActual, nuevoNombre, nuevoCorreo } = req.body;
+
+  if (!correoActual || !nuevoNombre || !nuevoCorreo) {
+    return res.status(400).json({ mensaje: 'Todos los campos son obligatorios' });
+  }
+
   try {
-    const { oldEmail, newName, newEmail } = req.body;
-
-    if (!oldEmail || !newName || !newEmail) {
-      return res.status(400).json({ mensaje: 'Todos los campos son obligatorios' });
-    }
-
-    const usuario = await Usuario.findOne({ correo: oldEmail });
+    const usuario = await Usuario.findOne({ correo: correoActual });
 
     if (!usuario) {
       return res.status(404).json({ mensaje: 'Usuario no encontrado' });
     }
 
-    usuario.nombre = newName;
-    usuario.correo = newEmail;
+    usuario.nombre = nuevoNombre;
+    usuario.correo = nuevoCorreo;
 
     await usuario.save();
-
     res.json({ mensaje: 'Usuario actualizado correctamente' });
   } catch (err) {
     console.error('Error al actualizar usuario:', err.message);
@@ -85,6 +84,8 @@ router.get('/correo/:correo', async (req, res) => {
     const correo = req.params.correo;
 
     const usuario = await Usuario.findOne({ correo }).select('nombre correo trabajo');
+    res.json(usuarios);
+
 
     if (!usuario) {
       return res.status(404).json({ mensaje: 'Usuario no encontrado' });
