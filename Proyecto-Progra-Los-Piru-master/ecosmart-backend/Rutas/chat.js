@@ -32,5 +32,16 @@ router.get('/chats/:correo', async (req, res) => {
     }
 });
 
+router.delete('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await Chat.findByIdAndDelete(id);
+        res.status(200).json({ message: 'Chat eliminado correctamente' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error al eliminar el chat' });
+    }
+});
+
+
 module.exports = router;
 

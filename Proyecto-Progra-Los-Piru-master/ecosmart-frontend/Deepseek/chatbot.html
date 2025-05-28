@@ -64,29 +64,62 @@
     seleccionarChat(id);
   }
 
-  function cargarListaChats() {
+  async function cargarListaChats() {
     const contenedor = document.querySelector('.chats');
     contenedor.innerHTML = '';
 
-    const chats = getChats();
-    chats.forEach(chat => {
-      const div = document.createElement('div');
-      div.className = 'chat-preview';
-      div.innerText = chat.nombre || 'Chat sin título';
-      div.onclick = () => seleccionarChat(chat.id);
+    const correo = localStorage.getItem('correo');
+    if (!correo) return;
 
-      const eliminar = document.createElement('button');
-      eliminar.className = 'eliminar';
-      eliminar.innerText = ''
-      eliminar.onclick = (e) => {
-        e.stopPropagation();
-        eliminarChat(chat.id);
-      };
+    try {
+      const response = await fetch(`http://localhost:5001/api/chat/chats/${correo}`);
+      const chats = await response.json();
 
-      div.appendChild(eliminar);
-      contenedor.appendChild(div);
-    });
+      chats.forEach(chat => {
+        const div = document.createElement('div');
+        div.className = 'chat-preview';
+        div.innerText = chat.pregunta || 'Chat sin título';
+
+        div.onclick = () => {
+          const mensajes = [
+            { sender: 'user', text: chat.pregunta },
+            { sender: 'bot', text: chat.respuesta }
+          ];
+          mostrarMensajesDesdeServidor(mensajes);
+        };
+
+        const eliminar = document.createElement('button');
+        eliminar.className = 'eliminar';
+        eliminar.innerText = '❌';
+        eliminar.onclick = async (e) => {
+          e.stopPropagation();
+          const confirmacion = confirm('¿Eliminar este chat?');
+          if (!confirmacion) return;
+
+          try {
+            await fetch(`http://localhost:5001/api/chat/${chat._id}`, {
+              method: 'DELETE'
+            });
+            cargarListaChats();
+          } catch (err) {
+            console.error('❌ Error al eliminar chat:', err);
+          }
+        };
+
+        div.appendChild(eliminar);
+        contenedor.appendChild(div);
+      });
+    } catch (err) {
+      console.error('❌ Error al cargar historial:', err);
+    }
   }
+
+  function mostrarMensajesDesdeServidor(mensajes) {
+    const contenedor = document.getElementById('chatMessages');
+    contenedor.innerHTML = '';
+    mensajes.forEach(msg => appendMessage(msg.sender, msg.text));
+  }
+
 
   function seleccionarChat(id) {
     chatActualId = id;
@@ -101,14 +134,18 @@
     chat.mensajes.forEach(msg => appendMessage(msg.sender, msg.text));
   }
 
-  function eliminarChat(id) {
-    let chats = getChats();
-    chats = chats.filter(c => c.id !== id);
-    saveChats(chats);
-    chatActualId = null;
-    document.getElementById('chatMessages').innerHTML = '';
-    cargarListaChats();
+  async function eliminarChat(id) {
+    try {
+      const res = await fetch(`http://localhost:5001/api/chat/${id}`, {
+        method: 'DELETE'
+      });
+      if (!res.ok) throw new Error('Error al eliminar');
+      console.log('✅ Chat eliminado');
+    } catch (err) {
+      console.error('❌ Error al eliminar el chat:', err);
+    }
   }
+
 
   async function askDeepSeek(prompt) {
     const response = await fetch('http://127.0.0.1:5000/api/generate', {
