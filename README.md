@@ -23,7 +23,7 @@ Descargar todo lo del repositorio
 https://github.com/CesarManz/Proyecto-Progra-Los-Piru
 
 ## Proyecto realizado por:
-Matias Dominguez (MatondM)
-Cesar Manzano (CesarManz)
-Osvaldo Marchant (xAshura3x)
-Martin Valverde (Roshi-32Bit)
+- Matias Dominguez (MatondM)
+- Cesar Manzano (CesarManz)
+- Osvaldo Marchant (xAshura3x)
+- Martin Valverde (Roshi-32Bit)
