@@ -29,119 +29,112 @@
     </div>
 </header>
 
-<form id="ActualizarForm">
-    <h2>Actualizar Usuario</h2>
+<h2>Administrar Usuarios</h2>
+<div id="usuariosContainer" style="display: flex; flex-wrap: wrap; gap: 20px;"></div>
 
-    <select class="dropdown-option" id="updateEmail" name="correoActual" required></select>
 
-    <input type="text" id="newName" name="newName" placeholder= "Nuevo nombre" class="recuadros" required>
-    <input type="email" id="newEmail" name="newEmail" placeholder= "Nuevo correo" class="recuadros" required>
-    <button type="submit" class="btn-act">Actualizar Usuario</button>
-</form>
 
-<form id="EliminarForm">
-    <h2>Eliminar Usuario</h2>
-    <select class="dropdown-option" id="deleteEmail" name="correo" required></select>
-    <button type="submit" class="btn-act">Eliminar Usuario</button>
-</form>
+
+<!-- Modal -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <h3>Actualizar Usuario</h3>
+        <form id="modalForm">
+            <input type="hidden" id="modalCorreoActual">
+            <label for="modalNuevoNombre">Nuevo Nombre:</label>
+            <input type="text" id="modalNuevoNombre" required><br>
+            <label for="modalNuevoCorreo">Nuevo Correo:</label>
+            <input type="email" id="modalNuevoCorreo" required><br>
+            <div class="modal-buttons">
+                <button type="submit">Guardar</button>
+                <button type="button" onclick="cerrarModal()">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 
 <script>
-    // Cargar correos al iniciar
-    async function cargarCorreos() {
+    async function cargarUsuarios() {
         try {
             const response = await fetch('http://localhost:5001/api/usuarios/correos');
-            const data = await response.json();
-            const select = document.getElementById('deleteEmail');
-            select.innerHTML = '<option value="">Seleccione un correo</option>';
-            data.forEach(usuario => {
-                const option = document.createElement('option');
-                option.value = usuario.correo;
-                option.textContent = usuario.correo;
-                select.appendChild(option);
+            const usuarios = await response.json();
+            const container = document.getElementById('usuariosContainer');
+            container.innerHTML = '';
+
+            usuarios.forEach(usuario => {
+                const card = document.createElement('div');
+                card.className = 'usuario-card';
+
+                const imgSrc = usuario.imagen || 'https://via.placeholder.com/100';
+
+                card.innerHTML = `
+            <img src="${imgSrc}" alt="Foto de ${usuario.nombre}" class="usuario-img">
+            <p><strong>${usuario.nombre || '(Sin nombre)'}</strong></p>
+            <p>${usuario.correo}</p>
+            <button onclick="abrirModal('${usuario.correo}', '${usuario.nombre || ''}')">Actualizar</button>
+            <button onclick="eliminarUsuario('${usuario.correo}')">Eliminar</button>
+          `;
+
+                container.appendChild(card);
             });
         } catch (err) {
-            console.error('Error al cargar correos:', err);
-        }
-        try {
-            const response = await fetch('http://localhost:5001/api/usuarios/correos');
-            const data = await response.json();
-
-            const selectUpdate = document.getElementById('updateEmail');
-            selectUpdate.innerHTML = '<option value="">Seleccione un correo</option>';
-
-            data.forEach(usuario => {
-                const option = document.createElement('option');
-                option.value = usuario.correo;
-                option.textContent = usuario.correo;
-                selectUpdate.appendChild(option);
-            });
-        } catch (err) {
-            console.error('Error al cargar correos:', err);
+            console.error('Error al cargar usuarios:', err);
         }
     }
 
-    // Ejecutar al cargar la página
-    window.onload = cargarCorreos;
-
-    // Formulario de actualización
-    document.getElementById('updateUserForm').addEventListener('submit', async function (e) {
-        e.preventDefault();
-
-        const correoActual = document.getElementById('updateEmail').value;
-        const nuevoNombre = document.getElementById('nuevoNombre').value.trim();
-        const nuevoCorreo = document.getElementById('nuevoCorreo').value.trim();
-
-        if (!correoActual || !nuevoNombre || !nuevoCorreo) {
-            alert("Completa todos los campos");
-            return;
-        }
+    async function eliminarUsuario(correo) {
+        if (!confirm(`¿Eliminar usuario con correo ${correo}?`)) return;
 
         try {
-            const response = await fetch('http://localhost:5001/api/usuarios/actualizar', {
+            const res = await fetch('http://localhost:5001/api/usuarios/eliminar', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ correo })
+            });
+            const data = await res.json();
+            alert(data.mensaje);
+            cargarUsuarios();
+        } catch (err) {
+            alert('Error al eliminar usuario');
+            console.error(err);
+        }
+    }
+
+    function abrirModal(correo, nombre) {
+        document.getElementById('modalCorreoActual').value = correo;
+        document.getElementById('modalNuevoNombre').value = nombre;
+        document.getElementById('modalNuevoCorreo').value = correo;
+        document.getElementById('modal').style.display = 'block';
+    }
+
+    function cerrarModal() {
+        document.getElementById('modal').style.display = 'none';
+    }
+
+    document.getElementById('modalForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const correoActual = document.getElementById('modalCorreoActual').value;
+        const nuevoNombre = document.getElementById('modalNuevoNombre').value;
+        const nuevoCorreo = document.getElementById('modalNuevoCorreo').value;
+
+        try {
+            const res = await fetch('http://localhost:5001/api/usuarios/actualizar', {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ correoActual, nuevoNombre, nuevoCorreo })
             });
-
-            const data = await response.json();
+            const data = await res.json();
             alert(data.mensaje);
-            cargarCorreos(); // actualizar dropdown si se cambió el correo
+            cerrarModal();
+            cargarUsuarios();
         } catch (err) {
             alert('Error al actualizar usuario');
             console.error(err);
         }
     });
 
-    // Eliminar usuario
-    document.getElementById('deleteUserForm').addEventListener('submit', async function (e) {
-        e.preventDefault();
-        const correo = document.getElementById('deleteEmail').value;
-        if (!correo) return alert("Selecciona un correo");
-
-        const confirmar = confirm(`¿Estás seguro de eliminar el usuario con correo ${correo}?`);
-        if (!confirmar) return;
-
-        try {
-            const response = await fetch('http://localhost:5001/api/usuarios/eliminar', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ correo })
-            });
-
-            const data = await response.json();
-            alert(data.mensaje);
-            cargarCorreos(); // actualizar el dropdown
-        } catch (err) {
-            alert('Error al eliminar el usuario');
-            console.error(err);
-        }
-    });
-
+    window.onload = cargarUsuarios;
 </script>
 </body>
 </html>

@@ -10,7 +10,7 @@ body {
     background-position: center;
     background-attachment: fixed;
     font-family: Arial, sans-serif;
-    color: white;
+    color: #000000;
 }
 .ecosmart{
     width: 150px;
@@ -62,18 +62,7 @@ form h2 {
     color: #000000;
 }
 
-.recuadros {
-    width: 85%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border-radius: 7px;
-    border: none;
-    background-color: #fff1d8;
-    font-size: 14px;
-}
-.recuadros::placeholder{
-    color: #CD8A39;
-}
+
 
 button {
     width: 100%;
@@ -135,74 +124,75 @@ nav a {
     width: 100%;
     height: auto;
 }
-.dropdown {
-    position: relative;
-    width: 00px ;
-    height: 30px ;
-    margin: 0 auto 20px;
-    font-family: sans-serif;
-    cursor: pointer;
-    border-radius: 10px;
-    background-color: #1D2A10;
-    color: #CD8A39;
+.usuarios-container {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
-    align-items: center;
-    padding: 10px;
-    user-select: none;
+    gap: 20px;
 }
-
-.dropdown-selected {
-    width: 100%;
-    margin-bottom: 15px;
-    border-radius: 5px;
-    padding: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-}
-
-.dropdown-options {
-    margin-bottom: 15px;
-    position: absolute;
-    text-align: center;
-    align-items: center;
-    top: 100%;
-    left: 0;
-    width: 200px;
-    max-height: 150px;
-    overflow-y: auto;
-    border-radius: 5px;
-    border-top: none;
-    border-radius: 0 0 5px 5px;
-    z-index: 10;
-    box-sizing: border-box;
-    display: none;
-}
-
-.dropdown-options.show {
-    margin-bottom: 15px;
-    align-items: center;
+.usuario-card {
+    border: 1px solid #CD8A39;
+    border-radius: 12px;
+    width: 250px;
     background-color: #CD8A39;
-    color: #1D2A10;
-    margin-left: 20px;
-    display: block;
+    text-align: center;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+    padding: 20px;
+}
+.usuario-img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 10px;
 }
 
-
-.dropdown-option {
-    margin-bottom: 15px;
-    padding: 10px;
+.usuario-card button {
+    margin-top: 10px;
+    margin-bottom: 5px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    background-color: #007bff;
+    color: white;
     cursor: pointer;
-    border-radius: 5px;
 }
 
-.dropdown-option:hover {
-    margin-bottom: 15px;
-    background-color: #FFCC8A;
-    color: #CD8A39;
+.usuario-card button:last-child {
+    background-color: #dc3545;
 }
-.dropdown-options::placeholder{
-    color: #CD8A39;
+
+.usuario-card button:hover {
+    opacity: 0.9;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    background: white;
+    padding: 20px;
+    border: 2px solid #ccc;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    z-index: 1000;
+}
+
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.modal input {
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
 }

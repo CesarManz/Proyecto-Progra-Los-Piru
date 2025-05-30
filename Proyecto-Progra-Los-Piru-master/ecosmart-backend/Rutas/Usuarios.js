@@ -81,11 +81,11 @@ router.put('/actualizar', async (req, res) => {
 // Obtener usuario por correo
 router.get('/correos', async (req, res) => {
   try {
-    const usuarios = await Usuario.find({}, 'correo');
+    const usuarios = await Usuario.find({}, 'nombre correo'); // ahora trae nombre también
     res.json(usuarios);
   } catch (err) {
-    console.error('❌ Error al obtener correos:', err.message);
-    res.status(500).json({ mensaje: 'Error al obtener correos' });
+    console.error('❌ Error al obtener usuarios:', err.message);
+    res.status(500).json({ mensaje: 'Error al obtener usuarios' });
   }
 });
 
