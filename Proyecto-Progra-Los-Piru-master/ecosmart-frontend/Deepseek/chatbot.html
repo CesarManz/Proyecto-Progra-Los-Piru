@@ -56,13 +56,15 @@
 
   function nuevoChat(nombre = "Chat sin título") {
     const chats = getChats();
-    const id = `chat-${Date.now()}`;
-    const nuevo = { id, nombre, mensajes: [] };
+    const chatId = `chat-${Date.now()}`;
+    const nuevo = { id: chatId, nombre, mensajes: [] };
     chats.push(nuevo);
     saveChats(chats);
+    localStorage.setItem("chatId", chatId);
     cargarListaChats();
-    seleccionarChat(id);
+    seleccionarChat(chatId);
   }
+
 
   async function cargarListaChats() {
     const contenedor = document.querySelector('.chats');
@@ -80,13 +82,26 @@
         div.className = 'chat-preview';
         div.innerText = chat.pregunta || 'Chat sin título';
 
-        div.onclick = () => {
-          const mensajes = [
-            { sender: 'user', text: chat.pregunta },
-            { sender: 'bot', text: chat.respuesta }
-          ];
-          mostrarMensajesDesdeServidor(mensajes);
+        div.onclick = async () => {
+          localStorage.setItem('chatId', chat.chatId); // 🔒 Guardamos el ID de la conversación actual
+
+          try {
+            // Pedimos al backend todos los mensajes de este chatId
+            const res = await fetch(`http://localhost:5001/api/chat/conversacion/${chat.chatId}`);
+            const mensajes = await res.json();
+
+            // Transformamos el array de {pregunta, respuesta} en formato [{user}, {bot}, ...]
+            const formateados = mensajes.map(m => [
+              { sender: 'user', text: m.pregunta },
+              { sender: 'bot', text: m.respuesta }
+            ]).flat();
+
+            mostrarMensajesDesdeServidor(formateados);
+          } catch (err) {
+            console.error('❌ Error al cargar conversación:', err);
+          }
         };
+
 
         const eliminar = document.createElement('button');
         eliminar.className = 'eliminar';
@@ -170,10 +185,10 @@
     const userText = input.value.trim();
     if (userText === '') return;
 
-    // Crear un nuevo chat si no hay uno activo
     if (!chatActualId) {
       const nombre = userText.length > 30 ? userText.slice(0, 30) + '...' : userText;
-      nuevoChat(nombre);
+      await nuevoChat(nombre); // ⏳ Esperamos a que se cree el nuevo chat
+      chatActualId = localStorage.getItem('chatId'); // 🆗 Ahora sí lo actualizamos
     }
 
     appendMessage('user', userText);
@@ -191,7 +206,6 @@
 
     const botResponse = await askDeepSeek(userText);
 
-    // Guardar en localStorage
     const chats = getChats();
     const chat = chats.find(c => c.id === chatActualId);
 
@@ -204,12 +218,12 @@
     saveChats(chats);
     cargarListaChats();
 
-    // Mostrar respuesta
     loadingBubble.innerHTML = botResponse;
 
-    // 🔥 NUEVO: Guardar en MongoDB
     const correo = localStorage.getItem('correo');
-    if (correo) {
+    const chatId = localStorage.getItem('chatId'); // ahora debe estar bien definido ✅
+
+    if (correo && chatId) {
       fetch('http://localhost:5001/api/chat', {
         method: 'POST',
         headers: {
@@ -217,6 +231,7 @@
         },
         body: JSON.stringify({
           correo: correo,
+          chatId: chatId,
           pregunta: userText,
           respuesta: botResponse
         })
@@ -225,9 +240,10 @@
               .then(data => console.log('✅ Chat guardado en MongoDB:', data))
               .catch(err => console.error('❌ Error al guardar el chat:', err));
     } else {
-      console.warn('⚠️ No se encontró correo en localStorage');
+      console.warn('⚠️ No se encontró correo o chatId en localStorage');
     }
   }
+
 
 
   window.onload = () => {
@@ -242,18 +258,6 @@
     });
   };
 </script>
-
-
-<!--
-  const chats = {
-    id: "1234",
-    nombre: "",
-    mensajes: [
-      { sender: "user", text: "Hola" },
-      { sender: "bot", text: "¡Hola, humano vegetal!" }
-    ]
-  }
--->
 
 </body>
 </html>
