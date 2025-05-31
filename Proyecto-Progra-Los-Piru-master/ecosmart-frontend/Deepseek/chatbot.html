@@ -120,7 +120,6 @@
     mensajes.forEach(msg => appendMessage(msg.sender, msg.text));
   }
 
-
   function seleccionarChat(id) {
     chatActualId = id;
     mostrarMensajes();
@@ -146,12 +145,11 @@
     }
   }
 
-
-  async function askDeepSeek(prompt) {
+  async function askDeepSeek(historial) {
     const response = await fetch('http://127.0.0.1:5000/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'deepseek-coder', prompt: prompt, stream: false })
+      body: JSON.stringify({ model: 'deepseek-coder', prompt: historial, stream: false })
     });
     const data = await response.json();
     return data.response;
@@ -170,7 +168,6 @@
     const userText = input.value.trim();
     if (userText === '') return;
 
-    // Crear un nuevo chat si no hay uno activo
     if (!chatActualId) {
       const nombre = userText.length > 30 ? userText.slice(0, 30) + '...' : userText;
       nuevoChat(nombre);
@@ -182,18 +179,21 @@
     const chatBox = document.getElementById('chatMessages');
     const loadingBubble = document.createElement('div');
     loadingBubble.className = 'msg bot';
-    loadingBubble.innerHTML = `
-    <span class="typing-dots">
-      <span></span><span></span><span></span>
-    </span>
-  `;
+    loadingBubble.innerHTML = `<span class="typing-dots"><span></span><span></span><span></span></span>`;
     chatBox.appendChild(loadingBubble);
 
-    const botResponse = await askDeepSeek(userText);
-
-    // Guardar en localStorage
     const chats = getChats();
     const chat = chats.find(c => c.id === chatActualId);
+
+    // Aquí construimos el historial solo con texto plano, sin etiquetas ni nombres
+    let historialTexto = '';
+    chat.mensajes.forEach(msg => {
+      historialTexto += `${msg.text}\n`;
+    });
+    historialTexto += `${userText}\n`;
+
+    // Llamamos a DeepSeek con el historial simplificado
+    const botResponse = await askDeepSeek(historialTexto);
 
     if (!chat.nombre || chat.nombre === 'Chat sin título') {
       chat.nombre = userText.length > 30 ? userText.slice(0, 30) + '...' : userText;
@@ -204,17 +204,14 @@
     saveChats(chats);
     cargarListaChats();
 
-    // Mostrar respuesta
     loadingBubble.innerHTML = botResponse;
 
-    // 🔥 NUEVO: Guardar en MongoDB
+    // Guardar en MongoDB
     const correo = localStorage.getItem('correo');
     if (correo) {
       fetch('http://localhost:5001/api/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           correo: correo,
           pregunta: userText,
@@ -243,17 +240,6 @@
   };
 </script>
 
-
-<!--
-  const chats = {
-    id: "1234",
-    nombre: "",
-    mensajes: [
-      { sender: "user", text: "Hola" },
-      { sender: "bot", text: "¡Hola, humano vegetal!" }
-    ]
-  }
--->
 
 </body>
 </html>
