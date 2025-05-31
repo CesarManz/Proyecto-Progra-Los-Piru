@@ -57,13 +57,15 @@
   function nuevoChat(nombre = "Chat sin título") {
     const chats = getChats();
     const chatId = `chat-${Date.now()}`;
-    const nuevo = { id: chatId, nombre, mensajes: [] };
+    const nuevo = { id: chatId, chatId, nombre, mensajes: [] };
     chats.push(nuevo);
     saveChats(chats);
     localStorage.setItem("chatId", chatId);
     cargarListaChats();
     seleccionarChat(chatId);
+    return chatId;
   }
+
 
 
   async function cargarListaChats() {
@@ -84,6 +86,7 @@
 
         div.onclick = async () => {
           localStorage.setItem('chatId', chat.chatId); // 🔒 Guardamos el ID de la conversación actual
+          chatActualId = chat.chatId;
 
           try {
             // Pedimos al backend todos los mensajes de este chatId
@@ -161,12 +164,11 @@
     }
   }
 
-
-  async function askDeepSeek(prompt) {
+  async function askDeepSeek(historial) {
     const response = await fetch('http://127.0.0.1:5000/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'deepseek-coder', prompt: prompt, stream: false })
+      body: JSON.stringify({ model: 'deepseek-coder', prompt: historial, stream: false })
     });
     const data = await response.json();
     return data.response;
@@ -185,10 +187,12 @@
     const userText = input.value.trim();
     if (userText === '') return;
 
+    // Crear un nuevo chat si no hay uno activo
     if (!chatActualId) {
       const nombre = userText.length > 30 ? userText.slice(0, 30) + '...' : userText;
       await nuevoChat(nombre); // ⏳ Esperamos a que se cree el nuevo chat
-      chatActualId = localStorage.getItem('chatId'); // 🆗 Ahora sí lo actualizamos
+      chatActualId = nuevoChat(nombre);
+
     }
 
     appendMessage('user', userText);
@@ -197,17 +201,22 @@
     const chatBox = document.getElementById('chatMessages');
     const loadingBubble = document.createElement('div');
     loadingBubble.className = 'msg bot';
-    loadingBubble.innerHTML = `
-    <span class="typing-dots">
-      <span></span><span></span><span></span>
-    </span>
-  `;
+    loadingBubble.innerHTML = `<span class="typing-dots"><span></span><span></span><span></span></span>`;
     chatBox.appendChild(loadingBubble);
 
-    const botResponse = await askDeepSeek(userText);
 
     const chats = getChats();
     const chat = chats.find(c => c.id === chatActualId);
+
+    // Aquí construimos el historial solo con texto plano, sin etiquetas ni nombres
+    let historialTexto = '';
+    chat.mensajes.forEach(msg => {
+      historialTexto += `${msg.text}\n`;
+    });
+    historialTexto += `${userText}\n`;
+
+    // Llamamos a DeepSeek con el historial simplificado
+    const botResponse = await askDeepSeek(historialTexto);
 
     if (!chat.nombre || chat.nombre === 'Chat sin título') {
       chat.nombre = userText.length > 30 ? userText.slice(0, 30) + '...' : userText;
@@ -218,17 +227,17 @@
     saveChats(chats);
     cargarListaChats();
 
+    // Mostrar respuesta
     loadingBubble.innerHTML = botResponse;
 
+    // 🔥 NUEVO: Guardar en MongoDB
     const correo = localStorage.getItem('correo');
     const chatId = localStorage.getItem('chatId'); // ahora debe estar bien definido ✅
 
     if (correo && chatId) {
       fetch('http://localhost:5001/api/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           correo: correo,
           chatId: chatId,
@@ -258,6 +267,7 @@
     });
   };
 </script>
+
 
 </body>
 </html>
