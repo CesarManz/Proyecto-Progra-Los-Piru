@@ -85,15 +85,16 @@
         div.innerText = chat.pregunta || 'Chat sin título';
 
         div.onclick = async () => {
-          localStorage.setItem('chatId', chat.chatId); // 🔒 Guardamos el ID de la conversación actual
+          //Se guarda el ID de la conversación actual
+          localStorage.setItem('chatId', chat.chatId);
           chatActualId = chat.chatId;
 
           try {
-            // Pedimos al backend todos los mensajes de este chatId
+            //Se le pide al backend todos los mensajes del chatId
             const res = await fetch(`http://localhost:5001/api/chat/conversacion/${chat.chatId}`);
             const mensajes = await res.json();
 
-            // Transformamos el array de {pregunta, respuesta} en formato [{user}, {bot}, ...]
+            //Se transforma el array de {pregunta, respuesta} en formato [{user}, {bot}, ...]
             const formateados = mensajes.map(m => [
               { sender: 'user', text: m.pregunta },
               { sender: 'bot', text: m.respuesta }
@@ -187,7 +188,7 @@
     const userText = input.value.trim();
     if (userText === '') return;
 
-    // Crear un nuevo chat si no hay uno activo
+    //Crea un nuevo chat si no hay uno activo
     if (!chatActualId) {
       const nombre = userText.length > 30 ? userText.slice(0, 30) + '...' : userText;
       await nuevoChat(nombre); // ⏳ Esperamos a que se cree el nuevo chat
@@ -208,14 +209,14 @@
     const chats = getChats();
     const chat = chats.find(c => c.id === chatActualId);
 
-    // Aquí construimos el historial solo con texto plano, sin etiquetas ni nombres
+    //Se construye el historial solo con texto plano, sin etiquetas ni nombres
     let historialTexto = '';
     chat.mensajes.forEach(msg => {
       historialTexto += `${msg.text}\n`;
     });
     historialTexto += `${userText}\n`;
 
-    // Llamamos a DeepSeek con el historial simplificado
+    //Se llama a la IA DeepSeek con el historial simplificado en vez de un prompt
     const botResponse = await askDeepSeek(historialTexto);
 
     if (!chat.nombre || chat.nombre === 'Chat sin título') {
@@ -227,12 +228,12 @@
     saveChats(chats);
     cargarListaChats();
 
-    // Mostrar respuesta
+    //Mostrar respuesta
     loadingBubble.innerHTML = botResponse;
 
-    // 🔥 NUEVO: Guardar en MongoDB
+    //Guarda el chat correspondiente al correo en MongoDB
     const correo = localStorage.getItem('correo');
-    const chatId = localStorage.getItem('chatId'); // ahora debe estar bien definido ✅
+    const chatId = localStorage.getItem('chatId');
 
     if (correo && chatId) {
       fetch('http://localhost:5001/api/chat', {
