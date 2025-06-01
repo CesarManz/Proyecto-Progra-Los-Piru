@@ -32,16 +32,17 @@ router.get('/conversacion/:chatId', async (req, res) => {
     }
 });
 
-
-router.delete('/:id', async (req, res) => {
+router.delete('/:chatId', async (req, res) => {
+    const { chatId } = req.params;
     try {
-        const { id } = req.params;
-        await Chat.findByIdAndDelete(id);
-        res.status(200).json({ message: 'Chat eliminado correctamente' });
-    } catch (error) {
-        res.status(500).json({ error: 'Error al eliminar el chat' });
+        await Chat.deleteMany({ chatId });
+        res.json({ success: true });
+    } catch (err) {
+        console.error('❌ Error eliminando chat:', err);
+        res.status(500).json({ error: 'Error eliminando chat' });
     }
 });
+
 // Obtener lista de chats únicos por correo
 router.get('/chats/:correo', async (req, res) => {
     try {

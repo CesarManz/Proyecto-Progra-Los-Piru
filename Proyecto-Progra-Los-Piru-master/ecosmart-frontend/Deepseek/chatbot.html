@@ -116,9 +116,13 @@
           if (!confirmacion) return;
 
           try {
-            await fetch(`http://localhost:5001/api/chat/${chat._id}`, {
+            await fetch(`http://localhost:5001/api/chat/${chat.chatId}`, {
               method: 'DELETE'
             });
+            if (localStorage.getItem('chatId') === chat.chatId) {
+              localStorage.removeItem('chatId');
+              chatActualId = null;
+            }
             cargarListaChats();
           } catch (err) {
             console.error('❌ Error al eliminar chat:', err);
@@ -191,8 +195,7 @@
     //Crea un nuevo chat si no hay uno activo
     if (!chatActualId) {
       const nombre = userText.length > 30 ? userText.slice(0, 30) + '...' : userText;
-      await nuevoChat(nombre); // ⏳ Esperamos a que se cree el nuevo chat
-      chatActualId = nuevoChat(nombre);
+      chatActualId = await nuevoChat(nombre);
 
     }
 
