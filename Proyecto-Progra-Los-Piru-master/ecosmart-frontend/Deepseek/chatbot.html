@@ -66,8 +66,6 @@
     return chatId;
   }
 
-
-
   async function cargarListaChats() {
     const contenedor = document.querySelector('.chats');
     contenedor.innerHTML = '';
@@ -143,7 +141,6 @@
     mensajes.forEach(msg => appendMessage(msg.sender, msg.text));
   }
 
-
   function seleccionarChat(id) {
     chatActualId = id;
     mostrarMensajes();
@@ -170,14 +167,25 @@
   }
 
   async function askDeepSeek(historial) {
+    const systemPrompt = `You are a helpful and concise assistant. Do not roleplay or simulate conversations. Only respond to the user's last message.`;
+
+    const prompt = `${systemPrompt}\n\n${historial}\nAssistant:`;
+
     const response = await fetch('http://127.0.0.1:5000/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'deepseek-coder', prompt: historial, stream: false })
+      body: JSON.stringify({
+        model: 'deepseek-coder',
+        prompt: prompt,
+        stream: false
+      })
     });
+
     const data = await response.json();
     return data.response;
   }
+
+
 
   function appendMessage(sender, text) {
     const chat = document.getElementById('chatMessages');
@@ -256,8 +264,6 @@
       console.warn('⚠️ No se encontró correo o chatId en localStorage');
     }
   }
-
-
 
   window.onload = () => {
     cargarListaChats();
