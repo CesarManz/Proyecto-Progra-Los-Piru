@@ -20,9 +20,6 @@ function generarValor(tipo) {
     case 'humedad del suelo':
       return +(50 + Math.random() * 20).toFixed(1); // 50–70 %
 
-    case 'humedad ambiente':
-      return +(40 + Math.random() * 30).toFixed(1); // 40–70 %
-
     case 'ph':
     case 'ph del suelo':
       return +(5.5 + Math.random() * 2).toFixed(2); // 5.5–7.5
