@@ -1,347 +1,388 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Parcelas Registradas</title>
-  <link rel="stylesheet" href="../Estilo-prin.css" />
+  <title>Parcelas</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../Principales/Estilo-prin.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), #c1d36b), url("../Public/Fondo.png");
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  color: #1D2A10;
+      font-family: 'Rubik', sans-serif;
+      margin: 0;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), #c1d36b), url("../public/Fondo.png");
+      background-size: cover;
+      background-attachment: fixed;
+      color: #1D2A10;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background-color: rgba(255, 255, 255, 0.96);
+      border-radius: 16px;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    h2 {
+      font-size: 2rem;
+      text-align: center;
+    }
+
+    select {
+      display: block;
+      margin: 1rem auto 2rem auto;
+      padding: 10px;
+      font-size: 1rem;
+    }
+
+    #contenedor-graficos {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      gap: 2rem;
+    }
+
+    canvas {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+  
+  #contenedor-graficos canvas {
+  width: 100%;
+  max-width: 500px;
+  height: 220px;
+  max-height: 220px;
 }
 
-header {
-  background-color: #1D2A10;
-  padding: 10px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: #CD8A39;
-  height: 70px;
-}
 
-.logo img {
-  width: 150px;
-  height: auto;
-}
+    section.tarjeta {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 16px;
+      margin-top: 2rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
 
-nav a {
-  color: #CD8A39;
-  text-decoration: none;
-  font-weight: bold;
-  margin: 0 10px;
-}
+    #clima-actual img {
+      width: 80px;
+      height: 80px;
+    }
 
-nav a:hover {
-  text-decoration: underline;
-}
+    #clima-actual p, #pronostico-dias p {
+      margin: 0.25rem 0;
+    }
 
-.busqueda {
-  background-color: #CD8A39;
-  padding: 5px;
-  border: none;
-  border-radius: 4px;
-}
+    #selector-parcela {
+      padding: 0.6rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+    }
 
-main {
-  background-color: rgba(205, 138, 57, 0.9);
-  backdrop-filter: none;
-  border-radius: 16px;
-  padding: 24px;
-  max-width: 1200px;
-  margin: 2rem auto;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-}
+    .titulo-seccion {
+      text-align: center;
+      font-size: 1.6rem;
+      margin-bottom: 1rem;
+      color: #344E41;
+    }
 
-h2 {
-  font-size: 1.6rem;
-  color: #1D2A10;
-  margin-bottom: 1rem;
-}
-
-.tarjeta {
-  background-color: #fff;
-  border: 2px solid #1D2A10;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 30px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  color: #1D2A10;
-}
-
-.mapa {
-  height: 200px;
-  margin: 10px 0;
-  border-radius: 10px;
-}
-
-.clima-widget {
-  background: #f9f9f9;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  padding: 10px 15px;
-  margin: 15px 0;
-}
-
-.clima-widget p {
-  margin: 4px 0;
-  font-size: 15px;
-}
-
-.acciones {
-  margin-top: 12px;
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.acciones button {
-  background-color: #1D2A10;
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.acciones button:hover {
-  background-color: #CD8A39;
-  color: #1D2A10;
-}
-
-.top-buttons {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 20px;
-}
-
-.top-buttons a {
-  background-color: #1D2A10;
-  color: white;
-  padding: 10px 16px;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.top-buttons a:hover {
-  background-color: #CD8A39;
-  color: #1D2A10;
-}
-
+    .contenedor-secciones {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
   </style>
 </head>
 <body>
-  <header>
-    <div class="logo">
-      <div class="item Logo" onclick="window.location.href='../Principales/Pagina-Principal.html'">
-        <img src="../Public/EcoSmart2.png" alt="Logo"/>
-      </div>
+<header>
+   <div class="logo">
+        <div class="item Logo" onclick="window.location.href='../Principales/Pagina-Principal.html'">
+            <img src="../Public/EcoSmart2.png" alt="Logo"/>
+        </div>
     </div>
-    <nav>
-      <a href="../Principales/Pagina-Principal.html">Pagina principal</a>
-      <a href="./listar-parcelas.html">Parcelas</a>
-      <a href="#">Inventario</a>
-      <a href="../Deepseek/consultas.html">Preguntas</a>
-      <input class="busqueda" type="search" placeholder="Buscar" />
+
+    <nav id="menu">
+            <a href="../Principales/Pagina-Principal.html">Inicio</a>
+            <a href="../Parcelas/listar-parcelas-FINAL-INTEGRADO.html">Parcelas</a>
+            <a href="../Deepseek/consultas.html">consultas</a>
+        
+        <input class="busqueda" type="search" placeholder="Buscar">
     </nav>
-  </header>
+
+    <div class="Fondo-fo-perfil" onclick="toggleMenu(event)">
+        <img class="fo-perfil" src="../Public/user.png" alt="Foto de perfil">
+        <div id="menuPerfil" class="menu-perfil">
+            <a href="../Perfil/Perfil.html">Perfil</a>
+            <a href="#" onclick="logout()">Cerrar sesión</a>
+        </div>
+    </div>
+    </header>
 
   <main>
-    <div class="top-buttons">
-      <a href="crear-parcela.html">+ Crear nueva parcela</a>
-    </div>
-    <h2>Parcelas Registradas</h2>
-    <div id="contenedorParcelas"></div>
-  </main>
+    <h2>Selecciona una Parcela</h2>
+    <select id="selector-parcela">
+      <option value="">Seleccione una parcela</option>
+    </select>
+    <div style="margin-top: 10px; display: flex; gap: 20px;">
+  <button onclick="window.location.href='../parcelas/crear-parcela.html'">➕ Crear parcela</button>
+  <button onclick="redirigirEditar()">✏️ Editar parcela</button>
+
+</div>
+
+
+    <div class="contenedor-secciones">
+<section class="tarjeta">
+      <h2>Clima Actual</h2>
+      <div id="clima-actual" style="text-align: center;"></div>
+      <h2>Pronóstico</h2>
+      <div id="pronostico-dias" style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;"></div>
+      <h2>Ubicación de la Parcela</h2>
+      <div id="mapa-parcela" style="height: 400px; border-radius: 12px;"></div>
+    </section>
+</div>
+  <div class="tarjeta">
+  <h2 class="titulo-seccion">Gráficos de Sensores</h2>
+  <div id="contenedor-graficos"></div>
+</div>
+
+</main>
 
   <script>
-   async function cargarParcelas() {
-  const res = await fetch("http://localhost:5001/api/parcelas");
-  const parcelas = await res.json();
-  const contenedor = document.getElementById("contenedorParcelas");
-  contenedor.innerHTML = "";
+  function redirigirEditar() {
+    const select = document.getElementById("selector-parcela");
+    const nombreSeleccionado = select.value;
 
-  for (const p of parcelas) {
-    // Usar coordenadas si existen, si no, usar el primer punto
-    let lat = null;
-    let lon = null;
-
-    if (p.coordenadas && p.coordenadas.lat && p.coordenadas.lon) {
-      lat = p.coordenadas.lat;
-      lon = p.coordenadas.lon;
-    } else if (p.puntos && p.puntos.length > 0) {
-      lat = p.puntos[0].lat;
-      lon = p.puntos[0].lng;
+    const parcela = parcelasGlobal.find(p => p.nombre === nombreSeleccionado);
+    if (parcela && parcela._id) {
+      window.location.href = `editar-parcela.html?id=${parcela._id}`;
+    } else {
+      alert("Selecciona una parcela válida.");
     }
-
-    if (lat === null || lon === null) continue;
-
-    const clima = await obtenerClima(lat, lon);
-    const sensores = await obtenerLecturas(p.nombre);
-    const pronostico = await obtenerPronostico(lat, lon);
-
-    const idMapa = `map-${p._id}`;
-    const idGrafico = `grafico-${p._id}`;
-
-    const div = document.createElement("div");
-    div.className = "tarjeta";
-    div.innerHTML = `
-      <h3>🌿 ${p.nombre}</h3>
-      <p><strong>📍 Coordenadas:</strong> ${lat}, ${lon}</p>
-      <div id="${idMapa}" class="mapa"></div>
-
-      <div class="clima-widget">
-        <p>☁️ <strong>Clima:</strong> ${clima.desc} – ${clima.temp}°C</p>
-        <p>💧 <strong>Humedad:</strong> ${clima.humedad}% | 🌬 <strong>Viento:</strong> ${clima.viento} km/h</p>
-      </div>
-
-      <p><strong>📊 Últimas lecturas:</strong></p>
-      <ul style="margin-left: 20px;">
-        ${sensores.map(s => `<li>${s.tipo}: ${s.valor} (${new Date(s.fecha).toLocaleTimeString()})</li>`).join("")}
-      </ul>
-
-      <canvas id="${idGrafico}" height="100"></canvas>
-
-      <div class="acciones">
-        <button onclick="verHistorial('${p.nombre}')">📈 Ver Historial</button>
-        <button onclick="window.location.href='editar-parcela.html?id=${p._id}'">✏️ Editar</button>
-        <button onclick="eliminarParcela('${p._id}')">🗑 Eliminar</button>
-      </div>
-    `;
-
-    contenedor.appendChild(div);
-    iniciarMapa(idMapa, lat, lon);
-    renderizarGrafico(idGrafico, pronostico);
   }
-}
+</script>
 
-    function verHistorial(nombre) {
-      window.location.href = `historial-parcela.html?nombre=${encodeURIComponent(nombre)}`;
-    }
+  <script>
+    parcelasGlobal = [];
+    let chartInstances = [];
 
-    function editarParcela(id) {
-      window.location.href = `editar-parcela.html?id=${id}`;
-    }
+    async function obtenerParcelas() {
+      try {
+        const res = await fetch("http://localhost:5001/api/parcelas");
+        const parcelas = await res.json();
+        const select = document.getElementById("selector-parcela");
 
-    async function eliminarParcela(id) {
-      if (confirm("¿Estás seguro de eliminar esta parcela?")) {
-        const res = await fetch(`http://localhost:5001/api/parcelas/${id}`, { method: "DELETE" });
-        if (res.ok) {
-          alert("✅ Parcela eliminada");
-          cargarParcelas();
-        } else {
-          alert("❌ No se pudo eliminar");
-        }
+        parcelasGlobal = parcelas;
+        parcelas.forEach(parcela => {
+          const option = document.createElement("option");
+          option.value = parcela.nombre;
+          option.textContent = `Parcela - ${parcela.nombre}`;
+          select.appendChild(option);
+        });
+      } catch (err) {
+        console.error("Error cargando parcelas:", err);
       }
     }
 
-    function iniciarMapa(id, lat, lon) {
-      const mapa = L.map(id).setView([lat, lon], 13);
-      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-      }).addTo(mapa);
-      L.marker([lat, lon]).addTo(mapa);
-    }
-
-function renderizarGrafico(id, datos) {
-  const ctx = document.getElementById(id).getContext("2d");
-
-  new Chart(ctx, {
-    type: "line",
-    data: {
-      labels: datos.map(d => d.dia), // Lunes, Martes...
-      datasets: [{
-        label: "Temperatura (°C)",
-        data: datos.map(d => d.temp),
-        borderColor: "#CD8A39",
-        backgroundColor: "rgba(205, 138, 57, 0.2)",
-        tension: 0.4,
-        fill: true,
-        pointRadius: 5,
-        pointBackgroundColor: "#1D2A10",
-        pointBorderColor: "#fff",
-        pointHoverRadius: 7,
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: context => `${context.label}: ${context.parsed.y}°C`
-          }
-        }
-      },
-      scales: {
-        y: {
-          title: {
-            display: true,
-            text: 'Temperatura °C'
-          }
-        }
-      }
-    }
-  });
-}
-
-async function obtenerClima(lat, lon) {
+async function obtenerHistorial(nombre) {
   try {
-    const res = await fetch(`http://localhost:5001/api/climaActual?lat=${lat}&lon=${lon}`);
-    const data = await res.json();
-    return {
-      temp: data.temperatura,
-      desc: data.descripcion,
-      humedad: data.humedad,
-      viento: (data.viento * 3.6).toFixed(1) // convertir m/s a km/h si quieres
-    };
-  } catch {
-    return { temp: "?", desc: "No disponible", humedad: "?", viento: "?" };
-  }
-}
-
-
- async function obtenerPronostico(lat, lon) {
-  try {
-    const res = await fetch(`http://localhost:5001/api/pronostico?lat=${lat}&lon=${lon}`);
-    const data = await res.json();
-
-    const diasSemana = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
-
-    return data.list
-      .filter((_, i) => i % 8 === 0) // 1 por día (cada 3h x 8 = 24h)
-      .slice(0, 5)
-      .map(p => ({
-        dia: diasSemana[new Date(p.dt * 1000).getDay()],
-        temp: Math.round(p.main.temp)
-      }));
-  } catch {
+    const res = await fetch(`http://localhost:5001/api/lecturas/historial/nombre/${encodeURIComponent(nombre)}`);
+    return await res.json();
+  } catch (err) {
+    console.error("Error cargando historial:", err);
     return [];
   }
 }
 
 
-    async function obtenerLecturas(nombre) {
-      try {
-        const res = await fetch(`http://localhost:5001/api/lecturas/historial/nombre/${encodeURIComponent(nombre)}`);
-        const data = await res.json();
-        return data.slice(0, 4);
-      } catch {
-        return [];
-      }
+    function limpiarGraficos() {
+      chartInstances.forEach(chart => chart.destroy());
+      chartInstances = [];
+      document.getElementById("contenedor-graficos").innerHTML = "";
     }
 
-    cargarParcelas();
+    function generarGrafico(datos, tipo, color) {
+  const contenedor = document.getElementById("contenedor-graficos");
+
+  // Limitar a los últimos 10 datos
+  const ultimosDatos = datos.slice(-10);
+
+  // Crear tarjeta visual para el gráfico
+  const tarjeta = document.createElement("div");
+  tarjeta.style.background = "rgba(255, 255, 255, 0.8)";
+  tarjeta.style.borderRadius = "12px";
+  tarjeta.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.2)";
+  tarjeta.style.padding = "16px";
+  tarjeta.style.margin = "20px auto";
+  tarjeta.style.maxWidth = "500px";
+  tarjeta.style.width = "100%";
+
+  const titulo = document.createElement("h4");
+  titulo.textContent = tipo;
+  titulo.style.color = "#1D2A10";
+  titulo.style.textAlign = "center";
+  titulo.style.marginBottom = "10px";
+  tarjeta.appendChild(titulo);
+
+  const canvas = document.createElement("canvas");
+  canvas.width = 400;
+  canvas.height = 250;
+  tarjeta.appendChild(canvas);
+  contenedor.appendChild(tarjeta);
+
+  const labels = ultimosDatos.map(d => d.fecha);
+  const valores = ultimosDatos.map(d => d.valor);
+
+  const chart = new Chart(canvas.getContext("2d"), {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: [{
+        label: tipo,
+        data: valores,
+        borderColor: color,
+        backgroundColor: "rgba(205,138,57,0.2)",
+        pointBackgroundColor: "#1D2A10",
+        fill: true,
+        tension: 0.4
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      animation: { duration: 600 },
+      scales: {
+        y: {
+          ticks: { color: "#1D2A10" }
+        },
+        x: {
+          ticks: { color: "#1D2A10" }
+        }
+      }
+    }
+  });
+
+  chartInstances.push(chart);
+}
+
+
+document.getElementById("selector-parcela").addEventListener("change", async (e) => {
+  const valor = e.target.value;
+  if (!valor) return;
+
+  const nombre = valor;
+  limpiarGraficos();
+  let parcela = parcelasGlobal.find(p => p.nombre === nombre);
+
+  const historial = await obtenerHistorial(nombre);
+
+  // Agrupar por tipo normalizado
+  const tiposMap = new Map();
+
+  historial.forEach(d => {
+    const key = d.tipo.trim().toLowerCase();
+    if (!tiposMap.has(key)) tiposMap.set(key, []);
+    tiposMap.get(key).push(d);
+  });
+
+  [...tiposMap.entries()].forEach(([tipo, datos], index) => {
+    const color = ['#CD8A39', '#1D2A10', '#A4C400', '#E6B800', '#4682B4', '#1DA1F2'][index % 6];
+    const nombreFormateado = tipo.charAt(0).toUpperCase() + tipo.slice(1);
+    generarGrafico(datos, nombreFormateado, color);
+  });
+
+  if (parcela?.puntos?.length) {
+    const { lat, lng } = parcela.puntos[0];
+    await obtenerClimaActual(lat, lng);
+    await obtenerPronostico(lat, lng);
+    mostrarMapa(parcela.puntos);
+  }
+});
+
+
+    obtenerParcelas();
   </script>
+
+<script>
+let parcelasGlobal = [];
+async function obtenerClimaActual(lat, lon) {
+  try {
+    const res = await fetch(`http://localhost:5001/api/climaActual?lat=${lat}&lon=${lon}`);
+    const data = await res.json();
+
+    if (!data.descripcion || !data.icono || !data.temperatura) {
+      console.warn("Datos de clima incompletos:", data);
+      return;
+    }
+
+    const clima = document.getElementById("clima-actual");
+    clima.innerHTML = `
+      <p><strong>Clima actual</strong></p>
+      <p>${data.descripcion}</p>
+      <p><img src="https://openweathermap.org/img/wn/${data.icono}@2x.png" /></p>
+      <p>Temp: ${data.temperatura}°C</p>
+      <p>Humedad: ${data.humedad}%</p>
+      <p>Viento: ${data.viento} m/s</p>
+    `;
+  } catch (err) {
+    console.error("Error obteniendo clima actual:", err);
+  }
+}
+
+  async function obtenerPronostico(lat, lon) {
+    try {
+      const res = await fetch(`http://localhost:5001/api/pronostico?lat=${lat}&lon=${lon}`);
+      const datos = await res.json();
+      const dias = document.getElementById("pronostico-dias");
+      dias.innerHTML = "";
+      const agrupado = {};
+
+      datos.list.forEach(item => {
+        const fecha = item.dt_txt.split(" ")[0];
+        if (!agrupado[fecha]) agrupado[fecha] = [];
+        agrupado[fecha].push(item);
+      });
+
+      Object.entries(agrupado).slice(0, 5).forEach(([fecha, items]) => {
+        const promedio = items.reduce((acc, d) => acc + d.main.temp, 0) / items.length;
+        dias.innerHTML += `
+          <div style="background:#fff; padding:1rem; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.1); text-align:center;">
+            <p><strong>${fecha}</strong></p>
+            <img src="https://openweathermap.org/img/wn/${items[0].weather[0].icon}@2x.png" />
+            <p>${items[0].weather[0].description}</p>
+            <p>${promedio.toFixed(1)} °C</p>
+          </div>`;
+      });
+    } catch (err) {
+      console.error("Error obteniendo pronóstico:", err);
+    }
+  }
+
+  function mostrarMapa(puntos) {
+    const mapaDiv = document.getElementById("mapa-parcela");
+    mapaDiv.innerHTML = "";
+    mapaDiv._leaflet_id = null;
+    const mapa = L.map("mapa-parcela").setView([puntos[0].lat, puntos[0].lng], 16);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(mapa);
+    const coords = puntos.map(p => [p.lat, p.lng]);
+    coords.forEach(coord => {
+      L.marker(coord).addTo(mapa);
+    });
+  }
+
+</script>
+
+  <script>
+    const nombre = localStorage.getItem("nombreUsuario");
+    if (nombre) {
+      document.getElementById("nombre-usuario").textContent = nombre;
+    }
+  </script>
+
 </body>
 </html>

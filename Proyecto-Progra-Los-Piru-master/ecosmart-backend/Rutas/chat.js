@@ -8,12 +8,12 @@ const Chat = require('../modelos/chat');
 // Ruta para guardar un mensaje de chat
 router.post('/', async (req, res) => {
     try {
-        const { correo, pregunta, respuesta } = req.body;
-        if (!correo || !pregunta || !respuesta) {
+        const { correo, chatId, pregunta, respuesta } = req.body;
+        if (!correo || !chatId || !pregunta || !respuesta) {
             return res.status(400).json({ error: 'Faltan datos' });
         }
 
-        const nuevoChat = new Chat({ correo, pregunta, respuesta });
+        const nuevoChat = new Chat({ correo, chatId, pregunta, respuesta });
         await nuevoChat.save();
 
         res.status(201).json(nuevoChat);
@@ -22,23 +22,50 @@ router.post('/', async (req, res) => {
         res.status(500).json({ error: 'Error al guardar el chat' });
     }
 });
-router.get('/chats/:correo', async (req, res) => {
+router.get('/conversacion/:chatId', async (req, res) => {
     try {
-        const { correo } = req.params;
-        const chats = await Chat.find({ correo });
-        res.json(chats);
+        const { chatId } = req.params;
+        const mensajes = await Chat.find({ chatId }).sort({ fecha: 1 });
+        res.json(mensajes);
     } catch (error) {
-        res.status(500).json({ error: 'Error al obtener los chats' });
+        res.status(500).json({ error: 'Error al obtener la conversación' });
     }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:chatId', async (req, res) => {
+    const { chatId } = req.params;
     try {
-        const { id } = req.params;
-        await Chat.findByIdAndDelete(id);
-        res.status(200).json({ message: 'Chat eliminado correctamente' });
+        await Chat.deleteMany({ chatId });
+        res.json({ success: true });
+    } catch (err) {
+        console.error('❌ Error eliminando chat:', err);
+        res.status(500).json({ error: 'Error eliminando chat' });
+    }
+});
+
+// Obtener lista de chats únicos por correo
+router.get('/chats/:correo', async (req, res) => {
+    try {
+        const { correo } = req.params;
+
+        const chats = await Chat.aggregate([
+            { $match: { correo } },
+            {
+                $group: {
+                    _id: "$chatId",
+                    chatId: { $first: "$chatId" },
+                    pregunta: { $first: "$pregunta" },
+                    fecha: { $first: "$fecha" },
+                    _idReal: { $first: "$_id" }
+                }
+            },
+            { $sort: { fecha: -1 } }
+        ]);
+
+        res.json(chats);
     } catch (error) {
-        res.status(500).json({ error: 'Error al eliminar el chat' });
+        console.error(error);
+        res.status(500).json({ error: 'Error al obtener chats' });
     }
 });
 

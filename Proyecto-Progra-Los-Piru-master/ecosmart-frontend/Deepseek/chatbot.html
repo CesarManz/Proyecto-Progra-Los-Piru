@@ -56,12 +56,14 @@
 
   function nuevoChat(nombre = "Chat sin título") {
     const chats = getChats();
-    const id = `chat-${Date.now()}`;
-    const nuevo = { id, nombre, mensajes: [] };
+    const chatId = `chat-${Date.now()}`;
+    const nuevo = { id: chatId, chatId, nombre, mensajes: [] };
     chats.push(nuevo);
     saveChats(chats);
+    localStorage.setItem("chatId", chatId);
     cargarListaChats();
-    seleccionarChat(id);
+    seleccionarChat(chatId);
+    return chatId;
   }
 
   async function cargarListaChats() {
@@ -80,13 +82,28 @@
         div.className = 'chat-preview';
         div.innerText = chat.pregunta || 'Chat sin título';
 
-        div.onclick = () => {
-          const mensajes = [
-            { sender: 'user', text: chat.pregunta },
-            { sender: 'bot', text: chat.respuesta }
-          ];
-          mostrarMensajesDesdeServidor(mensajes);
+        div.onclick = async () => {
+          //Se guarda el ID de la conversación actual
+          localStorage.setItem('chatId', chat.chatId);
+          chatActualId = chat.chatId;
+
+          try {
+            //Se le pide al backend todos los mensajes del chatId
+            const res = await fetch(`http://localhost:5001/api/chat/conversacion/${chat.chatId}`);
+            const mensajes = await res.json();
+
+            //Se transforma el array de {pregunta, respuesta} en formato [{user}, {bot}, ...]
+            const formateados = mensajes.map(m => [
+              { sender: 'user', text: m.pregunta },
+              { sender: 'bot', text: m.respuesta }
+            ]).flat();
+
+            mostrarMensajesDesdeServidor(formateados);
+          } catch (err) {
+            console.error('❌ Error al cargar conversación:', err);
+          }
         };
+
 
         const eliminar = document.createElement('button');
         eliminar.className = 'eliminar';
@@ -97,9 +114,13 @@
           if (!confirmacion) return;
 
           try {
-            await fetch(`http://localhost:5001/api/chat/${chat._id}`, {
+            await fetch(`http://localhost:5001/api/chat/${chat.chatId}`, {
               method: 'DELETE'
             });
+            if (localStorage.getItem('chatId') === chat.chatId) {
+              localStorage.removeItem('chatId');
+              chatActualId = null;
+            }
             cargarListaChats();
           } catch (err) {
             console.error('❌ Error al eliminar chat:', err);
@@ -119,7 +140,6 @@
     contenedor.innerHTML = '';
     mensajes.forEach(msg => appendMessage(msg.sender, msg.text));
   }
-
 
   function seleccionarChat(id) {
     chatActualId = id;
@@ -146,16 +166,26 @@
     }
   }
 
+  async function askDeepSeek(historial) {
+    const systemPrompt = `You are a helpful and concise assistant. Do not roleplay or simulate conversations. Only respond to the user's last message.`;
 
-  async function askDeepSeek(prompt) {
+    const prompt = `${systemPrompt}\n\n${historial}\nAssistant:`;
+
     const response = await fetch('http://127.0.0.1:5000/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'deepseek-coder', prompt: prompt, stream: false })
+      body: JSON.stringify({
+        model: 'deepseek-coder',
+        prompt: prompt,
+        stream: false
+      })
     });
+
     const data = await response.json();
     return data.response;
   }
+
+
 
   function appendMessage(sender, text) {
     const chat = document.getElementById('chatMessages');
@@ -170,10 +200,11 @@
     const userText = input.value.trim();
     if (userText === '') return;
 
-    // Crear un nuevo chat si no hay uno activo
+    //Crea un nuevo chat si no hay uno activo
     if (!chatActualId) {
       const nombre = userText.length > 30 ? userText.slice(0, 30) + '...' : userText;
-      nuevoChat(nombre);
+      chatActualId = await nuevoChat(nombre);
+
     }
 
     appendMessage('user', userText);
@@ -182,18 +213,22 @@
     const chatBox = document.getElementById('chatMessages');
     const loadingBubble = document.createElement('div');
     loadingBubble.className = 'msg bot';
-    loadingBubble.innerHTML = `
-    <span class="typing-dots">
-      <span></span><span></span><span></span>
-    </span>
-  `;
+    loadingBubble.innerHTML = `<span class="typing-dots"><span></span><span></span><span></span></span>`;
     chatBox.appendChild(loadingBubble);
 
-    const botResponse = await askDeepSeek(userText);
 
-    // Guardar en localStorage
     const chats = getChats();
     const chat = chats.find(c => c.id === chatActualId);
+
+    //Se construye el historial solo con texto plano, sin etiquetas ni nombres
+    let historialTexto = '';
+    chat.mensajes.forEach(msg => {
+      historialTexto += `${msg.text}\n`;
+    });
+    historialTexto += `${userText}\n`;
+
+    //Se llama a la IA DeepSeek con el historial simplificado en vez de un prompt
+    const botResponse = await askDeepSeek(historialTexto);
 
     if (!chat.nombre || chat.nombre === 'Chat sin título') {
       chat.nombre = userText.length > 30 ? userText.slice(0, 30) + '...' : userText;
@@ -204,19 +239,20 @@
     saveChats(chats);
     cargarListaChats();
 
-    // Mostrar respuesta
+    //Mostrar respuesta
     loadingBubble.innerHTML = botResponse;
 
-    // 🔥 NUEVO: Guardar en MongoDB
+    //Guarda el chat correspondiente al correo en MongoDB
     const correo = localStorage.getItem('correo');
-    if (correo) {
+    const chatId = localStorage.getItem('chatId');
+
+    if (correo && chatId) {
       fetch('http://localhost:5001/api/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           correo: correo,
+          chatId: chatId,
           pregunta: userText,
           respuesta: botResponse
         })
@@ -225,10 +261,9 @@
               .then(data => console.log('✅ Chat guardado en MongoDB:', data))
               .catch(err => console.error('❌ Error al guardar el chat:', err));
     } else {
-      console.warn('⚠️ No se encontró correo en localStorage');
+      console.warn('⚠️ No se encontró correo o chatId en localStorage');
     }
   }
-
 
   window.onload = () => {
     cargarListaChats();
@@ -243,17 +278,6 @@
   };
 </script>
 
-
-<!--
-  const chats = {
-    id: "1234",
-    nombre: "",
-    mensajes: [
-      { sender: "user", text: "Hola" },
-      { sender: "bot", text: "¡Hola, humano vegetal!" }
-    ]
-  }
--->
 
 </body>
 </html>
