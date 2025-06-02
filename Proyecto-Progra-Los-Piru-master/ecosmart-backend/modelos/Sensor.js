@@ -1,12 +1,9 @@
 const mongoose = require('mongoose');
 
 const sensorSchema = new mongoose.Schema({
-  sueloHumedad: Number,
-  nitrogeno: Number,
-  fosforo: Number,
-  potasio: Number,
-  vitaminaA: Number,
-  vitaminaC: Number,
+  TemperaturaDelSuelo: Number,
+  HumedadDelSuelo: Number,
+  nivelDeNutrientes: Number,
   phSuelo: Number,
   fecha: {
     type: Date,

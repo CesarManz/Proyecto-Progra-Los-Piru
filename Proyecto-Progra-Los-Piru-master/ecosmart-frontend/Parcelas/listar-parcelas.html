@@ -101,17 +101,14 @@
 </head>
 <body>
 <header>
-   <div class="logo">
+    <div class="logo">
         <div class="item Logo" onclick="window.location.href='../Principales/Pagina-Principal.html'">
             <img src="../Public/EcoSmart2.png" alt="Logo"/>
         </div>
     </div>
 
     <nav id="menu">
-            <a href="../Principales/Pagina-Principal.html">Inicio</a>
-            <a href="../Parcelas/listar-parcelas-FINAL-INTEGRADO.html">Parcelas</a>
-            <a href="../Deepseek/consultas.html">consultas</a>
-        
+        <!-- Links se insertan dinámicamente según el rol -->
         <input class="busqueda" type="search" placeholder="Buscar">
     </nav>
 
@@ -122,22 +119,23 @@
             <a href="#" onclick="logout()">Cerrar sesión</a>
         </div>
     </div>
-    </header>
+</header>
 
-  <main>
+<main>
     <h2>Selecciona una Parcela</h2>
     <select id="selector-parcela">
       <option value="">Seleccione una parcela</option>
     </select>
-    <div style="margin-top: 10px; display: flex; gap: 20px;">
+  <div id="seccion-parcela" style="display: none;">
+  <div style="margin-top: 10px; display: flex; gap: 20px;">
   <button onclick="window.location.href='../parcelas/crear-parcela.html'">➕ Crear parcela</button>
   <button onclick="redirigirEditar()">✏️ Editar parcela</button>
-
+  <button onclick="eliminarParcela()">🗑️ Eliminar parcela</button>
 </div>
 
 
-    <div class="contenedor-secciones">
-<section class="tarjeta">
+  <div class="contenedor-secciones">
+  <section class="tarjeta">
       <h2>Clima Actual</h2>
       <div id="clima-actual" style="text-align: center;"></div>
       <h2>Pronóstico</h2>
@@ -145,15 +143,14 @@
       <h2>Ubicación de la Parcela</h2>
       <div id="mapa-parcela" style="height: 400px; border-radius: 12px;"></div>
     </section>
-</div>
+  </div> 
   <div class="tarjeta">
   <h2 class="titulo-seccion">Gráficos de Sensores</h2>
   <div id="contenedor-graficos"></div>
+  </div>
 </div>
-
 </main>
-
-  <script>
+<script>
   function redirigirEditar() {
     const select = document.getElementById("selector-parcela");
     const nombreSeleccionado = select.value;
@@ -166,9 +163,69 @@
     }
   }
 </script>
+<script>
+    function toggleMenu(event) {
+        event.stopPropagation();
+        const menu = document.getElementById('menuPerfil');
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
 
-  <script>
-    parcelasGlobal = [];
+    document.addEventListener('click', function () {
+        const menu = document.getElementById('menuPerfil');
+        menu.style.display = 'none';
+    });
+
+    function logout() {
+        localStorage.clear();
+        window.location.href = '../Registro-Login/Login.html';
+    }
+
+    // Lógica para personalizar según el trabajo
+    const trabajo = localStorage.getItem('trabajo');
+    const correo = localStorage.getItem('correo');
+    const menu = document.getElementById('menu');
+
+    if (!trabajo || !correo) {
+        window.location.href = '../Registro-Login/Login.html';
+    }
+
+    const linksPorRol = {
+        tecnico: [
+            { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
+            { texto: "Parcelas", href: "../parcelas/listar-parcelas.html" },
+            { texto: "Administrar usuarios", href: "../Administrar-Usuarios/Administrar-usuarios.html" },
+            { texto: "Preguntas", href: "../Deepseek/consultas.html" },
+        ],
+        agronomo: [
+            { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
+            { texto: "Parcelas", href: "../parcelas/listar-parcelas.html" },
+            { texto: "Preguntas", href: "../Deepseek/consultas.html" },
+            { texto: "Inventario", href: "../Inventario/Inventario.html"},
+            { texto: "Asignar tareas", href: "../Tareas/Asignar-tareas.html"}
+        ],
+        agricultor: [
+            { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
+            { texto: "Parcelas", href: "../parcelas/listar-parcelas.html" },
+            { texto: "Preguntas", href: "../Deepseek/consultas.html" },
+        ]
+    };
+
+    const enlaces = linksPorRol[trabajo];
+
+    if (enlaces) {
+        enlaces.forEach(link => {
+            const a = document.createElement('a');
+            a.href = link.href;
+            a.textContent = link.texto;
+            menu.insertBefore(a, menu.querySelector('.busqueda'));
+        });
+    } else {
+        alert('Rol desconocido');
+    }
+
+</script>
+<script>
+    let parcelasGlobal = [];
     let chartInstances = [];
 
     async function obtenerParcelas() {
@@ -176,7 +233,7 @@
         const res = await fetch("http://localhost:5001/api/parcelas");
         const parcelas = await res.json();
         const select = document.getElementById("selector-parcela");
-
+       select.innerHTML = '<option value="">Seleccione una parcela</option>';
         parcelasGlobal = parcelas;
         parcelas.forEach(parcela => {
           const option = document.createElement("option");
@@ -200,13 +257,13 @@ async function obtenerHistorial(nombre) {
 }
 
 
-    function limpiarGraficos() {
+  function limpiarGraficos() {
       chartInstances.forEach(chart => chart.destroy());
       chartInstances = [];
       document.getElementById("contenedor-graficos").innerHTML = "";
     }
 
-    function generarGrafico(datos, tipo, color) {
+  function generarGrafico(datos, tipo, color) {
   const contenedor = document.getElementById("contenedor-graficos");
 
   // Limitar a los últimos 10 datos
@@ -276,12 +333,15 @@ document.getElementById("selector-parcela").addEventListener("change", async (e)
   if (!valor) return;
 
   const nombre = valor;
-  limpiarGraficos();
+
   let parcela = parcelasGlobal.find(p => p.nombre === nombre);
+  if (!parcela) return;
+
+  document.getElementById("seccion-parcela").style.display = "block";
+    limpiarGraficos();
 
   const historial = await obtenerHistorial(nombre);
-
-  // Agrupar por tipo normalizado
+    // Agrupar por tipo normalizado
   const tiposMap = new Map();
 
   historial.forEach(d => {
@@ -304,12 +364,8 @@ document.getElementById("selector-parcela").addEventListener("change", async (e)
   }
 });
 
-
-    obtenerParcelas();
-  </script>
-
+</script>
 <script>
-let parcelasGlobal = [];
 async function obtenerClimaActual(lat, lon) {
   try {
     const res = await fetch(`http://localhost:5001/api/climaActual?lat=${lat}&lon=${lon}`);
@@ -376,13 +432,59 @@ async function obtenerClimaActual(lat, lon) {
   }
 
 </script>
-
-  <script>
+<script>
     const nombre = localStorage.getItem("nombreUsuario");
     if (nombre) {
       document.getElementById("nombre-usuario").textContent = nombre;
     }
-  </script>
+</script>
+<script>
+async function mostrarGraficos() {
+  const select = document.getElementById("selector-parcela");
+  const nombre = select.value;
+  if (!nombre) {
+    alert("Selecciona una parcela primero");
+    return;
+  }
+}
+</script>
+<script>
+  function eliminarParcela() {
+    const select = document.getElementById("selector-parcela");
+    const nombreSeleccionado = select.value;
+    if (!nombreSeleccionado) {
+      alert("Selecciona una parcela válida.");
+      return;
+    }
+
+    const parcela = parcelasGlobal.find(p => p.nombre === nombreSeleccionado);
+    if (!parcela || !parcela._id) {
+      alert("No se encontró la parcela.");
+      return;
+    }
+
+    if (!confirm(`¿Estás seguro de eliminar la parcela "${nombreSeleccionado}"?`)) return;
+
+    fetch(`http://localhost:5001/api/parcelas/${parcela._id}`, {
+      method: "DELETE"
+    })
+    .then(res => res.json())
+    .then(data => {
+      alert("✅ Parcela eliminada con éxito.");
+      location.reload();
+    })
+    .catch(err => {
+      console.error("Error al eliminar:", err);
+      alert("❌ Error al eliminar la parcela.");
+    });
+  }
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    obtenerParcelas();
+  });
+</script>
+
 
 </body>
 </html>
