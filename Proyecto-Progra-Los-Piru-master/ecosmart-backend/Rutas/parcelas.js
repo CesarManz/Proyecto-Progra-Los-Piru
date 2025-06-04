@@ -47,17 +47,35 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// ✅ NUEVA RUTA: Editar parcela
+
+// Editar parcela con actualización segura de sensores
 router.put('/:id', async (req, res) => {
   try {
-    const actualizada = await Parcela.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const datos = {
+      nombre: req.body.nombre,
+      coordenadas: req.body.coordenadas || {},
+      sensores: Array.isArray(req.body.sensores) ? req.body.sensores : []
+    };
+
+    const actualizada = await Parcela.findByIdAndUpdate(req.params.id, datos, { new: true });
+
     if (!actualizada) {
       return res.status(404).json({ mensaje: 'Parcela no encontrada' });
     }
+
+    const Sensor = require('../modelos/Sensor'); // Asegúrate de importar tu modelo
+    await Sensor.deleteMany({
+      parcelaId: req.params.id,
+      tipo: { $nin: datos.sensores }
+    });
+
     res.json(actualizada);
   } catch (error) {
+    console.error("Error actualizando parcela:", error);
     res.status(500).json({ mensaje: 'Error al actualizar la parcela' });
   }
 });
+
+
 
 module.exports = router;

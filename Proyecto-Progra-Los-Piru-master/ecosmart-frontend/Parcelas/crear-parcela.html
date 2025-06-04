@@ -7,93 +7,163 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <style>
-    body {
-      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), #c1d36b), url("../Public/Fondo.png");
-      background-size: cover;
-      background-attachment: fixed;
-      font-family: 'Segoe UI', sans-serif;
-      color: #1D2A10;
-      margin: 0;
-    }
+  body {
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), #c1d36b), url("../Public/Fondo.png");
+    background-size: cover;
+    background-attachment: fixed;
+    font-family: 'Segoe UI', sans-serif;
+    color: #1D2A10;
+    margin: 0;
+  }
 
-    main {
-      max-width: 700px;
-      margin: 2rem auto;
-      background: rgba(205, 138, 57, 0.9);
-      padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 12px 24px rgba(0,0,0,0.2);
-    }
+  main {
+    max-width: 700px;
+    margin: 2rem auto;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+  }
 
-    h2 {
-      text-align: center;
-      font-size: 1.8rem;
-      margin-bottom: 1.5rem;
-    }
+  h2 {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: #1D2A10;
+  }
 
-    form label {
-      display: block;
-      margin-top: 1rem;
-      font-weight: 600;
-    }
+  form label {
+    display: block;
+    margin-top: 1rem;
+    font-weight: 600;
+  }
 
-    form input, form select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 6px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1rem;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    }
+  form input,
+  form select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  }
 
-    .error-msg {
-      color: red;
-      font-size: 0.9rem;
-      margin-top: 4px;
-      display: none;
-    }
+  .sensor-checkboxes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+  }
 
-    button {
-      margin-top: 2rem;
-      width: 100%;
-      background-color: #1D2A10;
-      color: white;
-      border: none;
-      padding: 12px;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
+  .sensor-checkboxes label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.8);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 1rem;
+    color: #1D2A10;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
 
-    button:hover {
-      background-color: #CD8A39;
-      color: #1D2A10;
-    }
+  .sensor-checkboxes input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #1D2A10;
+    cursor: pointer;
+  }
 
-    #mapa {
-      height: 400px;
-      border: 2px solid #1D2A10;
-      border-radius: 10px;
-      margin-top: 0.5rem;
-    }
-  </style>
+  .error-msg {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 4px;
+    display: none;
+  }
+
+  button {
+    margin-top: 2rem;
+    width: 100%;
+    background-color: #1D2A10;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  button:hover {
+    background-color: #CD8A39;
+    color: #1D2A10;
+  }
+
+  #mapa {
+    height: 400px;
+    border: 2px solid #1D2A10;
+    border-radius: 10px;
+    margin-top: 0.5rem;
+  }
+
+  nav a {
+    color: #CD8A39;
+    text-decoration: none;
+    font-weight: bold;
+    margin: 0 10px;
+  }
+  .sensor-checkboxes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.sensor-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.8);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 1rem;
+  color: #1D2A10;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.sensor-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #1D2A10;
+  cursor: pointer;
+}
+
+</style>
+
 </head>
 <body>
-  <header>
+<header>
     <div class="logo">
-      <img class="ecosmart" src="../Public/EcoSmart2.png" />
+        <div class="item Logo" onclick="window.location.href='../Principales/Pagina-Principal.html'">
+            <img src="../Public/EcoSmart2.png" alt="Logo"/>
+        </div>
     </div>
-    <nav>
-      <a href="../Principales/Pagina-Principal.html">Pagina principal</a>
-      <a href="listar-parcelas.html">Parcelas</a>
-      <a href="#">Inventario</a>
-      <a href="../consultas.html">Preguntas</a>
-      <input class="busqueda" type="search" placeholder="Buscar" />
+
+    <nav id="menu">
+        <!-- Links se insertan dinámicamente según el rol -->
+        <input class="busqueda" type="search" placeholder="Buscar">
     </nav>
-  </header>
+
+    <div class="Fondo-fo-perfil" onclick="toggleMenu(event)">
+        <img class="fo-perfil" src="../Public/user.png" alt="Foto de perfil">
+        <div id="menuPerfil" class="menu-perfil">
+            <a href="../Perfil/Perfil.html">Perfil</a>
+            <a href="#" onclick="logout()">Cerrar sesión</a>
+        </div>
+    </div>
+</header>
 
   <main>
     <h2>Crear Nueva Parcela</h2>
@@ -112,21 +182,94 @@
       <label>Longitud:</label>
       <input type="text" id="lon" readonly />
 
-      <label>Sensores disponibles:</label>
-      <select id="sensores" multiple>
-        <option value="Humedad del suelo">💧 Humedad del suelo</option>
-        <option value="pH">🧪 pH del suelo</option>
-        <option value="Nivel de nutrientes">🌱 Nivel de nutrientes</option>
-        <option value="Temperatura del suelo">🌡️ Temperatura del suelo</option>
-        <option value="Humedad ambiente">💧 Humedad ambiente</option>
-      </select>
+      <label style="margin-bottom: 10px;">Sensores disponibles:</label>
+<div id="sensores-checks" class="sensor-checkboxes">
+ <div class="sensor-row">
+    <input type="checkbox" value="Humedad del suelo" />
+    <span>💧 Humedad del suelo</span>
+  </div>
+  <div class="sensor-row">
+    <input type="checkbox" value="pH" />
+    <span>🧪 pH del suelo</span>
+  </div>
+  <div class="sensor-row">
+    <input type="checkbox" value="Nivel de nutrientes" />
+    <span>🌱 Nivel de nutrientes</span>
+  </div>
+  <div class="sensor-row">
+    <input type="checkbox" value="Temperatura del suelo" />
+    <span>🌡️ Temperatura del suelo</span>
+  </div>
+</div>
+
+
       <div id="errorSensores" class="error-msg">* Selecciona al menos un sensor</div>
 
       <button type="submit">Crear Parcela</button>
     </form>
   </main>
+<script>
+    function toggleMenu(event) {
+        event.stopPropagation();
+        const menu = document.getElementById('menuPerfil');
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
 
-  <script>
+    document.addEventListener('click', function () {
+        const menu = document.getElementById('menuPerfil');
+        menu.style.display = 'none';
+    });
+
+    function logout() {
+        localStorage.clear();
+        window.location.href = '../Registro-Login/Login.html';
+    }
+
+    // Lógica para personalizar según el trabajo
+    const trabajo = localStorage.getItem('trabajo');
+    const correo = localStorage.getItem('correo');
+    const menu = document.getElementById('menu');
+
+    if (!trabajo || !correo) {
+        window.location.href = '../Registro-Login/Login.html';
+    }
+
+    const linksPorRol = {
+        tecnico: [
+            { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
+            { texto: "Parcelas", href: "../parcelas/listar-parcelas.html" },
+            { texto: "Administrar usuarios", href: "../Administrar-Usuarios/Administrar-usuarios.html" },
+            { texto: "Preguntas", href: "../Deepseek/consultas.html" },
+        ],
+        agronomo: [
+            { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
+            { texto: "Parcelas", href: "../parcelas/listar-parcelas.html" },
+            { texto: "Preguntas", href: "../Deepseek/consultas.html" },
+            { texto: "Inventario", href: "../Inventario/Inventario.html"},
+            { texto: "Asignar tareas", href: "../Tareas/Asignar-tareas.html"}
+        ],
+        agricultor: [
+            { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
+            { texto: "Parcelas", href: "../parcelas/listar-parcelas.html" },
+            { texto: "Preguntas", href: "../Deepseek/consultas.html" },
+        ]
+    };
+
+    const enlaces = linksPorRol[trabajo];
+
+    if (enlaces) {
+        enlaces.forEach(link => {
+            const a = document.createElement('a');
+            a.href = link.href;
+            a.textContent = link.texto;
+            menu.insertBefore(a, menu.querySelector('.busqueda'));
+        });
+    } else {
+        alert('Rol desconocido');
+    }
+
+</script>
+<script>
     const map = L.map("mapa").setView([-34.6, -71.2], 14);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
 
@@ -156,7 +299,7 @@
       const nombre = document.getElementById("nombre").value.trim();
       const lat = parseFloat(document.getElementById("lat").value);
       const lon = parseFloat(document.getElementById("lon").value);
-      const sensores = Array.from(document.getElementById("sensores").selectedOptions).map(opt => opt.value);
+      const sensores = Array.from(document.querySelectorAll('#sensores-checks input:checked')).map(cb => cb.value);
 
       // Validaciones
       document.getElementById("errorNombre").style.display = nombre ? "none" : "block";
@@ -191,6 +334,6 @@
         alert("❌ Error al crear la parcela");
       }
     });
-  </script>
+</script>
 </body>
 </html>
