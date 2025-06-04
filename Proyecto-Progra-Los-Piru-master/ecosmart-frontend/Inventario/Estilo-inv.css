@@ -11,19 +11,93 @@ body {
     background-attachment: fixed;
     font-family: Arial, sans-serif;
     color: white;
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-size: cover;
+    background-color: #595D2B;
+    color: #1D2A10;
 }
+
 .ecosmart{
     width: 150px;
     height: auto;
 }
 header {
     background-color: #1D2A10;
-    padding: 20px 20px;
+    padding: 10px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     color: #CD8A39;
-    height: 70px;
+    height: 50px;
+}
+.Fondo-fo-perfil{
+    background: rgba(205, 138, 57, 0.3);
+    text-align: right;
+    border-radius: 50%;
+}
+
+.Fondo-fo-perfil {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+}
+
+.fo-perfil{
+    margin-top: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.menu-perfil {
+    display: none;
+    position: absolute;
+    top: 60px;
+    right: 0;
+    background: rgba(205, 138, 57, 0.5);
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    width: 150px;
+    z-index: 100;
+}
+
+.menu-perfil a {
+    display: block;
+    padding: 10px;
+    color: #333;
+    text-decoration: none;
+}
+
+.menu-perfil a:hover {
+    background: rgba(205, 138, 57, 0.9);
+    border-radius: 10px;
+}
+nav a {
+    color: #CD8A39;
+    text-decoration: none;
+    font-weight: bold;
+    margin: 0 10px;
+}
+.busqueda {
+    background-color: #CD8A39;
+    padding: 5px;
+    border: none;
+    border-radius: 4px;
+}
+.Cuadrado-transparente {
+    background: rgba(205, 138, 57, 0.4);
+    margin-right: auto;
+    padding: 10px;
+    width: 70%;
+    border-radius: 12px;
+    margin-left: 50px;
+    margin-top: 50px;
+    text-align: center;
+    color: #CD8A39;
 }
 .item {
     display: flex;
