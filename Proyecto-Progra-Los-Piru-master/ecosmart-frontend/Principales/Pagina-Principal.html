@@ -124,6 +124,7 @@
             const response = await fetch('http://localhost:5001/api/parcelas'); // Ajusta la ruta según tu backend
             const parcelas = await response.json();
 
+
             const container = document.getElementById('parcelasContainer');
             container.innerHTML = '';
 
