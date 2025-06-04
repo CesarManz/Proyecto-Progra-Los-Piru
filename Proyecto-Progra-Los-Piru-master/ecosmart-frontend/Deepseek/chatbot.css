@@ -108,7 +108,6 @@ CSS Principal
     gap: 15px;
 }
 
-
 /* Estilo de mensaje general */
 .msg {
     max-width: 75%;
@@ -138,6 +137,44 @@ CSS Principal
     border-bottom-left-radius: 0;
     height: auto;
     width: auto;
+}
+
+/* Preguntas Frecuentes */
+.fastQuestions {
+    bottom: 50px;
+    left: 45%;
+    width: 30%;
+    max-width: none;
+    height: 100px;
+    margin-left: 35%;
+    margin-bottom: 1%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    border: 0.2px solid #3B3D1C;
+    background-color: #595D2B;
+    border-radius: 20px;
+    z-index: 100;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+.faq-grid {
+    gap: 30px;
+    margin-top: 20px;
+}
+.faq-item {
+    color: #1D2A10;
+    font-size: 10px;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: left;
+}
+.Question{
+    cursor: pointer;
+}
+.Question:hover{
+    color: #c95211;
+    text-decoration: underline;
 }
 
 /* Input del chat */

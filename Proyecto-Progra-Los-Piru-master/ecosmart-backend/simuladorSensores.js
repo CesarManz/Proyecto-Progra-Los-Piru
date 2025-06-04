@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const nodemailer = require("nodemailer");
 const Parcela = require('./modelos/Parcela');
 const Lectura = require('./modelos/Lectura');
 
@@ -11,8 +12,16 @@ mongoose.connect('mongodb+srv://xAshura3x:omWSvOUHLYUR0ttE@cluster0.vlf79yu.mong
   })
   .catch(err => console.error("❌ Error de conexión:", err.message));
 
-// Función para generar un valor según el tipo de sensor
-function generarValor(tipo) {
+let umbralMinimotemsuelo=18;
+let umbralMaximotemsuelo=28;
+let umbralMinimoHumedadsuelo=50;
+let umbralMaximoHumedadsuelo=70;
+let umbralMinimoPhsuelo=5.5;
+let umbralMaximoPhsuelo=7.5;
+let umbralMinimoNivelnutrientes=200;
+let umbralMaximoNivelnutrientes=400;
+
+  function generarValor(tipo) {
   switch (tipo.toLowerCase()) {
     case 'temperatura del suelo':
       return +(18 + Math.random() * 10).toFixed(1); // 18–28 °C
@@ -27,13 +36,65 @@ function generarValor(tipo) {
     case 'nivel de nutrientes':
       return Math.floor(200 + Math.random() * 200); // 200–400 ppm
 
-    case 'temperatura ambiente':
-      console.warn("⚠️ 'Temperatura Ambiente' debe venir de OpenWeatherMap. No se simula.");
-      return null;
 
     default:
       console.warn(`⚠️ Sensor desconocido: '${tipo}' no será simulado.`);
       return null;
+  }
+}
+function alertasPorCorreo(parcela, tipo, valor) {
+  const transporter = nodemailer.createTransport({
+    service: "Gmail",
+    auth: {
+      user: "ecosmartoficial@gmail.com",
+      pass: "mvut dcar rdpe zbnd"
+    }
+  });
+
+  const mailOptions = {
+    from: "ecosmartoficial@gmail.com",
+    to: "cesarmanzano984@gmail.com",
+    subject: `Alerta: ${tipo} en ${parcela.nombre}`,
+    text: `El valor de ${tipo} ha cambiado a ${valor} en la parcela ${parcela.nombre}.`
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      return console.error("❌ Error al enviar correo:", error.message);
+    }
+    console.log("✅ Correo enviado:", info.response);
+  });
+}
+
+function VerificarUmbrales(parcela, tipo, valor) {
+  switch (tipo.toLowerCase()) {
+    case 'temperatura del suelo':
+      if (valor < umbralMinimotemsuelo || valor > umbralMaximotemsuelo) {
+        alertasPorCorreo(parcela, tipo, valor);
+      }
+      break;
+
+    case 'humedad del suelo':
+      if (valor < umbralMinimoHumedadsuelo || valor > umbralMaximoHumedadsuelo) {
+        alertasPorCorreo(parcela, tipo, valor);
+      }
+      break;
+
+    case 'ph':
+    case 'ph del suelo':
+      if (valor < umbralMinimoPhsuelo || valor > umbralMaximoPhsuelo) {
+        alertasPorCorreo(parcela, tipo, valor);
+      }
+      break;
+
+    case 'nivel de nutrientes':
+      if (valor < umbralMinimoNivelnutrientes || valor > umbralMaximoNivelnutrientes) {
+        alertasPorCorreo(parcela, tipo, valor);
+      }
+      break;
+
+    default:
+      console.warn(`⚠️ Sensor desconocido: '${tipo}' no se verificará.`);
   }
 }
 
@@ -55,6 +116,8 @@ async function simularLecturas() {
           valor,
           fecha: new Date()
         });
+        VerificarUmbrales(p, tipo, valor); // Verificar umbrales antes de guardar
+        alertasPorCorreo(p, tipo, valor);
 
         await nuevaLectura.save();
         console.log(`📡 ${tipo} en ${p.nombre}: ${valor}`);
