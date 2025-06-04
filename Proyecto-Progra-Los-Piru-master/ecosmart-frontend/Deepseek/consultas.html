@@ -11,12 +11,10 @@
   <div class="logo">
     <img class="ecosmart" src="../Public/EcoSmart2.png" alt="Logo Ecosmart">
   </div>
-
   <nav id="menu">
     <!-- Links se insertan dinámicamente según el rol -->
     <input class="busqueda" type="search" placeholder="Buscar">
   </nav>
-
   <div class="Fondo-fo-perfil" onclick="toggleMenu(event)">
     <img class="fo-perfil" src="../Public/user.png" alt="Foto de perfil">
     <div id="menuPerfil" class="menu-perfil">
@@ -29,23 +27,41 @@
 <div class="faq-container">
   <h2>Preguntas Frecuentes</h2>
   <div class="faq-grid">
-    <div class="faq-item">
+        <div class="faq-item">
+          <div class="inputAsk" onclick="sendMessage('¿Qué factores afectan el rendimiento de un cultivo?')">
+            <img src="../Public/planta.png" alt="icono planta" />
+            <h3 class="Question">¿Qué factores afectan el rendimiento de un cultivo?</h3>
+            <p>El clima, tipo de suelo, manejo agronómico, riego, nutrición y control de plagas son los factores principales.</p>
+          </div>
+        </div>
 
-      <h3><img src="../Public/planta.png"><br>¿Qué factores afectan el rendimiento de un cultivo?</h3>
-      <p>El clima, tipo de suelo, manejo agronómico, riego, nutrición y control de plagas son los factores principales.</p>
+        <div class="faq-item">
+          <div class="inputAsk" onclick="sendMessage('¿Qué enfermedades y plagas pueden afectar los cultivos?')">
+            <img src="../Public/planta (1).png" alt="icono planta" />
+            <h3 class="Question">¿Qué enfermedades y plagas pueden afectar los cultivos?</h3>
+            <p>Cada cultivo tiene plagas y enfermedades específicas. Se debe vigilar hongos, insectos y virus, y aplicar manejo integrado.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="inputAsk" onclick="sendMessage('¿Qué tan importante es la rotación de cultivos?')">
+            <img src="../Public/planta.png" alt="icono planta" />
+            <h3 class="Question">¿Qué tan importante es la rotación de cultivos?</h3>
+            <p>Muy importante. Mejora la salud del suelo, reduce enfermedades y aumenta la fertilidad del terreno.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="inputAsk" onclick="sendMessage('¿Qué tipo de suelo es el más adecuado para cultivar?')">
+            <img src="../Public/planta (1).png" alt="icono planta" />
+            <h3 class="Question">¿Qué tipo de suelo es el más adecuado para cultivar?</h3>
+            <p>Suelos fértiles, bien drenados y con materia orgánica. El pH ideal varía, pero suele ser entre 6 y 7.</p>
+          </div>
+        </div>
+
+      </div>
     </div>
-    <div class="faq-item">
-      <h3><img src="../Public/planta%20(1).png"><br>¿Qué enfermedades y plagas pueden afectar los cultivos?</h3>
-      <p>Cada cultivo tiene plagas y enfermedades específicas. Se debe vigilar hongos, insectos y virus, y aplicar manejo integrado.</p>
-    </div>
-    <div class="faq-item">
-      <h3><img src="../Public/planta.png"><br>¿Qué tan importante es la rotación de cultivos?</h3>
-      <p>Muy importante. Mejora la salud del suelo, reduce enfermedades y aumenta la fertilidad del terreno.</p>
-    </div>
-    <div class="faq-item">
-      <h3><img src="../Public/planta%20(1).png"><br>¿Qué tipo de suelo es el más adecuado para cultivar?</h3>
-      <p>Suelos fértiles, bien drenados y con materia orgánica. El pH ideal varía, pero suele ser entre 6 y 7.</p>
-    </div>
+
   </div>
 </div>
 
@@ -70,7 +86,7 @@
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'deepseek-coder',
+        model: 'tinyllama',
         prompt: prompt,
         stream: false
       })
@@ -88,32 +104,33 @@
     chat.appendChild(msg);
   }
 
-async function sendMessage() {
+  async function sendMessage(questionText = '') {
     const input = document.getElementById('chatInput');
-    const userText = input.value.trim();
+    const chat = document.getElementById('chatMessages');
+
+    // Determina si se envía una pregunta del usuario o una FAQ
+    const userText = questionText || input.value.trim();
     if (userText === '') return;
 
     appendMessage('user', userText);
     input.value = '';
 
+    // Animación de burbuja de carga
+    const loadingBubble = document.createElement('div');
+    loadingBubble.className = 'msg bot';
+    loadingBubble.innerHTML = `
+    <span class="typing-dots">
+      <span></span><span></span><span></span>
+    </span>`;
+    chat.appendChild(loadingBubble);
 
-  const chat = document.getElementById('chatMessages');
-  const loadingBubble = document.createElement('div');
-  loadingBubble.className = 'msg bot';
-  loadingBubble.innerHTML = `
-        <span class="typing-dots">
-            <span></span><span></span><span></span>
-        </span>
-    `;
-  chat.appendChild(loadingBubble);
+    // Obtener respuesta del bot
+    const botResponse = await askDeepSeek(userText);
 
-  // Obtener respuesta real
-  const botResponse = await askDeepSeek(userText);
+    // Reemplaza burbuja de carga por la respuesta
+    loadingBubble.innerHTML = botResponse;
+  }
 
-  // Reemplazar la burbuja de carga con la respuesta real
-  loadingBubble.classList.remove('loading');
-  loadingBubble.innerHTML = botResponse;
-}
 
 </script>
 <script>

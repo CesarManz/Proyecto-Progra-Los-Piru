@@ -28,12 +28,41 @@
 
   </div>
 
-  <div class="chatbot" >
+  <div class="chatbot">
     <div class="chat-header">
       <img class="deepseeklogo" src="../Public/deepseeklogo.png"></img>
     </div>
 
     <div class="chat-messages" id="chatMessages"></div>
+
+    <div class="fastQuestions">
+          <div class="faq-item">
+            <div class="inputAsk" onclick="sendMessage('¿Qué factores afectan el rendimiento de un cultivo?')">
+              <h3 class="Question">¿Qué factores afectan el rendimiento de un cultivo?</h3>
+            </div>
+          </div>
+      <br>
+          <div class="faq-item">
+            <div class="inputAsk" onclick="sendMessage('¿Qué enfermedades y plagas pueden afectar los cultivos?')">
+              <h3 class="Question">¿Qué enfermedades y plagas pueden afectar los cultivos?</h3>
+            </div>
+          </div>
+      <br>
+          <div class="faq-item">
+            <div class="inputAsk" onclick="sendMessage('¿Qué tan importante es la rotación de cultivos?')">
+              <h3 class="Question">¿Qué tan importante es la rotación de cultivos?</h3>
+            </div>
+          </div>
+      <br>
+          <div class="faq-item">
+            <div class="inputAsk" onclick="sendMessage('¿Qué tipo de suelo es el más adecuado para cultivar?')">
+              <h3 class="Question">¿Qué tipo de suelo es el más adecuado para cultivar?</h3>
+            </div>
+          </div>
+      <br>
+        </div>
+      </div>
+    </div>
 
     <div class="chat-input">
       <input type="text" id="chatInput" placeholder="Escriba su mensaje">
@@ -45,6 +74,10 @@
 
 <script>
   let chatActualId = null;
+
+  function vanishSquare(){
+
+  }
 
   function getChats() {
     return JSON.parse(localStorage.getItem("chats")) || [];
@@ -175,7 +208,7 @@
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'deepseek-coder',
+        model: 'tinyllama',
         prompt: prompt,
         stream: false
       })
@@ -185,8 +218,6 @@
     return data.response;
   }
 
-
-
   function appendMessage(sender, text) {
     const chat = document.getElementById('chatMessages');
     const msg = document.createElement('div');
@@ -195,20 +226,22 @@
     chat.appendChild(msg);
   }
 
-  async function sendMessage() {
+  async function sendMessage(questionText = '') {
     const input = document.getElementById('chatInput');
-    const userText = input.value.trim();
+    const userText = questionText || input.value.trim();
     if (userText === '') return;
 
-    //Crea un nuevo chat si no hay uno activo
+    // Crea un nuevo chat si no hay uno activo
     if (!chatActualId) {
       const nombre = userText.length > 30 ? userText.slice(0, 30) + '...' : userText;
       chatActualId = await nuevoChat(nombre);
-
     }
 
     appendMessage('user', userText);
-    input.value = '';
+
+    if (!questionText) {
+      input.value = '';
+    }
 
     const chatBox = document.getElementById('chatMessages');
     const loadingBubble = document.createElement('div');
@@ -216,18 +249,16 @@
     loadingBubble.innerHTML = `<span class="typing-dots"><span></span><span></span><span></span></span>`;
     chatBox.appendChild(loadingBubble);
 
-
     const chats = getChats();
     const chat = chats.find(c => c.id === chatActualId);
 
-    //Se construye el historial solo con texto plano, sin etiquetas ni nombres
+    // Historial simplificado
     let historialTexto = '';
     chat.mensajes.forEach(msg => {
       historialTexto += `${msg.text}\n`;
     });
     historialTexto += `${userText}\n`;
 
-    //Se llama a la IA DeepSeek con el historial simplificado en vez de un prompt
     const botResponse = await askDeepSeek(historialTexto);
 
     if (!chat.nombre || chat.nombre === 'Chat sin título') {
@@ -239,10 +270,9 @@
     saveChats(chats);
     cargarListaChats();
 
-    //Mostrar respuesta
     loadingBubble.innerHTML = botResponse;
 
-    //Guarda el chat correspondiente al correo en MongoDB
+    // Guardar en MongoDB si hay correo y chatId
     const correo = localStorage.getItem('correo');
     const chatId = localStorage.getItem('chatId');
 
@@ -264,6 +294,7 @@
       console.warn('⚠️ No se encontró correo o chatId en localStorage');
     }
   }
+
 
   window.onload = () => {
     cargarListaChats();

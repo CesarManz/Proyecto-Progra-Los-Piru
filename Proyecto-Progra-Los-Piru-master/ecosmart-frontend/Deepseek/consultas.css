@@ -249,6 +249,14 @@ nav a {
   display: inline-block;
 }
 
+.Question{
+  cursor: pointer;
+}
+.Question:hover{
+  color: #c95211;
+  text-decoration: underline;
+}
+
 .typing-dots {
   text-align: left;
   display: inline-flex;
