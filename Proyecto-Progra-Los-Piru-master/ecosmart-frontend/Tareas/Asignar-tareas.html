@@ -142,5 +142,36 @@
     });
 
 </script>
+<script>
+    document.getElementById('formTarea').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const asignacion = document.getElementById('destinatario').value;
+        const titulo = document.getElementById('titulo').value;
+        const descripcion = document.getElementById('descripcion').value;
+
+        try {
+            const response = await fetch('http://localhost:5001/api/tareas', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ asignacion, titulo, descripcion })
+            });
+
+            const resultado = await response.json();
+
+            if (response.ok) {
+                alert('✅ Tarea asignada correctamente');
+                document.getElementById('formTarea').reset();
+            } else {
+                alert('❌ Error al asignar tarea: ' + resultado.mensaje);
+            }
+        } catch (error) {
+            console.error('❌ Error en la petición:', error);
+            alert('❌ Error al enviar la tarea');
+        }
+    });
+</script>
 
 </body>
