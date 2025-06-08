@@ -210,7 +210,7 @@
   const temasPermitidos = [
     'planta', 'cultivo', 'suelo', 'riego', 'fertilizante', 'pesticida',
     'plaga', 'enfermedad', 'rotación', 'compost', 'abonado', 'invernadero',
-    'hortaliza', 'germinación', 'raíces', 'ecología', 'biodegradable', 'sustrato'
+    'hortaliza', 'germinación', 'raíces', 'ecología', 'biodegradable', 'sustrato', 'insecto', 'bicho'
   ];
 
   function esPreguntaValida(texto) {
@@ -303,8 +303,6 @@
     }
   }
 
-
-
   async function askDeepSeek(historial) {
     const systemPrompt = `Eres un asistente experto en botánica, agricultura y ecología. Solo debes responder preguntas sobre plantas, cultivos, suelos, fertilizantes, plagas, enfermedades vegetales, riego, técnicas de cultivo o temas ecológicos relacionados. Si el usuario pregunta algo fuera de esos temas, responde amablemente que solo puedes hablar sobre temas botánicos. No hagas roleplay. Sé conciso y claro.`;
 
@@ -324,15 +322,8 @@
     return data.response;
   }
 
-
-
   window.onload = () => {
     cargarListaChats();
-
-    const preguntas = document.querySelector('.fastQuestions');
-    if (preguntas) {
-      preguntas.style.display = 'flex'; // o 'block'
-    }
 
     const input = document.getElementById('chatInput');
     input.addEventListener('keydown', function (e) {
