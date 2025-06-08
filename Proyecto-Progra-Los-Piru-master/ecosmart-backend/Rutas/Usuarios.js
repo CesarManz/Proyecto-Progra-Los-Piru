@@ -89,6 +89,27 @@ router.get('/correos', async (req, res) => {
   }
 });
 
+router.get('/por-trabajo', async (req, res) => {
+  try {
+    const trabajos = req.query.trabajo;
+
+    let filtro = {};
+    if (trabajos) {
+      if (Array.isArray(trabajos)) {
+        filtro.trabajo = { $in: trabajos };
+      } else {
+        filtro.trabajo = trabajos;
+      }
+    }
+
+    const usuarios = await Usuario.find(filtro, 'nombre correo trabajo'); // trae también trabajo
+    res.json(usuarios);
+  } catch (err) {
+    console.error('❌ Error al obtener usuarios por trabajo:', err.message);
+    res.status(500).json({ mensaje: 'Error al obtener usuarios por trabajo' });
+  }
+});
+
 
 // ✅ Login de usuario
 router.post('/login', verificarUsuario);
