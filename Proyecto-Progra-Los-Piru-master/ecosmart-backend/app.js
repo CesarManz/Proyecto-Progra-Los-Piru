@@ -23,6 +23,7 @@ const rutaClimaCoord = require('./Rutas/ClimaActual');        // Por coordenadas
 const rutaPronostico = require('./Rutas/rutaPronosticos');    // Pronóstico
 const rutaChat = require('./Rutas/chat');
 const rutaTareas = require('./Rutas/tareas');
+const productosRuta = require('./Rutas/productos');
 
 // Usar rutas
 app.use('/api/usuarios', rutaUsuarios);
@@ -34,6 +35,8 @@ app.use('/api', rutaClimaCoord);             // ejemplo: /api/climaActual?lat=..
 app.use('/api', rutaPronostico);             // ejemplo: /api/pronostico?lat=...&lon=...
 app.use('/api/chat', rutaChat); // Ruta POST: /api/chat
 app.use('/api/tareas', rutaTareas);
+app.use('/productos', productosRuta);
+app.use('/api/productos', require('./Rutas/productos'));
 
 // Iniciar servidor
 app.listen(PORT, () => {

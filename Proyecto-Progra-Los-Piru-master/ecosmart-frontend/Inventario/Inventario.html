@@ -5,6 +5,7 @@
     <title>Inventario</title>
     <link rel="stylesheet" href="../Inventario/Estilo-inv.css">
 </head>
+<body>
 <header>
     <div class="logo">
         <div class="item Logo" onclick="window.location.href='../Principales/Pagina-Principal.html'">
@@ -25,7 +26,43 @@
         </div>
     </div>
 </header>
+
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Productos</title>
+    <link rel="stylesheet" href="productos.css" />
+</head>
 <body>
+
+<section class="formulario">
+    <h2>Agregar Producto</h2>
+    <form id="formProducto">
+        <input type="text" id="nombre" placeholder="Nombre del producto" required />
+        <input type="number" id="codigo" placeholder="Código" required />
+        <input type="number" id="cantidad" placeholder="Cantidad" required />
+        <select id="tipo" required>
+            <option value="">Selecciona un tipo</option>
+            <option value="semilla">Semilla</option>
+            <option value="fertilizante">Fertilizante</option>
+        </select>
+        <button type="submit">Agregar</button>
+    </form>
+</section>
+
+
+<div class="contenedor">
+    <div class="columna" id="semillas">
+        <h2>🌱 Semillas</h2>
+        <!-- Aquí se insertan las semillas -->
+    </div>
+    <div class="columna" id="fertilizantes">
+        <h2>🧪 Fertilizantes</h2>
+        <!-- Aquí se insertan los fertilizantes -->
+    </div>
+</div>
+
+
 <script>
     function toggleMenu(event) {
         event.stopPropagation();
@@ -86,6 +123,53 @@
         alert('Rol desconocido');
     }
 
+</script>
+<script>
+    async function cargarProductos() {
+        const res = await fetch('http://localhost:3000/api/productos');
+        const productos = await res.json();
+
+        const contenedorSemillas = document.getElementById('semillas');
+        const contenedorFertilizantes = document.getElementById('fertilizantes');
+
+        contenedorSemillas.innerHTML = '';
+        contenedorFertilizantes.innerHTML = '';
+
+        productos.forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `<h4>${p.nombre}</h4><p>Cantidad: ${p.cantidad}</p>`;
+
+            if (p.tipo === 'semilla') contenedorSemillas.appendChild(card);
+            else if (p.tipo === 'fertilizante') contenedorFertilizantes.appendChild(card);
+        });
+    }
+
+    document.getElementById('formularioProducto').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const nombre = document.getElementById('nombre').value;
+        const codigo = document.getElementById('codigo').value;
+        const cantidad = document.getElementById('cantidad').value;
+        const tipo = document.querySelector('input[name="tipo"]:checked').value;
+
+        const producto = { nombre, codigo, cantidad, tipo };
+
+        try {
+            const res = await fetch('http://localhost:3000/api/productos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(producto),
+            });
+
+            const data = await res.json();
+            alert(data.mensaje);
+        } catch (err) {
+            alert('Error al guardar producto');
+        }
+    });
+
+    window.onload = cargarProductos;
 </script>
 </body>
 
