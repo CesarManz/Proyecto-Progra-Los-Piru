@@ -163,6 +163,37 @@
 
 
 
+</header>
+<div class="Cuadrado-transparente">
+
+    <div class="Asignar">
+        <h3>Asignar Tareas</h3>
+        <h4>Seleccione a quien quiere asignar la tarea</h4>
+
+        <form id="formTarea">
+            <label for="destinatario">Seleccionar persona:</label>
+            <select id="destinatario" name="destinatario" required>
+                <option value="">-- Cargando personas... --</option>
+            </select>
+
+            <br><br>
+
+            <label for="titulo">Título de la tarea:</label>
+            <input type="text" id="titulo" name="titulo" required>
+
+            <label for="descripcion">Descripción:</label>
+            <textarea id="descripcion" name="descripcion" rows="3" required></textarea>
+
+            <br><br>
+            <button type="submit">Asignar tarea</button>
+        </form>
+    </div>
+
+
+    <div class="Revisar">
+        <h3>Las siguientes tareas se encuentran en revision: </h3>
+        <!-- Mostrar todas las tareas que si estado sea "en revision"-->
+    </div>
 </div>
 
 
@@ -227,4 +258,126 @@
     }
 
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const response = await fetch('http://localhost:5001/api/usuarios/por-trabajo?trabajo=agricultor&trabajo=tecnico');
+            const personas = await response.json();
+
+            const select = document.getElementById('destinatario');
+            select.innerHTML = '<option value="">-- Seleccione --</option>';
+
+            personas.forEach(persona => {
+                const option = document.createElement('option');
+                option.value = persona.correo;
+                option.textContent = `${persona.nombre} (${persona.trabajo})`;
+                select.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error cargando personas:', error);
+            alert('No se pudieron cargar los usuarios.');
+        }
+    });
+
+</script>
+<script>
+    document.getElementById('formTarea').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const asignacion = document.getElementById('destinatario').value;
+        const titulo = document.getElementById('titulo').value;
+        const descripcion = document.getElementById('descripcion').value;
+
+        try {
+            const response = await fetch('http://localhost:5001/api/tareas', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ asignacion, titulo, descripcion })
+            });
+
+            const resultado = await response.json();
+
+            if (response.ok) {
+                alert('✅ Tarea asignada correctamente');
+                document.getElementById('formTarea').reset();
+            } else {
+                alert('❌ Error al asignar tarea: ' + resultado.mensaje);
+            }
+        } catch (error) {
+            console.error('❌ Error en la petición:', error);
+            alert('❌ Error al enviar la tarea');
+        }
+    });
+</script>
+
+<script>
+    async function cargarTareasEnRevision() {
+        const contenedor = document.querySelector('.Revisar');
+
+        try {
+            const response = await fetch('http://localhost:5001/api/tareas/revision');
+            const tareas = await response.json();
+
+            if (!Array.isArray(tareas) || tareas.length === 0) {
+                contenedor.innerHTML += '<p>No hay tareas en revisión.</p>';
+                return;
+            }
+
+            // Crear un contenedor de tareas
+            const lista = document.createElement('div');
+            lista.classList.add('lista-tareas');
+
+            tareas.forEach(tarea => {
+                const div = document.createElement('div');
+                div.classList.add('tarea');
+
+                div.innerHTML = `
+                <h4>${tarea.titulo}</h4>
+                <p><strong>Asignada a:</strong> ${tarea.asignacion}</p>
+                <p>${tarea.descripcion}</p>
+                <div class="botones">
+                    <button onclick="cambiarEstado('${tarea._id}', 'activo')">Cancelar</button>
+                    <button onclick="cambiarEstado('${tarea._id}', 'terminada')">Completada</button>
+                </div>
+                <hr>
+            `;
+
+                lista.appendChild(div);
+            });
+
+            contenedor.appendChild(lista);
+
+        } catch (error) {
+            console.error('❌ Error cargando tareas:', error);
+            contenedor.innerHTML += '<p>Error al cargar tareas.</p>';
+        }
+    }
+
+    async function cambiarEstado(id, nuevoEstado) {
+        try {
+            const res = await fetch(`http://localhost:5001/api/tareas/${id}/estado`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nuevoEstado })
+            });
+
+            if (res.ok) {
+                alert(`Tarea actualizada a estado: ${nuevoEstado}`);
+                location.reload();
+            } else {
+                const error = await res.json();
+                alert('❌ Error: ' + error.mensaje);
+            }
+        } catch (err) {
+            console.error('❌ Error al actualizar estado:', err);
+            alert('❌ No se pudo actualizar la tarea');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', cargarTareasEnRevision);
+</script>
+
+
 </body>

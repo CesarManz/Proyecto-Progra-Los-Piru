@@ -34,19 +34,25 @@ const alertaActivadaRoutes = require('./Controllers/alertaActivadaController');
 
 // Usar rutas
 app.use('/api/usuarios', rutaUsuarios);
+const rutaTareas = require('./Rutas/tareas');
+
+// Usar rutas
+app.use('/api/usuarios', rutaUsuarios);
+app.use('/api/usuarios', require('./Rutas/Usuarios'));
 app.use('/api/parcelas', rutaParcelas);
 app.use('/api/lecturas', rutaLecturas);
 app.use('/api/clima', rutaClimaCiudad);      // ejemplo: /api/clima/santiago
 app.use('/api', rutaClimaCoord);             // ejemplo: /api/climaActual?lat=...&lon=...
 app.use('/api', rutaPronostico);             // ejemplo: /api/pronostico?lat=...&lon=...
 app.use('/api/chat', rutaChat); // Ruta POST: /api/chat
-app.get('/lecturas/parcela/:id', lecturaController.obtenerLecturasPorParcela); // ✅ esto sí funciona
+app.get('/lecturas/parcela/:id', lecturaController.obtenerLecturasPorParcela); 
 app.use('/api/alertas', alertaRoutes);
 app.use('/api/activadas', alertaActivadaRoutes);
 
 
 
 
+app.use('/api/tareas', rutaTareas);
 
 // Iniciar servidor
 app.listen(PORT, () => {

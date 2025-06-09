@@ -105,6 +105,11 @@ CSS Principal
     background-color: #595D2B;
     display: flex;
     flex-direction: column;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #595D2B;
     gap: 15px;
 }
 
@@ -169,6 +174,24 @@ CSS Principal
     border-radius: 10px;
     text-align: left;
 }
+
+
+
+.faq-item {
+    color: #1D2A10;
+    font-size: 10px;
+    padding: 5px 15px;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.faq-item:hover {
+    background-color: #1D2A10;
+    color: #595D2B;
+}
+
 .Question{
     cursor: pointer;
 }
@@ -193,6 +216,17 @@ CSS Principal
     background-color: #595D2B;
     border-radius: 20px;
     z-index: 100;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    margin-top: auto;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0.2px solid #3B3D1C;
+    background-color: #595D2B;
+    border-radius: 20px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
 }
 
@@ -219,6 +253,7 @@ CSS Principal
 /* Contenedor interior centrado */
 .chat-input input {
     width: 60%;
+    height: 25px;
     padding: 12px;
     border: none;
     border-radius: 12px 0 0 12px;
@@ -235,6 +270,10 @@ CSS Principal
     cursor: pointer;
     font-size: 16px;
     color: #1D2A10;
+}
+.newChat{
+    width: 24px;
+    height: auto;
 }
 
 .chat-preview{

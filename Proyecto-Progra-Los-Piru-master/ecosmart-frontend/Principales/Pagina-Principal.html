@@ -25,8 +25,7 @@
 }
 .notificacion button:hover {
   color: red;
-}
-</style>
+}</style>
 </head>
 <body>
 <header>
@@ -46,9 +45,9 @@
         <div id="menuPerfil" class="menu-perfil">
             <a href="../Perfil/Perfil.html">Perfil</a>
             <a href="#" onclick="logout()">Cerrar sesión</a>
-        </div>   
+        </div>
     </div>
-    <div class="icono-notificacion" onclick="toggleNotificaciones()" style="position: relative; cursor: pointer;">
+        <div class="icono-notificacion" onclick="toggleNotificaciones()" style="position: relative; cursor: pointer;">
   <img src="../Public/campana.png" alt="Notificaciones" style="width: 28px; height: 28px;">
   <span id="alerta-punto" style="
     position: absolute;
@@ -62,7 +61,6 @@
     display: none;
   "></span>
 </div>
-
 </header>
 
 <div class="Cuadrado-transparente">
@@ -94,7 +92,7 @@
     </button>
 
 </div>
-<div id="notificaciones-box" style="
+  <div id="notificaciones-box" style="
   position: fixed;
   top: 70px;
   right: 10px;
@@ -108,8 +106,6 @@
   display: none;
   z-index: 9999;
 "></div>
-
-
 <script>
   function toggleNotificaciones() {
     const box = document.getElementById("notificaciones-box");
@@ -191,6 +187,9 @@
     });
   });
 </script>
+
+
+
 <script>
     function toggleMenu(event) {
         event.stopPropagation();
@@ -284,4 +283,3 @@
 
 </body>
 </html>
-

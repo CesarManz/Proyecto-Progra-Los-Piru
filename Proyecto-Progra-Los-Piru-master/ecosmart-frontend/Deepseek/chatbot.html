@@ -72,6 +72,8 @@
 </div>
 </div>
 
+
+
 <script>
   let chatActualId = null;
 
@@ -98,6 +100,15 @@
     seleccionarChat(chatId);
     return chatId;
   }
+
+
+    const preguntas = document.querySelector('.fastQuestions');
+    if (preguntas) {
+      preguntas.style.display = '';
+    }
+    return chatId;
+  
+
 
   async function cargarListaChats() {
     const contenedor = document.querySelector('.chats');
@@ -187,6 +198,14 @@
     chat.mensajes.forEach(msg => appendMessage(msg.sender, msg.text));
   }
 
+  function appendMessage(sender, text) {
+    const chat = document.getElementById('chatMessages');
+    const msg = document.createElement('div');
+    msg.className = sender === 'user' ? 'msg user' : 'msg bot';
+    msg.textContent = text;
+    chat.appendChild(msg);
+  }
+
   async function eliminarChat(id) {
     try {
       const res = await fetch(`http://localhost:5001/api/chat/${id}`, {
@@ -224,7 +243,16 @@
     msg.className = sender === 'user' ? 'msg user' : 'msg bot';
     msg.textContent = text;
     chat.appendChild(msg);
+    const temasPermitidos = [
+      'planta', 'cultivo', 'suelo', 'riego', 'fertilizante', 'pesticida',
+      'plaga', 'enfermedad', 'rotación', 'compost', 'abonado', 'invernadero',
+      'hortaliza', 'germinación', 'raíces', 'ecología', 'biodegradable', 'sustrato', 'insecto', 'bicho'
+    ];
   }
+    function esPreguntaValida(texto) {
+      const lower = texto.toLowerCase();
+      return temasPermitidos.some(palabra => lower.includes(palabra));
+    }
 
   async function sendMessage(questionText = '') {
     const input = document.getElementById('chatInput');
@@ -232,6 +260,19 @@
     if (userText === '') return;
 
     // Crea un nuevo chat si no hay uno activo
+    const preguntas = document.querySelector('.fastQuestions');
+    if (preguntas) {
+      preguntas.style.display = 'none';
+    }
+
+    // Filtro: solo preguntas relacionadas con plantas
+    if (!esPreguntaValida(userText)) {
+      appendMessage('user', userText);
+      appendMessage('bot', '🌱 Lo siento, solo puedo responder preguntas relacionadas con plantas, agricultura o ecología.');
+      input.value = '';
+      return;
+    }
+
     if (!chatActualId) {
       const nombre = userText.length > 30 ? userText.slice(0, 30) + '...' : userText;
       chatActualId = await nuevoChat(nombre);
@@ -242,6 +283,7 @@
     if (!questionText) {
       input.value = '';
     }
+    if (!questionText) input.value = '';
 
     const chatBox = document.getElementById('chatMessages');
     const loadingBubble = document.createElement('div');
@@ -295,6 +337,33 @@
     }
   }
 
+  async function sendMessageAndHide(element) {
+    const mensaje = element.innerText;
+    await sendMessage(mensaje);
+    const preguntas = document.querySelector('.fastQuestions');
+    if (preguntas) {
+      preguntas.style.display = 'none';
+    }
+  }
+
+  async function askDeepSeek(historial) {
+    const systemPrompt = `Eres un asistente experto en botánica, agricultura y ecología. Solo debes responder preguntas sobre plantas, cultivos, suelos, fertilizantes, plagas, enfermedades vegetales, riego, técnicas de cultivo o temas ecológicos relacionados. Si el usuario pregunta algo fuera de esos temas, responde amablemente que solo puedes hablar sobre temas botánicos. No hagas roleplay. Sé conciso y claro.`;
+
+    const prompt = `${systemPrompt}\n\n${historial}\nAsistente:`;
+
+    const response = await fetch('http://127.0.0.1:5000/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'tinyllama',
+        prompt: prompt,
+        stream: false
+      })
+    });
+
+    const data = await response.json();
+    return data.response;
+  }
 
   window.onload = () => {
     cargarListaChats();
@@ -307,6 +376,7 @@
       }
     });
   };
+
 </script>
 
 

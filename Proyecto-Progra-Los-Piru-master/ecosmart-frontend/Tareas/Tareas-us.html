@@ -165,6 +165,10 @@
     });
   });
 </script>
+</header>
+<div class="Cuadrado-transparente">
+
+</div>
 
 <script>// Script para mostrar un conjunto de opciones diferentes en el header dependiendo el rol del usuario
     function toggleMenu(event) {
@@ -259,4 +263,71 @@
 
     }
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        const correo = localStorage.getItem('correo');
+        const contenedor = document.querySelector('.Cuadrado-transparente');
+
+        if (!correo) {
+            contenedor.innerHTML = '<p>No hay usuario identificado.</p>';
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:5001/api/tareas/asignadas/${correo}`);
+            const tareas = await response.json();
+
+            const tareasActivas = tareas.filter(t => t.estado === 'activo');
+
+            if (tareasActivas.length === 0) {
+                contenedor.innerHTML = '<p>No tienes tareas activas.</p>';
+                return;
+            }
+
+            tareasActivas.forEach(t => {
+                const div = document.createElement('div');
+                div.classList.add('tarea');
+                div.innerHTML = `
+                <h4>${t.titulo}</h4>
+                <p><strong>Descripción:</strong> ${t.descripcion}</p>
+                <p><strong>Estado:</strong> <span class="estado">${t.estado}</span></p>
+                <button class="btn-terminar" data-id="${t._id}">Terminar</button>
+                <hr>
+            `;
+
+                contenedor.appendChild(div);
+            });
+
+            document.querySelectorAll('.btn-terminar').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const id = btn.getAttribute('data-id');
+
+                    try {
+                        const res = await fetch(`http://localhost:5001/api/tareas/${id}/estado`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ nuevoEstado: 'en revision' }),
+                        });
+
+                        if (res.ok) {
+                            // Eliminar del DOM la tarea actual
+                            btn.closest('.tarea').remove();
+                        } else {
+                            alert('Error al actualizar la tarea');
+                        }
+                    } catch (error) {
+                        console.error('Error al cambiar estado:', error);
+                    }
+                });
+            });
+        } catch (error) {
+            console.error('Error al cargar tareas:', error);
+            contenedor.innerHTML = '<p>Error al cargar las tareas.</p>';
+        }
+    });
+
+</script>
+
 </body>
