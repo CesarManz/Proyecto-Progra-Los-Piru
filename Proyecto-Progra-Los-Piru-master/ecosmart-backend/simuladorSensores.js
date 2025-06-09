@@ -2,47 +2,42 @@ const mongoose = require('mongoose');
 const nodemailer = require("nodemailer");
 const Parcela = require('./modelos/Parcela');
 const Lectura = require('./modelos/Lectura');
+const Alerta = require('./modelos/Alerta');
+const AlertaActivada = require('./modelos/AlertaActivada');
 
-// Conexión a MongoDB Atlas
+// Umbrales generales por si no hay alertas configuradas
+const umbrales = {
+  'temperatura del suelo': { min: 18, max: 28 },
+  'humedad del suelo': { min: 50, max: 70 },
+  'ph del suelo': { min: 5.5, max: 7.5 },
+  'nivel de nutrientes': { min: 200, max: 400 }
+};
+
+// Conexión a MongoDB
 mongoose.connect('mongodb+srv://xAshura3x:omWSvOUHLYUR0ttE@cluster0.vlf79yu.mongodb.net/test?retryWrites=true&w=majority')
   .then(() => {
     console.log("✅ Conectado a MongoDB");
-    simularLecturas(); // Llamar al inicio
-    setInterval(simularLecturas, 10000); // Cada 10 segundos
+    simularLecturas();
+    setInterval(simularLecturas, 10000);
   })
   .catch(err => console.error("❌ Error de conexión:", err.message));
 
-let umbralMinimotemsuelo=18;
-let umbralMaximotemsuelo=28;
-let umbralMinimoHumedadsuelo=50;
-let umbralMaximoHumedadsuelo=70;
-let umbralMinimoPhsuelo=5.5;
-let umbralMaximoPhsuelo=7.5;
-let umbralMinimoNivelnutrientes=200;
-let umbralMaximoNivelnutrientes=400;
-
-  function generarValor(tipo) {
+// Función para generar datos simulados
+function generarValor(tipo) {
   switch (tipo.toLowerCase()) {
-    case 'temperatura del suelo':
-      return +(18 + Math.random() * 10).toFixed(1); // 18–28 °C
-
-    case 'humedad del suelo':
-      return +(50 + Math.random() * 20).toFixed(1); // 50–70 %
-
+    case 'temperatura del suelo': return +(18 + Math.random() * 10).toFixed(1);
+    case 'humedad del suelo': return +(50 + Math.random() * 20).toFixed(1);
     case 'ph':
-    case 'ph del suelo':
-      return +(5.5 + Math.random() * 2).toFixed(2); // 5.5–7.5
-
-    case 'nivel de nutrientes':
-      return Math.floor(200 + Math.random() * 200); // 200–400 ppm
-
-
+    case 'ph del suelo': return +(5.5 + Math.random() * 2).toFixed(2);
+    case 'nivel de nutrientes': return Math.floor(200 + Math.random() * 200);
     default:
-      console.warn(`⚠️ Sensor desconocido: '${tipo}' no será simulado.`);
+      console.warn(`⚠️ Tipo de sensor desconocido: '${tipo}'`);
       return null;
   }
 }
-function alertasPorCorreo(parcela, tipo, valor) {
+
+// Envío de correos
+function enviarCorreo(correo, parcela, tipo, valor) {
   const transporter = nodemailer.createTransport({
     service: "Gmail",
     auth: {
@@ -53,77 +48,76 @@ function alertasPorCorreo(parcela, tipo, valor) {
 
   const mailOptions = {
     from: "ecosmartoficial@gmail.com",
-    to: "cesarmanzano984@gmail.com",
+    to: correo,
     subject: `Alerta: ${tipo} en ${parcela.nombre}`,
-    text: `El valor de ${tipo} ha cambiado a ${valor} en la parcela ${parcela.nombre}.`
+    text: `El valor de ${tipo} es ${valor} en la parcela ${parcela.nombre}.`
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      return console.error("❌ Error al enviar correo:", error.message);
-    }
+    if (error) return console.error("❌ Error al enviar correo:", error.message);
     console.log("✅ Correo enviado:", info.response);
   });
 }
 
-function VerificarUmbrales(parcela, tipo, valor) {
-  switch (tipo.toLowerCase()) {
-    case 'temperatura del suelo':
-      if (valor < umbralMinimotemsuelo || valor > umbralMaximotemsuelo) {
-        alertasPorCorreo(parcela, tipo, valor);
-      }
-      break;
+// Verificar alertas personalizadas y guardar si se activan
+async function verificarYGuardarAlertas(parcela, tipo, valor) {
+  const alertas = await Alerta.find({
+    parcela: parcela._id,
+    sensor: new RegExp("^" + tipo + "$", "i")
+  });
 
-    case 'humedad del suelo':
-      if (valor < umbralMinimoHumedadsuelo || valor > umbralMaximoHumedadsuelo) {
-        alertasPorCorreo(parcela, tipo, valor);
-      }
-      break;
+  for (let alerta of alertas) {
+    if (valor < alerta.umbralMinimo || valor > alerta.umbralMaximo) {
+      const mensaje = valor < alerta.umbralMinimo ? alerta.descripcionMinimo : alerta.descripcionMaximo;
 
-    case 'ph':
-    case 'ph del suelo':
-      if (valor < umbralMinimoPhsuelo || valor > umbralMaximoPhsuelo) {
-        alertasPorCorreo(parcela, tipo, valor);
-      }
-      break;
+      const alertaActivada = new AlertaActivada({
+        parcela: parcela._id,
+        tipo,
+        valor,
+        mensaje
+      });
 
-    case 'nivel de nutrientes':
-      if (valor < umbralMinimoNivelnutrientes || valor > umbralMaximoNivelnutrientes) {
-        alertasPorCorreo(parcela, tipo, valor);
-      }
-      break;
+      await alertaActivada.save();
 
-    default:
-      console.warn(`⚠️ Sensor desconocido: '${tipo}' no se verificará.`);
+      if (alerta.correo) {
+        enviarCorreo(alerta.correo, parcela, tipo, valor);
+      }
+    }
   }
 }
 
-// Función principal que simula datos
+// Simular lectura y verificar alertas
 async function simularLecturas() {
   try {
     const parcelas = await Parcela.find();
 
-    for (const p of parcelas) {
-      if (!p.sensores || !Array.isArray(p.sensores)) continue;
+    for (const parcela of parcelas) {
+      if (!parcela.sensores || !Array.isArray(parcela.sensores)) continue;
 
-      for (const tipo of p.sensores) {
+      for (const tipo of parcela.sensores) {
         const valor = generarValor(tipo);
-        if (valor === null || valor === undefined) continue;
+        if (valor == null) continue;
 
         const nuevaLectura = new Lectura({
-          parcela: p._id,
+          parcela: parcela._id,
           tipo,
           valor,
           fecha: new Date()
         });
-        VerificarUmbrales(p, tipo, valor); // Verificar umbrales antes de guardar
-        alertasPorCorreo(p, tipo, valor);
 
         await nuevaLectura.save();
-        console.log(`📡 ${tipo} en ${p.nombre}: ${valor}`);
+        await verificarYGuardarAlertas(parcela, tipo, valor);
+
+        // Verificar umbrales generales
+        const u = umbrales[tipo.toLowerCase()];
+        if (u && (valor < u.min || valor > u.max)) {
+          enviarCorreo("cesarmanzano984@gmail.com", parcela, tipo, valor);
+        }
+
+        console.log(`📡 ${tipo} en ${parcela.nombre}: ${valor}`);
       }
     }
   } catch (error) {
-    console.error("❌ Error al simular lecturas:", error.message);
+    console.error("❌ Error en simulación:", error.message);
   }
 }

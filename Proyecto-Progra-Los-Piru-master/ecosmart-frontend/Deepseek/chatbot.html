@@ -29,38 +29,47 @@
   </div>
 
   <div class="chatbot">
-    <!-- Header con logo -->
     <div class="chat-header">
-      <img class="deepseeklogo" src="../Public/deepseeklogo.png" alt="DeepSeek Logo" />
+      <img class="deepseeklogo" src="../Public/deepseeklogo.png"></img>
     </div>
 
-    <!-- Preguntas rápidas para que el usuario seleccione -->
-    <div class="fastQuestions">
-      <div class="faq-item" onclick="sendMessageAndHide(this)">
-        <h3 class="Question">¿Qué factores afectan el rendimiento de un cultivo?</h3>
-      </div>
-      <div class="faq-item" onclick="sendMessageAndHide(this)">
-        <h3 class="Question">¿Qué enfermedades y plagas pueden afectar los cultivos?</h3>
-      </div>
-      <div class="faq-item" onclick="sendMessageAndHide(this)">
-        <h3 class="Question">¿Qué tan importante es la rotación de cultivos?</h3>
-      </div>
-      <div class="faq-item" onclick="sendMessageAndHide(this)">
-        <h3 class="Question">¿Qué tipo de suelo es el más adecuado para cultivar?</h3>
-      </div>
-    </div>
-
-    <!-- Contenedor de mensajes -->
     <div class="chat-messages" id="chatMessages"></div>
 
-    <div class="chat-input">
-      <input type="text" id="chatInput" placeholder="Escriba su mensaje" />
-      <button onclick="nuevoChat()">
-        <img class="newChat" src="../Public/nuevoChat.png" alt="Nuevo Chat" />
-      </button>
+    <div class="fastQuestions">
+          <div class="faq-item">
+            <div class="inputAsk" onclick="sendMessage('¿Qué factores afectan el rendimiento de un cultivo?')">
+              <h3 class="Question">¿Qué factores afectan el rendimiento de un cultivo?</h3>
+            </div>
+          </div>
+      <br>
+          <div class="faq-item">
+            <div class="inputAsk" onclick="sendMessage('¿Qué enfermedades y plagas pueden afectar los cultivos?')">
+              <h3 class="Question">¿Qué enfermedades y plagas pueden afectar los cultivos?</h3>
+            </div>
+          </div>
+      <br>
+          <div class="faq-item">
+            <div class="inputAsk" onclick="sendMessage('¿Qué tan importante es la rotación de cultivos?')">
+              <h3 class="Question">¿Qué tan importante es la rotación de cultivos?</h3>
+            </div>
+          </div>
+      <br>
+          <div class="faq-item">
+            <div class="inputAsk" onclick="sendMessage('¿Qué tipo de suelo es el más adecuado para cultivar?')">
+              <h3 class="Question">¿Qué tipo de suelo es el más adecuado para cultivar?</h3>
+            </div>
+          </div>
+      <br>
+        </div>
+      </div>
     </div>
-  </div>
 
+    <div class="chat-input">
+      <input type="text" id="chatInput" placeholder="Escriba su mensaje">
+      <button onclick="nuevoChat()">+</button>
+    </div>
+
+</div>
 </div>
 
 
@@ -89,14 +98,16 @@
     localStorage.setItem("chatId", chatId);
     cargarListaChats();
     seleccionarChat(chatId);
+    return chatId;
+  }
+
 
     const preguntas = document.querySelector('.fastQuestions');
     if (preguntas) {
       preguntas.style.display = '';
     }
-
     return chatId;
-  }
+  
 
 
   async function cargarListaChats() {
@@ -207,22 +218,48 @@
     }
   }
 
-  const temasPermitidos = [
-    'planta', 'cultivo', 'suelo', 'riego', 'fertilizante', 'pesticida',
-    'plaga', 'enfermedad', 'rotación', 'compost', 'abonado', 'invernadero',
-    'hortaliza', 'germinación', 'raíces', 'ecología', 'biodegradable', 'sustrato', 'insecto', 'bicho'
-  ];
+  async function askDeepSeek(historial) {
+    const systemPrompt = `You are a helpful and concise assistant. Do not roleplay or simulate conversations. Only respond to the user's last message.`;
 
-  function esPreguntaValida(texto) {
-    const lower = texto.toLowerCase();
-    return temasPermitidos.some(palabra => lower.includes(palabra));
+    const prompt = `${systemPrompt}\n\n${historial}\nAssistant:`;
+
+    const response = await fetch('http://127.0.0.1:5000/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'tinyllama',
+        prompt: prompt,
+        stream: false
+      })
+    });
+
+    const data = await response.json();
+    return data.response;
   }
+
+  function appendMessage(sender, text) {
+    const chat = document.getElementById('chatMessages');
+    const msg = document.createElement('div');
+    msg.className = sender === 'user' ? 'msg user' : 'msg bot';
+    msg.textContent = text;
+    chat.appendChild(msg);
+    const temasPermitidos = [
+      'planta', 'cultivo', 'suelo', 'riego', 'fertilizante', 'pesticida',
+      'plaga', 'enfermedad', 'rotación', 'compost', 'abonado', 'invernadero',
+      'hortaliza', 'germinación', 'raíces', 'ecología', 'biodegradable', 'sustrato', 'insecto', 'bicho'
+    ];
+  }
+    function esPreguntaValida(texto) {
+      const lower = texto.toLowerCase();
+      return temasPermitidos.some(palabra => lower.includes(palabra));
+    }
 
   async function sendMessage(questionText = '') {
     const input = document.getElementById('chatInput');
     const userText = questionText || input.value.trim();
     if (userText === '') return;
 
+    // Crea un nuevo chat si no hay uno activo
     const preguntas = document.querySelector('.fastQuestions');
     if (preguntas) {
       preguntas.style.display = 'none';
@@ -242,6 +279,10 @@
     }
 
     appendMessage('user', userText);
+
+    if (!questionText) {
+      input.value = '';
+    }
     if (!questionText) input.value = '';
 
     const chatBox = document.getElementById('chatMessages');
@@ -253,6 +294,7 @@
     const chats = getChats();
     const chat = chats.find(c => c.id === chatActualId);
 
+    // Historial simplificado
     let historialTexto = '';
     chat.mensajes.forEach(msg => {
       historialTexto += `${msg.text}\n`;
@@ -272,6 +314,7 @@
 
     loadingBubble.innerHTML = botResponse;
 
+    // Guardar en MongoDB si hay correo y chatId
     const correo = localStorage.getItem('correo');
     const chatId = localStorage.getItem('chatId');
 
