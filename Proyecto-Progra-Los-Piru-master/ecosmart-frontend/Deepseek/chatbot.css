@@ -99,6 +99,12 @@ CSS Principal
 /* Área de mensajes */
 .chat-messages {
     flex: 1;
+    height: 100%;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #595D2B;
+    display: flex;
+    flex-direction: column;
     display: flex;
     flex-direction: column;
     padding: 20px;
@@ -140,16 +146,35 @@ CSS Principal
 
 /* Preguntas Frecuentes */
 .fastQuestions {
-    position: fixed; /* la saca del flujo normal */
-    bottom: 9%;       /* separada del header (ajusta según tu header) */
-    right: 28%;     /* pegada al lado derecho, ajusta margen */
-    width: 400px;    /* ancho fijo */
-    background-color: #595D2B;
-    border: 0.2px solid #3B3D1C;
-    border-radius: 20px;
+    bottom: 50px;
+    left: 45%;
+    width: 30%;
+    max-width: none;
+    height: 100px;
+    margin-left: 35%;
+    margin-bottom: 1%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     padding: 10px;
+    border: 0.2px solid #3B3D1C;
+    background-color: #595D2B;
+    border-radius: 20px;
+    z-index: 100;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
 }
+.faq-grid {
+    gap: 30px;
+    margin-top: 20px;
+}
+.faq-item {
+    color: #1D2A10;
+    font-size: 10px;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: left;
+}
+
 
 
 .faq-item {
@@ -177,6 +202,20 @@ CSS Principal
 
 /* Input del chat */
 .chat-input {
+    bottom: 20px;
+    left: 45%;
+    width: 30%;
+    max-width: none;
+    margin-left: 35%;
+    margin-bottom: 1%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    border: 0.2px solid #3B3D1C;
+    background-color: #595D2B;
+    border-radius: 20px;
+    z-index: 100;
     width: 100%;
     max-width: 600px;
     margin: 0 auto;
@@ -191,6 +230,27 @@ CSS Principal
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
 }
 
+.chat-input input {
+    width: 60%;
+    padding: 10px;
+    border: none;
+    border-radius: 12px 0 0 12px;
+    background-color: #B2A872;
+    outline: none;
+    font-size: 14px;
+}
+
+.chat-input button {
+    padding: 15px 15px;
+    background-color: #CD8A39;
+    border: none;
+    color: #1D2A10;
+    border-radius: 0 12px 12px 0;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+/* Contenedor interior centrado */
 .chat-input input {
     width: 60%;
     height: 25px;
@@ -208,9 +268,9 @@ CSS Principal
     border: none;
     border-radius: 0 12px 12px 0;
     cursor: pointer;
+    font-size: 16px;
     color: #1D2A10;
 }
-
 .newChat{
     width: 24px;
     height: auto;

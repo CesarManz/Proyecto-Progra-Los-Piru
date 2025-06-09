@@ -139,6 +139,29 @@
   accent-color: #1D2A10;
   cursor: pointer;
 }
+.notificacion {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #fffefb;
+  color: #1D2A10;
+  border-bottom: 1px solid #e0dfdb;
+}
+.notificacion strong {
+  color: #CD8A39;
+}
+.notificacion button {
+  background: none;
+  border: none;
+  color: #bbb;
+  cursor: pointer;
+  font-size: 16px;
+}
+.notificacion button:hover {
+  color: red;
+}
+
 
 </style>
 
@@ -163,6 +186,21 @@
             <a href="#" onclick="logout()">Cerrar sesión</a>
         </div>
     </div>
+    <div class="icono-notificacion" onclick="toggleNotificaciones()" style="position: relative; cursor: pointer;">
+  <img src="../Public/campana.png" alt="Notificaciones" style="width: 28px; height: 28px;">
+  <span id="alerta-punto" style="
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    border: 2px solid white;
+    display: none;
+  "></span>
+</div>
+
 </header>
 
   <main>
@@ -201,13 +239,108 @@
     <span>🌡️ Temperatura del suelo</span>
   </div>
 </div>
-
-
-      <div id="errorSensores" class="error-msg">* Selecciona al menos un sensor</div>
-
-      <button type="submit">Crear Parcela</button>
+  <div id="errorSensores" class="error-msg">* Selecciona al menos un sensor</div>
+    <button type="submit">Crear Parcela</button>
     </form>
   </main>
+  <div id="notificaciones-box" style="
+  position: fixed;
+  top: 70px;
+  right: 10px;
+  background: white;
+  color: #1D2A10;
+  width: 360px;
+  max-height: 500px;
+  overflow-y: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  display: none;
+  z-index: 9999;
+"></div>
+<script>
+  function toggleNotificaciones() {
+    const box = document.getElementById("notificaciones-box");
+    const punto = document.getElementById("alerta-punto");
+
+    if (box.style.display === "block") {
+      box.style.display = "none";
+    } else {
+      cargarNotificaciones();
+      box.style.display = "block";
+      punto.style.display = "none";
+    }
+  }
+
+  async function cargarNotificaciones() {
+    try {
+      const res = await fetch("http://localhost:5001/api/activadas");
+      const alertas = await res.json();
+      const contenedor = document.getElementById("notificaciones-box");
+      contenedor.innerHTML = "";
+
+      alertas.reverse().forEach(a => {
+        const div = document.createElement("div");
+        div.className = "notificacion";
+        div.innerHTML = `
+          <div class="texto">
+            <strong>${a.parcela?.nombre || "Parcela"}</strong>
+            <div style="font-size: 0.9rem;">${a.mensaje} <span style="color: #999">(${timeAgo(new Date(a.fecha))})</span></div>
+          </div>
+          <button onclick="eliminarNotificacion('${a._id}')">✖</button>
+        `;
+        contenedor.appendChild(div);
+      });
+
+    } catch (e) {
+      console.error("❌ Error al cargar notificaciones:", e);
+    }
+  }
+
+  function eliminarNotificacion(id) {
+    fetch(`http://localhost:5001/api/activadas/eliminar/${id}`, { method: "DELETE" })
+      .then(() => cargarNotificaciones())
+      .then(() => verificarAlertasActivas());
+  }
+
+  function verificarAlertasActivas() {
+    fetch("http://localhost:5001/api/activadas")
+      .then(res => res.json())
+      .then(alertas => {
+        const punto = document.getElementById("alerta-punto");
+        if (alertas.length > 0) {
+          punto.style.display = "inline-block";
+        } else {
+          punto.style.display = "none";
+        }
+      })
+      .catch(err => {
+        console.warn("No se pudo verificar alertas activas:", err);
+      });
+  }
+
+  function timeAgo(date) {
+    const diff = Math.floor((Date.now() - date.getTime()) / 1000);
+    if (diff < 60) return "hace unos segundos";
+    if (diff < 3600) return `hace ${Math.floor(diff / 60)} min`;
+    if (diff < 86400) return `hace ${Math.floor(diff / 3600)} horas`;
+    return `hace ${Math.floor(diff / 86400)} días`;
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    verificarAlertasActivas();
+    setInterval(verificarAlertasActivas, 10000);
+    document.addEventListener("click", function (event) {
+      const box = document.getElementById("notificaciones-box");
+      const bell = document.querySelector(".icono-notificacion");
+      if (box.style.display === "block" && !box.contains(event.target) && !bell.contains(event.target)) {
+        box.style.display = "none";
+      }
+    });
+  });
+</script>
+
+
+
 <script>
     function toggleMenu(event) {
         event.stopPropagation();

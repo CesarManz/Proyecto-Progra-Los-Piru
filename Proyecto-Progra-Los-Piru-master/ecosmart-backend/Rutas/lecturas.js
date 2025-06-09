@@ -3,6 +3,16 @@ const router = express.Router();
 const Lectura = require('../modelos/Lectura');
 const Parcela = require('../modelos/Parcela');
 
+// ✅ Obtener las últimas 50 lecturas (para monitoreo en tiempo real)
+router.get('/', async (req, res) => {
+  try {
+    const lecturas = await Lectura.find().sort({ fecha: -1 }).limit(50);
+    res.json(lecturas);
+  } catch (err) {
+    console.error("❌ Error al obtener lecturas:", err.message);
+    res.status(500).json({ mensaje: 'Error al obtener lecturas' });
+  }
+});
 // ✅ Obtener últimas lecturas por ID de parcela
 router.get('/:id', async (req, res) => {
   try {
