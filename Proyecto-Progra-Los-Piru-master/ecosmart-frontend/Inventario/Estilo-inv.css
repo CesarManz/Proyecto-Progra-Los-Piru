@@ -113,3 +113,74 @@ nav a {
     width: 100%;
     height: auto;
 }
+.contenedor {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.columna {
+    flex: 1;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
+
+.producto {
+    background: #e7f0ff;
+    border-left: 4px solid #007BFF;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+}
+.formulario {
+    max-width: 500px;
+    margin: 0 auto 30px;
+    padding: 20px;
+    background: #CD8A39;
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
+
+.formulario h2 {
+    margin-bottom: 10px;
+}
+
+.formulario input,
+.formulario select,
+.formulario button {
+    display: block;
+    width: 95%;
+    padding: 10px;
+    margin: 8px 0;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.formulario button {
+    background-color: #28a745;
+    color: black;
+    border: none;
+    cursor: pointer;
+}
+
+.formulario button:hover {
+    background-color: #218838;
+}
+.columna {
+    flex: 1;
+    background: #CD8A39;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
+
+.producto {
+    background: #CD8A39;
+    border-left: 4px solid #007BFF;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+}

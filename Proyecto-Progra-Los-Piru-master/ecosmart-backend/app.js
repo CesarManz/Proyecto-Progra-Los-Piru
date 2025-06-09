@@ -35,6 +35,7 @@ const alertaActivadaRoutes = require('./Controllers/alertaActivadaController');
 // Usar rutas
 app.use('/api/usuarios', rutaUsuarios);
 const rutaTareas = require('./Rutas/tareas');
+const productosRuta = require('./Rutas/productos');
 
 // Usar rutas
 app.use('/api/usuarios', rutaUsuarios);
@@ -53,6 +54,8 @@ app.use('/api/activadas', alertaActivadaRoutes);
 
 
 app.use('/api/tareas', rutaTareas);
+app.use('/productos', productosRuta);
+app.use('/api/productos', require('./Rutas/productos'));
 
 // Iniciar servidor
 app.listen(PORT, () => {
