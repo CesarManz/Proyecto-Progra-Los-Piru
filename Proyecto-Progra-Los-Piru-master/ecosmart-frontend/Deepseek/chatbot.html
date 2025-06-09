@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>DeepSeek</title>
+  <link rel="icon" href="../Public/EcoSmart%20MiniLogo.png" type="image/png">
+  <link rel="stylesheet" href="../Deepseek/chatbot.css">
+</head>
+<body>
+<header>
+</header>
+
+<div class="principal">
+  <div class="columnaIzquierda">
+    <!--
+    Logo Ecosmart en la columna izquierda
+    Tiene que redireccionar a la pagina principal
+    -->
+    <a href= "../Deepseek/consultas.html">
+      <div class="logo">
+        <img class= "ecosmart" src="../Public/EcoSmart3.png">
+      </div>
+    </a>
+
+    <div class="chats">
+
+    </div>
+
+  </div>
+
+  <div class="chatbot">
+    <div class="chat-header">
+      <img class="deepseeklogo" src="../Public/deepseeklogo.png"></img>
+    </div>
+
+    <div class="chat-messages" id="chatMessages"></div>
+
+    <div class="fastQuestions">
+          <div class="faq-item">
+            <div class="inputAsk" onclick="sendMessage('¿Qué factores afectan el rendimiento de un cultivo?')">
+              <h3 class="Question">¿Qué factores afectan el rendimiento de un cultivo?</h3>
+            </div>
+          </div>
+      <br>
+          <div class="faq-item">
+            <div class="inputAsk" onclick="sendMessage('¿Qué enfermedades y plagas pueden afectar los cultivos?')">
+              <h3 class="Question">¿Qué enfermedades y plagas pueden afectar los cultivos?</h3>
+            </div>
+          </div>
+      <br>
+          <div class="faq-item">
+            <div class="inputAsk" onclick="sendMessage('¿Qué tan importante es la rotación de cultivos?')">
+              <h3 class="Question">¿Qué tan importante es la rotación de cultivos?</h3>
+            </div>
+          </div>
+      <br>
+          <div class="faq-item">
+            <div class="inputAsk" onclick="sendMessage('¿Qué tipo de suelo es el más adecuado para cultivar?')">
+              <h3 class="Question">¿Qué tipo de suelo es el más adecuado para cultivar?</h3>
+            </div>
+          </div>
+      <br>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-input">
+      <input type="text" id="chatInput" placeholder="Escriba su mensaje">
+      <button onclick="nuevoChat()">+</button>
+    </div>
+
+</div>
+</div>
+
+<script>
+  let chatActualId = null;
+
+  function vanishSquare(){
+
+  }
+
+  function getChats() {
+    return JSON.parse(localStorage.getItem("chats")) || [];
+  }
+
+  function saveChats(chats) {
+    localStorage.setItem("chats", JSON.stringify(chats));
+  }
+
+  function nuevoChat(nombre = "Chat sin título") {
+    const chats = getChats();
+    const chatId = `chat-${Date.now()}`;
+    const nuevo = { id: chatId, chatId, nombre, mensajes: [] };
+    chats.push(nuevo);
+    saveChats(chats);
+    localStorage.setItem("chatId", chatId);
+    cargarListaChats();
+    seleccionarChat(chatId);
+    return chatId;
+  }
+
+  async function cargarListaChats() {
+    const contenedor = document.querySelector('.chats');
+    contenedor.innerHTML = '';
+
+    const correo = localStorage.getItem('correo');
+    if (!correo) return;
+
+    try {
+      const response = await fetch(`http://localhost:5001/api/chat/chats/${correo}`);
+      const chats = await response.json();
+
+      chats.forEach(chat => {
+        const div = document.createElement('div');
+        div.className = 'chat-preview';
+        div.innerText = chat.pregunta || 'Chat sin título';
+
+        div.onclick = async () => {
+          //Se guarda el ID de la conversación actual
+          localStorage.setItem('chatId', chat.chatId);
+          chatActualId = chat.chatId;
+
+          try {
+            //Se le pide al backend todos los mensajes del chatId
+            const res = await fetch(`http://localhost:5001/api/chat/conversacion/${chat.chatId}`);
+            const mensajes = await res.json();
+
+            //Se transforma el array de {pregunta, respuesta} en formato [{user}, {bot}, ...]
+            const formateados = mensajes.map(m => [
+              { sender: 'user', text: m.pregunta },
+              { sender: 'bot', text: m.respuesta }
+            ]).flat();
+
+            mostrarMensajesDesdeServidor(formateados);
+          } catch (err) {
+            console.error('❌ Error al cargar conversación:', err);
+          }
+        };
+
+
+        const eliminar = document.createElement('button');
+        eliminar.className = 'eliminar';
+        eliminar.innerText = '❌';
+        eliminar.onclick = async (e) => {
+          e.stopPropagation();
+          const confirmacion = confirm('¿Eliminar este chat?');
+          if (!confirmacion) return;
+
+          try {
+            await fetch(`http://localhost:5001/api/chat/${chat.chatId}`, {
+              method: 'DELETE'
+            });
+            if (localStorage.getItem('chatId') === chat.chatId) {
+              localStorage.removeItem('chatId');
+              chatActualId = null;
+            }
+            cargarListaChats();
+          } catch (err) {
+            console.error('❌ Error al eliminar chat:', err);
+          }
+        };
+
+        div.appendChild(eliminar);
+        contenedor.appendChild(div);
+      });
+    } catch (err) {
+      console.error('❌ Error al cargar historial:', err);
+    }
+  }
+
+  function mostrarMensajesDesdeServidor(mensajes) {
+    const contenedor = document.getElementById('chatMessages');
+    contenedor.innerHTML = '';
+    mensajes.forEach(msg => appendMessage(msg.sender, msg.text));
+  }
+
+  function seleccionarChat(id) {
+    chatActualId = id;
+    mostrarMensajes();
+  }
+
+  function mostrarMensajes() {
+    const chat = getChats().find(c => c.id === chatActualId);
+    const contenedor = document.getElementById('chatMessages');
+    contenedor.innerHTML = '';
+    if (!chat) return;
+    chat.mensajes.forEach(msg => appendMessage(msg.sender, msg.text));
+  }
+
+  async function eliminarChat(id) {
+    try {
+      const res = await fetch(`http://localhost:5001/api/chat/${id}`, {
+        method: 'DELETE'
+      });
+      if (!res.ok) throw new Error('Error al eliminar');
+      console.log('✅ Chat eliminado');
+    } catch (err) {
+      console.error('❌ Error al eliminar el chat:', err);
+    }
+  }
+
+  async function askDeepSeek(historial) {
+    const systemPrompt = `You are a helpful and concise assistant. Do not roleplay or simulate conversations. Only respond to the user's last message.`;
+
+    const prompt = `${systemPrompt}\n\n${historial}\nAssistant:`;
+
+    const response = await fetch('http://127.0.0.1:5000/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'tinyllama',
+        prompt: prompt,
+        stream: false
+      })
+    });
+
+    const data = await response.json();
+    return data.response;
+  }
+
+  function appendMessage(sender, text) {
+    const chat = document.getElementById('chatMessages');
+    const msg = document.createElement('div');
+    msg.className = sender === 'user' ? 'msg user' : 'msg bot';
+    msg.textContent = text;
+    chat.appendChild(msg);
+  }
+
+  async function sendMessage(questionText = '') {
+    const input = document.getElementById('chatInput');
+    const userText = questionText || input.value.trim();
+    if (userText === '') return;
+
+    // Crea un nuevo chat si no hay uno activo
+    if (!chatActualId) {
+      const nombre = userText.length > 30 ? userText.slice(0, 30) + '...' : userText;
+      chatActualId = await nuevoChat(nombre);
+    }
+
+    appendMessage('user', userText);
+
+    if (!questionText) {
+      input.value = '';
+    }
+
+    const chatBox = document.getElementById('chatMessages');
+    const loadingBubble = document.createElement('div');
+    loadingBubble.className = 'msg bot';
+    loadingBubble.innerHTML = `<span class="typing-dots"><span></span><span></span><span></span></span>`;
+    chatBox.appendChild(loadingBubble);
+
+    const chats = getChats();
+    const chat = chats.find(c => c.id === chatActualId);
+
+    // Historial simplificado
+    let historialTexto = '';
+    chat.mensajes.forEach(msg => {
+      historialTexto += `${msg.text}\n`;
+    });
+    historialTexto += `${userText}\n`;
+
+    const botResponse = await askDeepSeek(historialTexto);
+
+    if (!chat.nombre || chat.nombre === 'Chat sin título') {
+      chat.nombre = userText.length > 30 ? userText.slice(0, 30) + '...' : userText;
+    }
+
+    chat.mensajes.push({ sender: 'user', text: userText });
+    chat.mensajes.push({ sender: 'bot', text: botResponse });
+    saveChats(chats);
+    cargarListaChats();
+
+    loadingBubble.innerHTML = botResponse;
+
+    // Guardar en MongoDB si hay correo y chatId
+    const correo = localStorage.getItem('correo');
+    const chatId = localStorage.getItem('chatId');
+
+    if (correo && chatId) {
+      fetch('http://localhost:5001/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          correo: correo,
+          chatId: chatId,
+          pregunta: userText,
+          respuesta: botResponse
+        })
+      })
+              .then(res => res.json())
+              .then(data => console.log('✅ Chat guardado en MongoDB:', data))
+              .catch(err => console.error('❌ Error al guardar el chat:', err));
+    } else {
+      console.warn('⚠️ No se encontró correo o chatId en localStorage');
+    }
+  }
+
+
+  window.onload = () => {
+    cargarListaChats();
+
+    const input = document.getElementById('chatInput');
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+  };
+</script>
+
+
+</body>
+</html>

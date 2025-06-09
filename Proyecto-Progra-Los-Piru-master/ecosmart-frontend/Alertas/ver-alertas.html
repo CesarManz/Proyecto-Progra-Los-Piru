@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Mis Alertas Configuradas</title>
+  <link rel="stylesheet" href="../Principales/Estilo-prin.css" />
+
+<style>
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), #c1d36b), url("../Public/Fondo.png");
+    background-size: cover;
+    background-attachment: fixed;
+    color: #1D2A10;
+  }
+
+  main {
+    max-width: 1000px;
+    margin: 2rem auto;
+    background: rgba(255, 255, 255, 0.92);
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+  }
+
+  h2 {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    color: #1D2A10;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+
+  th, td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+    font-size: 0.95rem;
+  }
+
+  th {
+    background-color: #CD8A39;
+    color: white;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+  .acciones button {
+    margin-right: 5px;
+    padding: 4px 8px;
+    font-size: 14px;
+    cursor: pointer;
+    background-color: #1D2A10;
+    color: white;
+    border: none;
+    border-radius: 5px;
+  }
+
+  .acciones button:hover {
+    background-color: #CD8A39;
+    color: #1D2A10;
+  }
+
+  .sin-alertas {
+    text-align: center;
+    color: #999;
+    padding: 10px;
+  }
+
+  #modal-editar {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+  }
+
+  #modal-editar .contenido {
+    background: white;
+    width: 400px;
+    margin: 80px auto;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #00000033;
+    position: relative;
+  }
+
+  #modal-editar input {
+    width: 100%;
+    padding: 6px;
+    margin-bottom: 10px;
+  }
+
+  #modal-editar button {
+    margin-right: 8px;
+    padding: 6px 12px;
+  }
+
+  #modal-editar .cerrar {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    cursor: pointer;
+    font-size: 16px;
+    background: none;
+    border: none;
+  }
+</style>
+
+</head>
+<body>
+  <header>
+    <div class="logo">
+        <div class="item Logo" onclick="window.location.href='../Principales/Pagina-Principal.html'">
+            <img src="../Public/EcoSmart2.png" alt="Logo"/>
+        </div>
+    </div>
+
+    <nav id="menu">
+        <!-- Links se insertan dinámicamente según el rol -->
+        <input class="busqueda" type="search" placeholder="Buscar">
+    </nav>
+
+    <div class="Fondo-fo-perfil" onclick="toggleMenu(event)">
+        <img class="fo-perfil" src="../Public/user.png" alt="Foto de perfil">
+        <div id="menuPerfil" class="menu-perfil">
+            <a href="../Perfil/Perfil.html">Perfil</a>
+            <a href="#" onclick="logout()">Cerrar sesión</a>
+        </div>
+    </div>
+    <div class="icono-notificacion" onclick="toggleNotificaciones()" style="position: relative; cursor: pointer;">
+  <img src="../Public/campana.png" alt="Notificaciones" style="width: 28px; height: 28px;">
+  <span id="alerta-punto" style="
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    border: 2px solid white;
+    display: none;
+  "></span>
+</div>
+
+</header>
+  <main>
+    <div style="text-align: right; margin-bottom: 1rem;">
+  <button onclick="window.location.href='Alertas.html'" style="
+    background-color: #CD8A39;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+  ">
+    ➕ Nueva Alerta
+  </button>
+</div>
+  <h2>Mis Alertas Configuradas</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Parcela</th>
+        <th>Sensor</th>
+        <th>Umbral Mínimo</th>
+        <th>Descripción Mínimo</th>
+        <th>Umbral Máximo</th>
+        <th>Descripción Máximo</th>
+        <th>Correo</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="tabla-alertas"></tbody>
+  </table>
+
+  <!-- MODAL DE EDICIÓN -->
+  <div id="modal-editar">
+    <div class="contenido">
+      <button class="cerrar" onclick="cerrarModal()">✖</button>
+      <h3>Editar Alerta</h3>
+      <form id="form-editar">
+        <input type="hidden" id="edit-id">
+        <label>Umbral Mínimo:</label>
+        <input type="number" id="edit-min" required>
+        <label>Descripción Mínimo:</label>
+        <input type="text" id="edit-descMin" required>
+        <label>Umbral Máximo:</label>
+        <input type="number" id="edit-max" required>
+        <label>Descripción Máximo:</label>
+        <input type="text" id="edit-descMax" required>
+        <div style="margin-top: 10px;">
+          <button type="submit">Guardar cambios</button>
+          <button type="button" onclick="cerrarModal()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+<div id="notificaciones-box" style="
+  position: fixed;
+  top: 70px;
+  right: 10px;
+  background: white;
+  color: #1D2A10;
+  width: 360px;
+  max-height: 500px;
+  overflow-y: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  display: none;
+  z-index: 9999;
+"></div>
+<script>
+  function toggleNotificaciones() {
+    const box = document.getElementById("notificaciones-box");
+    const punto = document.getElementById("alerta-punto");
+
+    if (box.style.display === "block") {
+      box.style.display = "none";
+    } else {
+      cargarNotificaciones();
+      box.style.display = "block";
+      punto.style.display = "none";
+    }
+  }
+
+  async function cargarNotificaciones() {
+    try {
+      const res = await fetch("http://localhost:5001/api/activadas");
+      const alertas = await res.json();
+      const contenedor = document.getElementById("notificaciones-box");
+      contenedor.innerHTML = "";
+
+      alertas.reverse().forEach(a => {
+        const div = document.createElement("div");
+        div.className = "notificacion";
+        div.innerHTML = `
+          <div class="texto">
+            <strong>${a.parcela?.nombre || "Parcela"}</strong>
+            <div style="font-size: 0.9rem;">${a.mensaje} <span style="color: #999">(${timeAgo(new Date(a.fecha))})</span></div>
+          </div>
+          <button onclick="eliminarNotificacion('${a._id}')">✖</button>
+        `;
+        contenedor.appendChild(div);
+      });
+
+    } catch (e) {
+      console.error("❌ Error al cargar notificaciones:", e);
+    }
+  }
+
+  function eliminarNotificacion(id) {
+    fetch(`http://localhost:5001/api/activadas/eliminar/${id}`, { method: "DELETE" })
+      .then(() => cargarNotificaciones())
+      .then(() => verificarAlertasActivas());
+  }
+
+  function verificarAlertasActivas() {
+    fetch("http://localhost:5001/api/activadas")
+      .then(res => res.json())
+      .then(alertas => {
+        const punto = document.getElementById("alerta-punto");
+        if (alertas.length > 0) {
+          punto.style.display = "inline-block";
+        } else {
+          punto.style.display = "none";
+        }
+      })
+      .catch(err => {
+        console.warn("No se pudo verificar alertas activas:", err);
+      });
+  }
+
+  function timeAgo(date) {
+    const diff = Math.floor((Date.now() - date.getTime()) / 1000);
+    if (diff < 60) return "hace unos segundos";
+    if (diff < 3600) return `hace ${Math.floor(diff / 60)} min`;
+    if (diff < 86400) return `hace ${Math.floor(diff / 3600)} horas`;
+    return `hace ${Math.floor(diff / 86400)} días`;
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    verificarAlertasActivas();
+    setInterval(verificarAlertasActivas, 10000);
+    document.addEventListener("click", function (event) {
+      const box = document.getElementById("notificaciones-box");
+      const bell = document.querySelector(".icono-notificacion");
+      if (box.style.display === "block" && !box.contains(event.target) && !bell.contains(event.target)) {
+        box.style.display = "none";
+      }
+    });
+  });
+</script>
+
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const correo = localStorage.getItem("correo");
+      if (!correo) return window.location.href = "../Login.html";
+
+      try {
+        const res = await fetch("http://localhost:5001/api/alertas");
+        const data = await res.json();
+        const tabla = document.getElementById("tabla-alertas");
+        let hayAlertas = false;
+
+        data.forEach(alerta => {
+          if (alerta.correo === correo) {
+            hayAlertas = true;
+            const row = document.createElement("tr");
+            row.innerHTML = `
+              <td>${alerta.parcela?.nombre || alerta.parcela}</td>
+              <td>${alerta.sensor}</td>
+              <td>${alerta.umbralMinimo}</td>
+              <td>${alerta.descripcionMinimo}</td>
+              <td>${alerta.umbralMaximo}</td>
+              <td>${alerta.descripcionMaximo}</td>
+              <td>${alerta.correo}</td>
+              <td class="acciones">
+                <button onclick="editarAlerta('${alerta._id}')">✏️</button>
+                <button onclick="eliminarAlerta('${alerta._id}')">🗑️</button>
+              </td>
+            `;
+            tabla.appendChild(row);
+          }
+        });
+
+        if (!hayAlertas) {
+          tabla.innerHTML = '<tr><td class="sin-alertas" colspan="8">No tienes alertas registradas.</td></tr>';
+        }
+
+      } catch (error) {
+        console.error("Error cargando alertas:", error);
+      }
+    });
+
+    function eliminarAlerta(id) {
+      if (confirm("¿Eliminar esta alerta?")) {
+        fetch(`http://localhost:5001/api/alertas/eliminar/${id}`, { method: "DELETE" })
+          .then(res => res.json())
+          .then(() => location.reload())
+          .catch(err => alert("Error al eliminar la alerta."));
+      }
+    }
+
+    async function editarAlerta(id) {
+      try {
+        const res = await fetch(`http://localhost:5001/api/alertas`);
+        const alertas = await res.json();
+        const alerta = alertas.find(a => a._id === id);
+        if (!alerta) return alert("No se encontró la alerta.");
+
+        document.getElementById("edit-id").value = alerta._id;
+        document.getElementById("edit-min").value = alerta.umbralMinimo;
+        document.getElementById("edit-max").value = alerta.umbralMaximo;
+        document.getElementById("edit-descMin").value = alerta.descripcionMinimo;
+        document.getElementById("edit-descMax").value = alerta.descripcionMaximo;
+
+        document.getElementById("modal-editar").style.display = "block";
+      } catch (e) {
+        alert("Error al cargar alerta.");
+      }
+    }
+
+    function cerrarModal() {
+      document.getElementById("modal-editar").style.display = "none";
+    }
+
+    document.getElementById("form-editar").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const id = document.getElementById("edit-id").value;
+      const body = {
+        umbralMinimo: parseFloat(document.getElementById("edit-min").value),
+        descripcionMinimo: document.getElementById("edit-descMin").value,
+        umbralMaximo: parseFloat(document.getElementById("edit-max").value),
+        descripcionMaximo: document.getElementById("edit-descMax").value
+      };
+
+      try {
+        const res = await fetch(`http://localhost:5001/api/alertas/editar/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
+        });
+        const result = await res.json();
+        alert(result.mensaje || "✅ Alerta actualizada");
+        cerrarModal();
+        location.reload();
+      } catch (err) {
+        alert("❌ Error al guardar cambios");
+      }
+    });
+  </script>
+<script>
+    function toggleMenu(event) {
+        event.stopPropagation();
+        const menu = document.getElementById('menuPerfil');
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    document.addEventListener('click', function () {
+        const menu = document.getElementById('menuPerfil');
+        menu.style.display = 'none';
+    });
+
+    function logout() {
+        localStorage.clear();
+        window.location.href = '../Registro-Login/Login.html';
+    }
+
+    // Lógica para personalizar según el trabajo
+    const trabajo = localStorage.getItem('trabajo');
+    const correo = localStorage.getItem('correo');
+    const menu = document.getElementById('menu');
+
+    if (!trabajo || !correo) {
+        window.location.href = '../Registro-Login/Login.html';
+    }
+
+    const linksPorRol = {
+        tecnico: [
+            { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
+            { texto: "Parcelas", href: "../parcelas/listar-parcelas.html" },
+            { texto: "Administrar usuarios", href: "../Administrar-Usuarios/Administrar-usuarios.html" },
+            { texto: "Preguntas", href: "../Deepseek/consultas.html" },
+        ],
+        agronomo: [
+            { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
+            { texto: "Parcelas", href: "../parcelas/listar-parcelas.html" },
+            { texto: "Preguntas", href: "../Deepseek/consultas.html" },
+            { texto: "Inventario", href: "../Inventario/Inventario.html"},
+            { texto: "Asignar tareas", href: "../Tareas/Asignar-tareas.html"}
+        ],
+        agricultor: [
+            { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
+            { texto: "Parcelas", href: "../parcelas/listar-parcelas.html" },
+            { texto: "Preguntas", href: "../Deepseek/consultas.html" },
+        ]
+    };
+
+    const enlaces = linksPorRol[trabajo];
+
+    if (enlaces) {
+        enlaces.forEach(link => {
+            const a = document.createElement('a');
+            a.href = link.href;
+            a.textContent = link.texto;
+            menu.insertBefore(a, menu.querySelector('.busqueda'));
+        });
+    } else {
+        alert('Rol desconocido');
+    }
+
+</script>
+  </main>
+</body>
+</html>

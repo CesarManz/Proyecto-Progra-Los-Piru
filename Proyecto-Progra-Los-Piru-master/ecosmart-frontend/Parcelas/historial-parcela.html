@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Historial de Parcela</title>
+  <link rel="stylesheet" href="../Principales/Estilo-prin.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Rubik', sans-serif;
+      margin: 0;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.2), #c1d36b), url("../Public/Fondo.png");
+      background-size: cover;
+      background-attachment: fixed;
+      color: #1D2A10;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background-color: rgba(255, 255, 255, 0.96);
+      border-radius: 16px;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    h2 {
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    h2::before {
+      content: "\1F33F";
+      font-size: 1.5rem;
+    }
+
+    #graficosContainer {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .tarjeta-grafico {
+      background: #fff;
+      border: 2px solid #1D2A10;
+      border-radius: 16px;
+      padding: 1rem;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
+    }
+
+    .tarjeta-grafico:hover {
+      transform: translateY(-4px);
+    }
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      background-color: #1D2A10;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 1.5rem;
+    }
+
+    button:hover {
+      background-color: #CD8A39;
+      color: #1D2A10;
+    }
+
+    canvas {
+      max-width: 100%;
+    }
+    .notificacion {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #fffefb;
+  color: #1D2A10;
+  border-bottom: 1px solid #e0dfdb;
+}
+.notificacion strong {
+  color: #CD8A39;
+}
+.notificacion button {
+  background: none;
+  border: none;
+  color: #bbb;
+  cursor: pointer;
+  font-size: 16px;
+}
+.notificacion button:hover {
+  color: red;
+}
+
+  </style>
+</head>
+<body>
+<header>
+    <div class="logo">
+        <div class="item Logo" onclick="window.location.href='../Principales/Pagina-Principal.html'">
+            <img src="../Public/EcoSmart2.png" alt="Logo"/>
+        </div>
+    </div>
+
+    <nav id="menu">
+        <!-- Links se insertan dinámicamente según el rol -->
+        <input class="busqueda" type="search" placeholder="Buscar">
+    </nav>
+
+    <div class="Fondo-fo-perfil" onclick="toggleMenu(event)">
+        <img class="fo-perfil" src="../Public/user.png" alt="Foto de perfil">
+        <div id="menuPerfil" class="menu-perfil">
+            <a href="../Perfil/Perfil.html">Perfil</a>
+            <a href="#" onclick="logout()">Cerrar sesión</a>
+        </div>
+    </div>
+    <div class="icono-notificacion" onclick="toggleNotificaciones()" style="position: relative; cursor: pointer;">
+  <img src="../Public/campana.png" alt="Notificaciones" style="width: 28px; height: 28px;">
+  <span id="alerta-punto" style="
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    border: 2px solid white;
+    display: none;
+  "></span>
+</div>
+
+</header>
+  <main>
+    <h2 id="tituloParcela">Historial de Parcela</h2>
+    <button onclick="descargarCSV()">📥 Descargar historial CSV</button>
+    <div id="graficosContainer"></div>
+  </main>
+  <div id="notificaciones-box" style="
+  position: fixed;
+  top: 70px;
+  right: 10px;
+  background: white;
+  color: #1D2A10;
+  width: 360px;
+  max-height: 500px;
+  overflow-y: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  display: none;
+  z-index: 9999;
+"></div>
+
+<script>
+  function toggleNotificaciones() {
+    const box = document.getElementById("notificaciones-box");
+    const punto = document.getElementById("alerta-punto");
+
+    if (box.style.display === "block") {
+      box.style.display = "none";
+    } else {
+      cargarNotificaciones();
+      box.style.display = "block";
+      punto.style.display = "none";
+    }
+  }
+
+  async function cargarNotificaciones() {
+    try {
+      const res = await fetch("http://localhost:5001/api/activadas");
+      const alertas = await res.json();
+      const contenedor = document.getElementById("notificaciones-box");
+      contenedor.innerHTML = "";
+
+      alertas.reverse().forEach(a => {
+        const div = document.createElement("div");
+        div.className = "notificacion";
+        div.innerHTML = `
+          <div class="texto">
+            <strong>${a.parcela?.nombre || "Parcela"}</strong>
+            <div style="font-size: 0.9rem;">${a.mensaje} <span style="color: #999">(${timeAgo(new Date(a.fecha))})</span></div>
+          </div>
+          <button onclick="eliminarNotificacion('${a._id}')">✖</button>
+        `;
+        contenedor.appendChild(div);
+      });
+
+    } catch (e) {
+      console.error("❌ Error al cargar notificaciones:", e);
+    }
+  }
+
+  function eliminarNotificacion(id) {
+    fetch(`http://localhost:5001/api/activadas/eliminar/${id}`, { method: "DELETE" })
+      .then(() => cargarNotificaciones())
+      .then(() => verificarAlertasActivas());
+  }
+
+  function verificarAlertasActivas() {
+    fetch("http://localhost:5001/api/activadas")
+      .then(res => res.json())
+      .then(alertas => {
+        const punto = document.getElementById("alerta-punto");
+        if (alertas.length > 0) {
+          punto.style.display = "inline-block";
+        } else {
+          punto.style.display = "none";
+        }
+      })
+      .catch(err => {
+        console.warn("No se pudo verificar alertas activas:", err);
+      });
+  }
+
+  function timeAgo(date) {
+    const diff = Math.floor((Date.now() - date.getTime()) / 1000);
+    if (diff < 60) return "hace unos segundos";
+    if (diff < 3600) return `hace ${Math.floor(diff / 60)} min`;
+    if (diff < 86400) return `hace ${Math.floor(diff / 3600)} horas`;
+    return `hace ${Math.floor(diff / 86400)} días`;
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    verificarAlertasActivas();
+    setInterval(verificarAlertasActivas, 10000);
+    document.addEventListener("click", function (event) {
+      const box = document.getElementById("notificaciones-box");
+      const bell = document.querySelector(".icono-notificacion");
+      if (box.style.display === "block" && !box.contains(event.target) && !bell.contains(event.target)) {
+        box.style.display = "none";
+      }
+    });
+  });
+</script>
+
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const nombreParcela = params.get("nombre");
+    document.getElementById("tituloParcela").innerText = "Historial de " + (nombreParcela || "Parcela");
+
+    let datosTotales = [];
+
+    async function obtenerHistorial(nombre) {
+      const res = await fetch(`http://localhost:5001/api/lecturas/historial/nombre/${encodeURIComponent(nombre)}`);
+      const data = await res.json();
+      datosTotales = data;
+      return data;
+    }
+
+    function agruparPorTipo(lecturas) {
+      const grupos = {};
+      lecturas.forEach(d => {
+        if (!grupos[d.tipo]) grupos[d.tipo] = [];
+        grupos[d.tipo].push(d);
+      });
+      return grupos;
+    }
+
+    function graficarPorTipo(grupos) {
+      const container = document.getElementById("graficosContainer");
+      container.innerHTML = "";
+
+      for (const tipo in grupos) {
+        const tarjeta = document.createElement("div");
+        tarjeta.className = "tarjeta-grafico";
+
+        const titulo = document.createElement("h3");
+        titulo.innerText = tipo;
+        tarjeta.appendChild(titulo);
+
+        const canvas = document.createElement("canvas");
+        tarjeta.appendChild(canvas);
+        container.appendChild(tarjeta);
+
+        const ultimas = grupos[tipo].slice(-10);
+        const etiquetas = ultimas.map(d => new Date(d.fecha).toLocaleTimeString());
+        const valores = ultimas.map(d => d.valor);
+
+        new Chart(canvas.getContext("2d"), {
+          type: "line",
+          data: {
+            labels: etiquetas,
+            datasets: [{
+              label: tipo,
+              data: valores,
+              borderColor: "#CD8A39",
+              backgroundColor: "rgba(205,138,57,0.2)",
+              pointBackgroundColor: "#1D2A10",
+              fill: true,
+              tension: 0.4
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            animation: { duration: 800 }
+          }
+        });
+      }
+    }
+
+    function descargarCSV() {
+      if (!datosTotales.length) {
+        alert("No hay datos para exportar.");
+        return;
+      }
+      const encabezado = "Tipo,Valor,Fecha\n";
+      const filas = datosTotales.map(d => `${d.tipo},${d.valor},${new Date(d.fecha).toISOString()}`).join("\n");
+      const csv = encabezado + filas;
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `historial-${nombreParcela}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    if (nombreParcela) {
+      obtenerHistorial(nombreParcela).then(lecturas => {
+        const grupos = agruparPorTipo(lecturas);
+        graficarPorTipo(grupos);
+      });
+    }
+  </script>
+</body>
+</html>

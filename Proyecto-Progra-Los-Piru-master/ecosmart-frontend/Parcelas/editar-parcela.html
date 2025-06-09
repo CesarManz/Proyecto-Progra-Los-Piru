@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Editar Parcela</title>
+  <link rel="stylesheet" href="../Principales/Estilo-prin.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), #c1d36b), url("../Public/Fondo.png");
+      background-size: cover;
+      background-attachment: fixed;
+      color: #1D2A10;
+    }
+
+    main {
+      max-width: 700px;
+      margin: 2rem auto;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+    }
+
+    form label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: 600;
+    }
+
+    form input, form select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    input:read-only {
+      background-color: #f4f4f4;
+      color: #555;
+    }
+
+    button {
+      margin-top: 2rem;
+      width: 100%;
+      background-color: #1D2A10;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #CD8A39;
+      color: #1D2A10;
+    }
+
+    #mapa {
+      height: 400px;
+      border: 2px solid #1D2A10;
+      border-radius: 10px;
+      margin-top: 0.5rem;
+    }
+
+    .error-msg {
+      color: red;
+      font-size: 0.9rem;
+      margin-top: 4px;
+      display: none;
+    }
+    .sensor-checkboxes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.sensor-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.8);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 1rem;
+  color: #1D2A10;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.sensor-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #1D2A10;
+  cursor: pointer;
+}
+.notificacion {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #fffefb;
+  color: #1D2A10;
+  border-bottom: 1px solid #e0dfdb;
+}
+.notificacion strong {
+  color: #CD8A39;
+}
+.notificacion button {
+  background: none;
+  border: none;
+  color: #bbb;
+  cursor: pointer;
+  font-size: 16px;
+}
+.notificacion button:hover {
+  color: red;
+}
+
+
+</style>
+</head>
+<body>
+<header>
+    <div class="logo">
+        <div class="item Logo" onclick="window.location.href='../Principales/Pagina-Principal.html'">
+            <img src="../Public/EcoSmart2.png" alt="Logo"/>
+        </div>
+    </div>
+
+    <nav id="menu">
+        <!-- Links se insertan dinámicamente según el rol -->
+        <input class="busqueda" type="search" placeholder="Buscar">
+    </nav>
+
+    <div class="Fondo-fo-perfil" onclick="toggleMenu(event)">
+        <img class="fo-perfil" src="../Public/user.png" alt="Foto de perfil">
+        <div id="menuPerfil" class="menu-perfil">
+            <a href="../Perfil/Perfil.html">Perfil</a>
+            <a href="#" onclick="logout()">Cerrar sesión</a>
+        </div>
+    </div>
+    <div class="icono-notificacion" onclick="toggleNotificaciones()" style="position: relative; cursor: pointer;">
+  <img src="../Public/campana.png" alt="Notificaciones" style="width: 28px; height: 28px;">
+  <span id="alerta-punto" style="
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    border: 2px solid white;
+    display: none;
+  "></span>
+</div>
+
+</header>
+<main>
+    <h2>Editar Parcela</h2>
+    <form id="formEditar">
+      <label>Nombre:</label>
+      <input type="text" id="nombre" required />
+      <div id="errorNombre" class="error-msg">* El nombre es obligatorio</div>
+
+      <label>Ubicación (opcional: haz clic en el mapa para cambiar):</label>
+      <div id="mapa"></div>
+
+      <label>Latitud:</label>
+      <input type="text" id="lat" readonly />
+
+      <label>Longitud:</label>
+      <input type="text" id="lon" readonly />
+
+<label style="margin-bottom: 10px;">Sensores disponibles:</label>
+<div id="sensores-checks" class="sensor-checkboxes">
+  <div class="sensor-row">
+    <input type="checkbox" value="Humedad del suelo" />
+    <span>💧 Humedad del suelo</span>
+  </div>
+  <div class="sensor-row">
+    <input type="checkbox" value="pH" />
+    <span>🧪 pH del suelo</span>
+  </div>
+  <div class="sensor-row">
+    <input type="checkbox" value="Nivel de nutrientes" />
+    <span>🌱 Nivel de nutrientes</span>
+  </div>
+  <div class="sensor-row">
+    <input type="checkbox" value="Temperatura del suelo" />
+    <span>🌡️ Temperatura del suelo</span>
+  </div>
+</div>
+  <button type="submit">Guardar Cambios</button>
+  </form>
+</main>
+<div id="notificaciones-box" style="
+  position: fixed;
+  top: 70px;
+  right: 10px;
+  background: white;
+  color: #1D2A10;
+  width: 360px;
+  max-height: 500px;
+  overflow-y: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  display: none;
+  z-index: 9999;
+"></div>
+
+<script>
+  function toggleNotificaciones() {
+    const box = document.getElementById("notificaciones-box");
+    const punto = document.getElementById("alerta-punto");
+
+    if (box.style.display === "block") {
+      box.style.display = "none";
+    } else {
+      cargarNotificaciones();
+      box.style.display = "block";
+      punto.style.display = "none";
+    }
+  }
+
+  async function cargarNotificaciones() {
+    try {
+      const res = await fetch("http://localhost:5001/api/activadas");
+      const alertas = await res.json();
+      const contenedor = document.getElementById("notificaciones-box");
+      contenedor.innerHTML = "";
+
+      alertas.reverse().forEach(a => {
+        const div = document.createElement("div");
+        div.className = "notificacion";
+        div.innerHTML = `
+          <div class="texto">
+            <strong>${a.parcela?.nombre || "Parcela"}</strong>
+            <div style="font-size: 0.9rem;">${a.mensaje} <span style="color: #999">(${timeAgo(new Date(a.fecha))})</span></div>
+          </div>
+          <button onclick="eliminarNotificacion('${a._id}')">✖</button>
+        `;
+        contenedor.appendChild(div);
+      });
+
+    } catch (e) {
+      console.error("❌ Error al cargar notificaciones:", e);
+    }
+  }
+
+  function eliminarNotificacion(id) {
+    fetch(`http://localhost:5001/api/activadas/eliminar/${id}`, { method: "DELETE" })
+      .then(() => cargarNotificaciones())
+      .then(() => verificarAlertasActivas());
+  }
+
+  function verificarAlertasActivas() {
+    fetch("http://localhost:5001/api/activadas")
+      .then(res => res.json())
+      .then(alertas => {
+        const punto = document.getElementById("alerta-punto");
+        if (alertas.length > 0) {
+          punto.style.display = "inline-block";
+        } else {
+          punto.style.display = "none";
+        }
+      })
+      .catch(err => {
+        console.warn("No se pudo verificar alertas activas:", err);
+      });
+  }
+
+  function timeAgo(date) {
+    const diff = Math.floor((Date.now() - date.getTime()) / 1000);
+    if (diff < 60) return "hace unos segundos";
+    if (diff < 3600) return `hace ${Math.floor(diff / 60)} min`;
+    if (diff < 86400) return `hace ${Math.floor(diff / 3600)} horas`;
+    return `hace ${Math.floor(diff / 86400)} días`;
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    verificarAlertasActivas();
+    setInterval(verificarAlertasActivas, 10000);
+    document.addEventListener("click", function (event) {
+      const box = document.getElementById("notificaciones-box");
+      const bell = document.querySelector(".icono-notificacion");
+      if (box.style.display === "block" && !box.contains(event.target) && !bell.contains(event.target)) {
+        box.style.display = "none";
+      }
+    });
+  });
+</script>
+
+<script>
+    function toggleMenu(event) {
+        event.stopPropagation();
+        const menu = document.getElementById('menuPerfil');
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    document.addEventListener('click', function () {
+        const menu = document.getElementById('menuPerfil');
+        menu.style.display = 'none';
+    });
+
+    function logout() {
+        localStorage.clear();
+        window.location.href = '../Registro-Login/Login.html';
+    }
+
+    // Lógica para personalizar según el trabajo
+    const trabajo = localStorage.getItem('trabajo');
+    const correo = localStorage.getItem('correo');
+    const menu = document.getElementById('menu');
+
+    if (!trabajo || !correo) {
+        window.location.href = '../Registro-Login/Login.html';
+    }
+
+    const linksPorRol = {
+        tecnico: [
+            { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
+            { texto: "Parcelas", href: "../parcelas/listar-parcelas.html" },
+            { texto: "Administrar usuarios", href: "../Administrar-Usuarios/Administrar-usuarios.html" },
+            { texto: "Preguntas", href: "../Deepseek/consultas.html" },
+        ],
+        agronomo: [
+            { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
+            { texto: "Parcelas", href: "../parcelas/listar-parcelas.html" },
+            { texto: "Preguntas", href: "../Deepseek/consultas.html" },
+            { texto: "Inventario", href: "../Inventario/Inventario.html"},
+            { texto: "Asignar tareas", href: "../Tareas/Asignar-tareas.html"}
+        ],
+        agricultor: [
+            { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
+            { texto: "Parcelas", href: "../parcelas/listar-parcelas.html" },
+            { texto: "Preguntas", href: "../Deepseek/consultas.html" },
+        ]
+    };
+
+    const enlaces = linksPorRol[trabajo];
+
+    if (enlaces) {
+        enlaces.forEach(link => {
+            const a = document.createElement('a');
+            a.href = link.href;
+            a.textContent = link.texto;
+            menu.insertBefore(a, menu.querySelector('.busqueda'));
+        });
+    } else {
+        alert('Rol desconocido');
+    }
+
+</script>
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const idParcela = params.get("id");
+
+    const map = L.map("mapa").setView([-34.6, -71.2], 14);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
+
+    let marcador = null;
+    let nombreOriginal = "";
+    let ubicacionModificada = false;
+
+    function normalizarTexto(texto) {
+      return texto.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLowerCase();
+    }
+
+    map.on("click", function (e) {
+      const { lat, lng } = e.latlng;
+      if (marcador) map.removeLayer(marcador);
+      marcador = L.marker([lat, lng]).addTo(map);
+      document.getElementById("lat").value = lat.toFixed(6);
+      document.getElementById("lon").value = lng.toFixed(6);
+      ubicacionModificada = true;
+    });
+
+async function cargarParcela() {
+  const res = await fetch(`http://localhost:5001/api/parcelas/${idParcela}`);
+  const data = await res.json();
+  nombreOriginal = data.nombre;
+  document.getElementById("nombre").value = data.nombre;
+  if (data.coordenadas && data.coordenadas.lat && data.coordenadas.lon) {
+  document.getElementById("lat").value = data.coordenadas.lat;
+  document.getElementById("lon").value = data.coordenadas.lon;
+  marcador = L.marker([data.coordenadas.lat, data.coordenadas.lon]).addTo(map);
+  map.setView([data.coordenadas.lat, data.coordenadas.lon], 15);
+}
+
+  if (data.sensores && Array.isArray(data.sensores)) {
+    document.querySelectorAll('#sensores-checks input[type="checkbox"]').forEach(cb => {
+      cb.checked = data.sensores.includes(cb.value);
+    });
+}
+
+}
+
+async function existeParcela(nombre) {
+        const res = await fetch("http://localhost:5001/api/parcelas");
+        const parcelas = await res.json();
+        return parcelas.some(p => normalizarTexto(p.nombre) === normalizarTexto(nombre) && p._id !== idParcela);
+      }
+  
+      cargarParcela();
+
+    document.getElementById("formEditar").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+    const nombre = document.getElementById("nombre").value.trim();
+    const sensoresSeleccionados = Array.from(document.querySelectorAll('#sensores-checks input:checked')).map(cb => cb.value);
+
+      let datos = { nombre };
+
+      // Validaciones
+      document.getElementById("errorNombre").style.display = nombre ? "none" : "block";
+      if (!nombre) return;
+
+      if (await existeParcela(nombre)) {
+        document.getElementById("errorNombre").innerText = "* Ya existe una parcela con ese nombre";
+        document.getElementById("errorNombre").style.display = "block";
+        return;
+      }
+
+      if (ubicacionModificada) {
+        const lat = parseFloat(document.getElementById("lat").value);
+        const lon = parseFloat(document.getElementById("lon").value);
+        datos.coordenadas = { lat, lon };
+      }
+
+     datos.sensores = sensoresSeleccionados;
+      await fetch(`http://localhost:5001/api/parcelas/${idParcela}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(datos)
+      });
+
+      alert("✅ Parcela actualizada con éxito");
+      window.location.href = "listar-parcelas.html";
+    });
+</script>
+</body>
+</html>

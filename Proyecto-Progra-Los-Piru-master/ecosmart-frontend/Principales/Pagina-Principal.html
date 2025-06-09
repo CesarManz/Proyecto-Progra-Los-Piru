@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Página Principal</title>
+    <link rel="stylesheet" href="Estilo-prin.css">
+    <style>.notificacion {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #fffefb;
+  color: #1D2A10;
+  border-bottom: 1px solid #e0dfdb;
+}
+.notificacion strong {
+  color: #CD8A39;
+}
+.notificacion button {
+  background: none;
+  border: none;
+  color: #bbb;
+  cursor: pointer;
+  font-size: 16px;
+}
+.notificacion button:hover {
+  color: red;
+}
+</style>
+</head>
+<body>
+<header>
+    <div class="logo">
+        <div class="item Logo" onclick="window.location.href='../Principales/Pagina-Principal.html'">
+            <img src="../Public/EcoSmart2.png" alt="Logo"/>
+        </div>
+    </div>
+
+    <nav id="menu">
+        <!-- Links se insertan dinámicamente según el rol -->
+        <input class="busqueda" type="search" placeholder="Buscar">
+    </nav>
+
+    <div class="Fondo-fo-perfil" onclick="toggleMenu(event)">
+        <img class="fo-perfil" src="../Public/user.png" alt="Foto de perfil">
+        <div id="menuPerfil" class="menu-perfil">
+            <a href="../Perfil/Perfil.html">Perfil</a>
+            <a href="#" onclick="logout()">Cerrar sesión</a>
+        </div>   
+    </div>
+    <div class="icono-notificacion" onclick="toggleNotificaciones()" style="position: relative; cursor: pointer;">
+  <img src="../Public/campana.png" alt="Notificaciones" style="width: 28px; height: 28px;">
+  <span id="alerta-punto" style="
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    border: 2px solid white;
+    display: none;
+  "></span>
+</div>
+
+</header>
+
+<div class="Cuadrado-transparente">
+    <div class="Tareas-pendientes">
+        <div class="texto">
+            <h1>Resumen</h1>
+            <h3>Tareas pendientes (x)</h3>
+            <h3>Tareas en revision (x)</h3>
+            <h3>Tareas terminadas (x)</h3>
+
+        </div>
+        <div class="imagenes">
+            <div class="item tareas" onclick="window.location.href='../Tareas/Tareas-us.html'">
+                <img  src="../Public/Tareas.png" alt="Tareas" />
+                <h5>Tareas</h5>
+            </div>
+            <div class="item alertas" onclick="window.location.href='../Alertas/ver-alertas.html'">
+                <img src="../Public/Alertas.png" alt="Alertas" />
+                <h5>Alertas</h5>
+            </div>
+        </div>
+    </div>
+
+    <h1 class="tit-parcelas">Parcelas</h1>
+    <div class="Ver-parcelas" id="parcelasContainer"></div>
+    <br><br/>
+    <button onclick="window.location.href='../Parcelas/listar-parcelas.html'">
+        Ver Parcelas
+    </button>
+
+</div>
+<div id="notificaciones-box" style="
+  position: fixed;
+  top: 70px;
+  right: 10px;
+  background: white;
+  color: #1D2A10;
+  width: 360px;
+  max-height: 500px;
+  overflow-y: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  display: none;
+  z-index: 9999;
+"></div>
+
+
+<script>
+  function toggleNotificaciones() {
+    const box = document.getElementById("notificaciones-box");
+    const punto = document.getElementById("alerta-punto");
+
+    if (box.style.display === "block") {
+      box.style.display = "none";
+    } else {
+      cargarNotificaciones();
+      box.style.display = "block";
+      punto.style.display = "none";
+    }
+  }
+
+  async function cargarNotificaciones() {
+    try {
+      const res = await fetch("http://localhost:5001/api/activadas");
+      const alertas = await res.json();
+      const contenedor = document.getElementById("notificaciones-box");
+      contenedor.innerHTML = "";
+
+      alertas.reverse().forEach(a => {
+        const div = document.createElement("div");
+        div.className = "notificacion";
+        div.innerHTML = `
+          <div class="texto">
+            <strong>${a.parcela?.nombre || "Parcela"}</strong>
+            <div style="font-size: 0.9rem;">${a.mensaje} <span style="color: #999">(${timeAgo(new Date(a.fecha))})</span></div>
+          </div>
+          <button onclick="eliminarNotificacion('${a._id}')">✖</button>
+        `;
+        contenedor.appendChild(div);
+      });
+
+    } catch (e) {
+      console.error("❌ Error al cargar notificaciones:", e);
+    }
+  }
+
+  function eliminarNotificacion(id) {
+    fetch(`http://localhost:5001/api/activadas/eliminar/${id}`, { method: "DELETE" })
+      .then(() => cargarNotificaciones())
+      .then(() => verificarAlertasActivas());
+  }
+
+  function verificarAlertasActivas() {
+    fetch("http://localhost:5001/api/activadas")
+      .then(res => res.json())
+      .then(alertas => {
+        const punto = document.getElementById("alerta-punto");
+        if (alertas.length > 0) {
+          punto.style.display = "inline-block";
+        } else {
+          punto.style.display = "none";
+        }
+      })
+      .catch(err => {
+        console.warn("No se pudo verificar alertas activas:", err);
+      });
+  }
+
+  function timeAgo(date) {
+    const diff = Math.floor((Date.now() - date.getTime()) / 1000);
+    if (diff < 60) return "hace unos segundos";
+    if (diff < 3600) return `hace ${Math.floor(diff / 60)} min`;
+    if (diff < 86400) return `hace ${Math.floor(diff / 3600)} horas`;
+    return `hace ${Math.floor(diff / 86400)} días`;
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    verificarAlertasActivas();
+    setInterval(verificarAlertasActivas, 10000);
+    document.addEventListener("click", function (event) {
+      const box = document.getElementById("notificaciones-box");
+      const bell = document.querySelector(".icono-notificacion");
+      if (box.style.display === "block" && !box.contains(event.target) && !bell.contains(event.target)) {
+        box.style.display = "none";
+      }
+    });
+  });
+</script>
+<script>
+    function toggleMenu(event) {
+        event.stopPropagation();
+        const menu = document.getElementById('menuPerfil');
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    document.addEventListener('click', function () {
+        const menu = document.getElementById('menuPerfil');
+        menu.style.display = 'none';
+    });
+
+    function logout() {
+        localStorage.clear();
+        window.location.href = '../Registro-Login/Login.html';
+    }
+
+    // Lógica para personalizar según el trabajo
+    const trabajo = localStorage.getItem('trabajo');
+    const correo = localStorage.getItem('correo');
+    const menu = document.getElementById('menu');
+
+    if (!trabajo || !correo) {
+        window.location.href = '../Registro-Login/Login.html';
+    }
+
+    const linksPorRol = {
+        tecnico: [
+            { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
+            { texto: "Parcelas", href: "../parcelas/listar-parcelas.html" },
+            { texto: "Administrar usuarios", href: "../Administrar-Usuarios/Administrar-usuarios.html" },
+            { texto: "Preguntas", href: "../Deepseek/consultas.html" },
+        ],
+        agronomo: [
+            { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
+            { texto: "Parcelas", href: "../parcelas/listar-parcelas.html" },
+            { texto: "Preguntas", href: "../Deepseek/consultas.html" },
+            { texto: "Inventario", href: "../Inventario/Inventario.html"},
+            { texto: "Asignar tareas", href: "../Tareas/Asignar-tareas.html"}
+        ],
+        agricultor: [
+            { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
+            { texto: "Parcelas", href: "../parcelas/listar-parcelas.html" },
+            { texto: "Preguntas", href: "../Deepseek/consultas.html" },
+        ]
+    };
+
+    const enlaces = linksPorRol[trabajo];
+
+    if (enlaces) {
+        enlaces.forEach(link => {
+            const a = document.createElement('a');
+            a.href = link.href;
+            a.textContent = link.texto;
+            menu.insertBefore(a, menu.querySelector('.busqueda'));
+        });
+    } else {
+        alert('Rol desconocido');
+    }
+
+</script>
+<script>
+    async function cargarParcelas() {
+        try {
+            const response = await fetch('http://localhost:5001/api/parcelas'); // Ajusta la ruta según tu backend
+            const parcelas = await response.json();
+
+
+            const container = document.getElementById('parcelasContainer');
+            container.innerHTML = '';
+
+            parcelas.slice(0, 3).forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'parcela';
+                div.innerHTML = `
+                <div class="contenido-parcela">
+                    <img src="../public/Planta-parcela.png" alt="Imagen de parcela" class="img-parcela">
+                    <div class="info-parcela">
+                        <h3>${p.nombre}</h3>
+                    </div>
+                </div>
+            `;
+                container.appendChild(div);
+            });
+        } catch (error) {
+            console.error('Error al cargar parcelas:', error);
+        }
+    }
+    cargarParcelas();
+</script>
+
+</body>
+</html>
+
