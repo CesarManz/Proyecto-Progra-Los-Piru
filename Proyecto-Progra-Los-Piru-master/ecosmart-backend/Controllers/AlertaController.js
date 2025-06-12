@@ -23,23 +23,28 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Editar alerta existente
-router.put("/editar/:id", async (req, res) => {
+// Obtener una alerta por ID
+router.get('/:id', async (req, res) => {
   try {
-    const alertaActualizada = await Alerta.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json({ mensaje: "✅ Alerta actualizada", alerta: alertaActualizada });
-  } catch (error) {
-    res.status(500).json({ mensaje: "❌ Error al actualizar alerta", error: error.message });
+    const alerta = await Alerta.findById(req.params.id).populate('parcela');
+    if (!alerta) return res.status(404).json({ mensaje: 'Alerta no encontrada' });
+    res.json(alerta);
+  } catch (err) {
+    console.error("❌ Error al obtener alerta:", err);
+    res.status(500).json({ mensaje: 'Error interno al obtener alerta' });
   }
 });
 
-// Eliminar alerta
-router.delete("/eliminar/:id", async (req, res) => {
+
+// Eliminar alerta por ID
+router.delete('/eliminar/:id', async (req, res) => {
   try {
-    await Alerta.findByIdAndDelete(req.params.id);
-    res.json({ mensaje: "✅ Alerta eliminada correctamente" });
-  } catch (error) {
-    res.status(500).json({ mensaje: "❌ Error al eliminar alerta", error: error.message });
+    const { id } = req.params;
+    await Alerta.findByIdAndDelete(id);
+    res.json({ mensaje: '✅ Alerta eliminada correctamente.' });
+  } catch (err) {
+    console.error("❌ Error al eliminar alerta:", err);
+    res.status(500).json({ mensaje: 'Error al eliminar la alerta.' });
   }
 });
 

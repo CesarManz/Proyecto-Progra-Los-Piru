@@ -70,6 +70,19 @@ async function verificarYGuardarAlertas(parcela, tipo, valor) {
     if (valor < alerta.umbralMinimo || valor > alerta.umbralMaximo) {
       const mensaje = valor < alerta.umbralMinimo ? alerta.descripcionMinimo : alerta.descripcionMaximo;
 
+      // NUEVO: evitar duplicados recientes (últimos 30 min)
+      const hace30Min = new Date(Date.now() - 30 * 60 * 1000);
+      const yaExiste = await AlertaActivada.findOne({
+        parcela: parcela._id,
+        tipo,
+        fecha: { $gte: hace30Min }
+      });
+
+      if (yaExiste) {
+        console.log(`⏳ Alerta reciente ya activada para ${tipo} en ${parcela.nombre}, no se repite.`);
+        continue;
+      }
+
       const alertaActivada = new AlertaActivada({
         parcela: parcela._id,
         tipo,

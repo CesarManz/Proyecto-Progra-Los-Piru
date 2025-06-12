@@ -300,8 +300,6 @@
     });
   });
 </script>
-
-
   <script>
     document.addEventListener("DOMContentLoaded", async () => {
       const correo = localStorage.getItem("correo");
@@ -343,14 +341,17 @@
       }
     });
 
-    function eliminarAlerta(id) {
-      if (confirm("¿Eliminar esta alerta?")) {
-        fetch(`http://localhost:5001/api/alertas/eliminar/${id}`, { method: "DELETE" })
-          .then(res => res.json())
-          .then(() => location.reload())
-          .catch(err => alert("Error al eliminar la alerta."));
-      }
-    }
+   function eliminarAlerta(id) {
+  if (confirm("¿Estás seguro que deseas eliminar esta alerta?")) {
+    fetch(`http://localhost:5001/api/alertas/eliminar/${id}`, { method: "DELETE" })
+      .then(res => res.json())
+      .then(data => {
+        alert(data.mensaje || "✅ Alerta eliminada.");
+        location.reload();
+      })
+      .catch(err => alert("❌ Error al eliminar la alerta."));
+  }
+}
 
     async function editarAlerta(id) {
       try {
