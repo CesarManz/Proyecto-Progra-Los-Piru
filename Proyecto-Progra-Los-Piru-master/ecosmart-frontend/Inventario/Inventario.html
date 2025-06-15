@@ -77,71 +77,9 @@
     </div>
 </div>
 
-
-<script>
-    function toggleMenu(event) {
-        event.stopPropagation();
-        const menu = document.getElementById('menuPerfil');
-        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-    }
-
-    document.addEventListener('click', function () {
-        const menu = document.getElementById('menuPerfil');
-        menu.style.display = 'none';
-    });
-
-    function logout() {
-        localStorage.clear();
-        window.location.href = '../Registro-Login/Login.html';
-    }
-
-    // Lógica para personalizar según el trabajo
-    const trabajo = localStorage.getItem('trabajo');
-    const correo = localStorage.getItem('correo');
-    const menu = document.getElementById('menu');
-
-    if (!trabajo || !correo) {
-        window.location.href = '../Registro-Login/Login.html';
-    }
-
-    const linksPorRol = {
-        tecnico: [
-            { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
-            { texto: "Parcelas", href: "../parcelas/listar-parcelas.html" },
-            { texto: "Administrar usuarios", href: "../Administrar-Usuarios/Administrar-usuarios.html" },
-            { texto: "Preguntas", href: "../Deepseek/consultas.html" },
-        ],
-        agronomo: [
-            { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
-            { texto: "Parcelas", href: "../parcelas/listar-parcelas.html" },
-            { texto: "Preguntas", href: "../Deepseek/consultas.html" },
-            { texto: "Inventario", href: "../Inventario/Inventario.html"},
-            { texto: "Asignar tareas", href: "../Tareas/Asignar-tareas.html"}
-        ],
-        agricultor: [
-            { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
-            { texto: "Parcelas", href: "../parcelas/listar-parcelas.html" },
-            { texto: "Preguntas", href: "../Deepseek/consultas.html" },
-        ]
-    };
-
-    const enlaces = linksPorRol[trabajo];
-
-    if (enlaces) {
-        enlaces.forEach(link => {
-            const a = document.createElement('a');
-            a.href = link.href;
-            a.textContent = link.texto;
-            menu.insertBefore(a, menu.querySelector('.busqueda'));
-        });
-    } else {
-        alert('Rol desconocido');
-    }
-
-</script>
 <script>
     async function cargarProductos() {
-        const res = await fetch('http://localhost:3000/api/productos');
+        const res = await fetch('http://localhost:5001/api/productos');
         const productos = await res.json();
 
         const contenedorSemillas = document.getElementById('semillas');
@@ -160,18 +98,18 @@
         });
     }
 
-    document.getElementById('formularioProducto').addEventListener('submit', async (e) => {
+    document.getElementById('formProducto').addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const nombre = document.getElementById('nombre').value;
-        const codigo = document.getElementById('codigo').value;
-        const cantidad = document.getElementById('cantidad').value;
-        const tipo = document.querySelector('input[name="tipo"]:checked').value;
+        const codigo = parseInt(document.getElementById('codigo').value);
+        const cantidad = parseInt(document.getElementById('cantidad').value);
+        const tipo = document.getElementById('tipo').value;
 
         const producto = { nombre, codigo, cantidad, tipo };
 
         try {
-            const res = await fetch('http://localhost:3000/api/productos', {
+            const res = await fetch('http://localhost:5001/api/productos/agregar', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(producto),
@@ -179,13 +117,17 @@
 
             const data = await res.json();
             alert(data.mensaje);
+            cargarProductos();
         } catch (err) {
             alert('Error al guardar producto');
         }
     });
 
+
     window.onload = cargarProductos;
 </script>
+<script src="../js-repetidos/header.js" defer></script>
+
 </body>
 
 <html/>
