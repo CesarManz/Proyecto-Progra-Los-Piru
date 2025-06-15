@@ -4,131 +4,7 @@
   <meta charset="UTF-8">
   <title>Configurar Alertas</title>
   <link rel="stylesheet" href="../Principales/Estilo-prin.css" />
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), #c1d36b), url("../Public/Fondo.png");
-      background-size: cover;
-      background-attachment: fixed;
-    }
-
-    .contenedor-alertas {
-      max-width: 600px;
-      background: rgba(255, 255, 255, 0.92);
-      margin: 3rem auto;
-      padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
-    }
-
-    h2 {
-      text-align: center;
-      color: #1D2A10;
-      margin-bottom: 1.5rem;
-    }
-
-    label {
-      display: block;
-      margin: 10px 0 4px;
-      color: #1D2A10;
-    }
-
-    select, input {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #bbb;
-      border-radius: 6px;
-      margin-bottom: 10px;
-    }
-
-    button[type="submit"] {
-      background-color: #CD8A39;
-      color: white;
-      padding: 10px 16px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      width: 100%;
-      font-weight: bold;
-    }
-
-    button[type="submit"]:hover {
-      background-color: #1D2A10;
-    }
-
-    #mensaje {
-      text-align: center;
-      margin-top: 1rem;
-      font-weight: bold;
-      color: #1D2A10;
-    }
-
-    #notificaciones-box {
-      position: fixed;
-      top: 70px;
-      right: 10px;
-      background: white;
-      color: #1D2A10;
-      width: 360px;
-      max-height: 500px;
-      overflow-y: auto;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      display: none;
-      z-index: 9999;
-    }
-
-    .notificacion {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 16px;
-      background: #fffefb;
-      color: #1D2A10;
-      border-bottom: 1px solid #e0dfdb;
-    }
-
-    .notificacion strong {
-      color: #CD8A39;
-    }
-
-    .notificacion .texto {
-      flex: 1;
-    }
-
-    .notificacion button {
-      background: none;
-      border: none;
-      color: #bbb;
-      cursor: pointer;
-      font-size: 16px;
-    }
-
-    .notificacion button:hover {
-      color: red;
-    }
-
-    .icono-notificacion {
-      position: absolute;
-      top: 20px;
-      right: 70px;
-      cursor: pointer;
-      z-index: 10000;
-    }
-
-    #alerta-punto {
-      position: absolute;
-      top: 0px;
-      right: 0px;
-      width: 10px;
-      height: 10px;
-      background-color: red;
-      border-radius: 50%;
-      border: 2px solid white;
-      display: none;
-    }
-  </style>
+  <link rel="stylesheet" href="Estilo-aler.css">
 </head>
 <body>
   <header>
@@ -137,16 +13,23 @@
         <img src="../Public/EcoSmart2.png" alt="Logo"/>
       </div>
     </div>
-
     <nav id="menu">
       <input class="busqueda" type="search" placeholder="Buscar">
     </nav>
-
     <div class="icono-notificacion" onclick="toggleNotificaciones()">
-      <img src="../Public/campana.png" alt="Notificaciones" style="width: 28px; height: 28px;">
-      <span id="alerta-punto"></span>
+      <img src="../Public/campana.png" alt="Notificaciones">
+        <span id="alerta-punto" style="
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    border: 2px solid white;
+    display: none;
+  "></span>
     </div>
-
     <div class="Fondo-fo-perfil" onclick="toggleMenu(event)">
       <img class="fo-perfil" src="../Public/user.png" alt="Foto de perfil">
       <div id="menuPerfil" class="menu-perfil">
@@ -155,46 +38,43 @@
       </div>
     </div>
   </header>
-
-  <div class="contenedor-alertas">
-    <div style="text-align: right; margin-bottom: 1rem;">
-      <button onclick="location.href='ver-alertas.html'" style="
-        background-color: #1D2A10;
-        color: white;
-        border: none;
-        padding: 8px 12px;
-        border-radius: 6px;
-        font-weight: bold;
-      ">⬅️ Ver Alertas</button>
     </div>
+  <div id="notificaciones-box" style="
+  position: fixed;
+  top: 70px;
+  right: 10px;
+  background: white;
+  color: #1D2A10;
+  width: 360px;
+  max-height: 500px;
+  overflow-y: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  display: none;
+  z-index: 9999;
+"></div>
 
-    <h2>Configurar Alerta</h2>
-    <form id="form-alerta">
-      <label for="parcela">Parcela:</label>
-      <select id="parcela" name="parcela" required></select>
+  <main>
+    <div class="contenedor-alertas">
+      <h2>Configuración de Alertas</h2>
+      <form id="formulario-alerta">
+        <label for="parcela">Parcela</label>
+        <select id="parcela" name="parcela"></select>
+        <label for="sensor">Sensor</label>
+        <select id="sensor" name="sensor"></select>
+        <label for="umbral">Umbral</label>
+        <input type="number" id="minimo" name="minimo" placeholder="Umbral mínimo" required>
+        <input type="number" id="maximo" name="maximo" placeholder="Umbral máximo" required>
+        <label for="descripcion">Descripción</label>
+        <input type="text" id="descripcionMin" placeholder="Descripción mínima">
+        <input type="text" id="descripcionMax" placeholder="Descripción máxima">
+        <button type="submit">Guardar Alerta</button>
+      </form>
+      <div id="mensaje"></div>
+    </div>
+  </main>
 
-      <label for="sensor">Tipo de Sensor:</label>
-      <select id="sensor" name="sensor" required></select>
-
-      <label for="minimo">Umbral Mínimo:</label>
-      <input type="number" step="any" id="minimo" name="umbralMinimo" required>
-
-      <label for="descripcionMin">Descripción cuando está por debajo:</label>
-      <input type="text" id="descripcionMin" name="descripcionMinimo" required>
-
-      <label for="maximo">Umbral Máximo:</label>
-      <input type="number" step="any" id="maximo" name="umbralMaximo" required>
-
-      <label for="descripcionMax">Descripción cuando está por encima:</label>
-      <input type="text" id="descripcionMax" name="descripcionMaximo" required>
-
-      <button type="submit">Guardar Alerta</button>
-    </form>
-    <p id="mensaje"></p>
-  </div>
-
-  <div id="notificaciones-box"></div>
-
+  <script src="../notificacion.js"></script>
   <script>
     function toggleMenu(event) {
       event.stopPropagation();
@@ -273,7 +153,7 @@
         });
       });
 
-      document.getElementById("form-alerta").addEventListener("submit", async (e) => {
+      document.getElementById("formulario-alerta").addEventListener("submit", async (e) => {
         e.preventDefault();
         const datos = {
           parcela: selectParcela.value,
@@ -298,87 +178,6 @@
       verificarAlertasActivas();
       setInterval(verificarAlertasActivas, 10000);
     });
-
-    function toggleNotificaciones() {
-      const box = document.getElementById("notificaciones-box");
-      const punto = document.getElementById("alerta-punto");
-      if (box.style.display === "block") {
-        box.style.display = "none";
-      } else {
-        cargarNotificaciones();
-        box.style.display = "block";
-        punto.style.display = "none";
-      }
-    }
-
-    async function cargarNotificaciones() {
-      try {
-        const res = await fetch("http://localhost:5001/api/activadas");
-        const alertas = await res.json();
-        const contenedor = document.getElementById("notificaciones-box");
-        contenedor.innerHTML = "";
-
-        alertas.reverse().forEach(a => {
-          const div = document.createElement("div");
-          div.className = "notificacion";
-          div.innerHTML = `
-            <div class="texto">
-              <strong>${a.parcela?.nombre || "Parcela"}</strong>
-              <div style="font-size: 0.9rem;">${a.mensaje} <span style="color: #999">(${timeAgo(new Date(a.fecha))})</span></div>
-            </div>
-            <button onclick="eliminarNotificacion('${a._id}')">✖</button>
-          `;
-          contenedor.appendChild(div);
-        });
-      } catch (e) {
-        console.error("❌ Error al cargar notificaciones:", e);
-      }
-    }
-
-    function eliminarNotificacion(id) {
-      fetch(`http://localhost:5001/api/activadas/eliminar/${id}`, { method: "DELETE" })
-        .then(() => cargarNotificaciones())
-        .then(() => verificarAlertasActivas());
-    }
-
-    function verificarAlertasActivas() {
-      fetch("http://localhost:5001/api/activadas")
-        .then(res => res.json())
-        .then(alertas => {
-          const punto = document.getElementById("alerta-punto");
-          punto.style.display = alertas.length > 0 ? "inline-block" : "none";
-        });
-    }
-
-    function timeAgo(date) {
-      const diff = Math.floor((Date.now() - date.getTime()) / 1000);
-      if (diff < 60) return "hace unos segundos";
-      if (diff < 3600) return `hace ${Math.floor(diff / 60)} min`;
-      if (diff < 86400) return `hace ${Math.floor(diff / 3600)} horas`;
-      return `hace ${Math.floor(diff / 86400)} días`;
-    }
   </script>
 </body>
 </html>
-    <meta charset="UTF-8">
-    <title>Alertas</title>
-    <link rel="stylesheet" href="Estilo-aler.css">
-</head>
-<header>
-    <div class="logo">
-        <div class="item Logo" onclick="window.location.href='../Principales/Pagina-Principal.html'">
-            <img src="../Public/EcoSmart2.png" alt="Logo"/>
-        </div>
-    </div>
-    <nav>
-        <a href="../Principales/Pagina-Principal.html">Pagina principal</a>
-        <a href="../Parcelas/listar-parcelas.html">Parcelas</a>
-        <a href="../Inventario/Inventario.html">Inventario</a>
-        <a href="../Deepseek/consultas.html">Preguntas</a>
-        <input class= "busqueda" type="search" placeholder="Buscar">
-    </nav>
-</header>
-<body>
-
-</body>
-<html/>
