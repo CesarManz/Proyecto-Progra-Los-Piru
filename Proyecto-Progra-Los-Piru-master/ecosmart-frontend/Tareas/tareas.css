@@ -76,6 +76,33 @@ header {
     background: rgba(205, 138, 57, 0.9);
     border-radius: 10px;
 }
+form {
+    background-color: #dba14e;
+    padding: 15px 15px;
+    border-radius: 15px;
+    width: 1000px;
+    margin: 20px auto;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    text-align: center;
+    align-items: center;;
+}
+form h2 {
+    margin-bottom: 25px;
+    font-weight: normal;
+    color: #000000;
+}
+button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 20px;
+    border: none;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: #1D2A10;
+    color: rgba(205, 138, 57, 0.9);
+}
 nav a {
     color: #CD8A39;
     text-decoration: none;
@@ -88,17 +115,7 @@ nav a {
     border: none;
     border-radius: 4px;
 }
-.Cuadrado-transparente {
-    background: rgba(205, 138, 57, 0.4);
-    margin-right: auto;
-    padding: 10px;
-    width: 70%;
-    border-radius: 12px;
-    margin-left: 50px;
-    margin-top: 50px;
-    text-align: center;
-    color: #CD8A39;
-}
+
 .item {
     display: flex;
     flex-direction: column;
@@ -112,4 +129,33 @@ nav a {
 .item img {
     width: 100%;
     height: auto;
+}
+.tarea {
+    display: none;
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    background: white;
+    padding: 20px;
+    border: 2px solid #ccc;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    z-index: 1000;
+}
+.tarea-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.tarea-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.tarea input {
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
 }

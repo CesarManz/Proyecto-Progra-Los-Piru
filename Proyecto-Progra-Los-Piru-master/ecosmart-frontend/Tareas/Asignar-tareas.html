@@ -65,20 +65,9 @@
 
 </header>
 <div class="Cuadrado-transparente">
-    <div id="notificaciones-box" style="
-  position: fixed;
-  top: 70px;
-  right: 10px;
-  background: white;
-  color: #1D2A10;
-  width: 360px;
-  max-height: 500px;
-  overflow-y: auto;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  display: none;
-  z-index: 9999;
-"></div>
+    <div id="notificaciones-box" style="display: flex; flex-wrap: wrap; gap: 20px;"></div>
+</div>
+
 <script>
   function toggleNotificaciones() {
     const box = document.getElementById("notificaciones-box");
@@ -164,14 +153,12 @@
 
 
 </header>
-<div class="Cuadrado-transparente">
 
-    <div class="Asignar">
+    <div id="tarea" class="taera">
         <h3>Asignar Tareas</h3>
-        <h4>Seleccione a quien quiere asignar la tarea</h4>
 
-        <form id="formTarea">
-            <label for="destinatario">Seleccionar persona:</label>
+        <form id="formtarea">
+            <label for="tareaDestinatario">Seleccionar persona:</label>
             <select id="destinatario" name="destinatario" required>
                 <option value="">-- Cargando personas... --</option>
             </select>
@@ -187,7 +174,7 @@
             <br><br>
             <button type="submit">Asignar tarea</button>
         </form>
-    </div>
+
 
 
     <div class="Revisar">
@@ -196,68 +183,6 @@
     </div>
 </div>
 
-
-
-<script>
-    function toggleMenu(event) {
-        event.stopPropagation();
-        const menu = document.getElementById('menuPerfil');
-        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-    }
-
-    document.addEventListener('click', function () {
-        const menu = document.getElementById('menuPerfil');
-        menu.style.display = 'none';
-    });
-
-    function logout() {
-        localStorage.clear();
-        window.location.href = '../Registro-Login/Login.html';
-    }
-
-    // Lógica para personalizar según el trabajo
-    const trabajo = localStorage.getItem('trabajo');
-    const correo = localStorage.getItem('correo');
-    const menu = document.getElementById('menu');
-
-    if (!trabajo || !correo) {
-        window.location.href = '../Registro-Login/Login.html';
-    }
-
-    const linksPorRol = {
-        tecnico: [
-            { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
-            { texto: "Parcelas", href: "../parcelas/listar-parcelas.html" },
-            { texto: "Administrar usuarios", href: "../Administrar-Usuarios/Administrar-usuarios.html" },
-            { texto: "Preguntas", href: "../Deepseek/consultas.html" },
-        ],
-        agronomo: [
-            { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
-            { texto: "Parcelas", href: "../parcelas/listar-parcelas.html" },
-            { texto: "Preguntas", href: "../Deepseek/consultas.html" },
-            { texto: "Inventario", href: "../Inventario/Inventario.html"},
-        ],
-        agricultor: [
-            { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
-            { texto: "Parcelas", href: "../parcelas/listar-parcelas.html" },
-            { texto: "Preguntas", href: "../Deepseek/consultas.html" },
-        ]
-    };
-
-    const enlaces = linksPorRol[trabajo];
-
-    if (enlaces) {
-        enlaces.forEach(link => {
-            const a = document.createElement('a');
-            a.href = link.href;
-            a.textContent = link.texto;
-            menu.insertBefore(a, menu.querySelector('.busqueda'));
-        });
-    } else {
-        alert('Rol desconocido');
-    }
-
-</script>
 <script>
     document.addEventListener('DOMContentLoaded', async () => {
         try {
@@ -378,7 +303,13 @@
 
     document.addEventListener('DOMContentLoaded', cargarTareasEnRevision);
 </script>
+<<<<<<< HEAD
 <script src="../notificacion.js"></script>
 
 
 </body>
+=======
+<script src="../js-repetidos/header.js" defer></script>
+</body>
+<html/>
+>>>>>>> d5a84a3f600a34782122ab7b9d0f38524bf1a899
