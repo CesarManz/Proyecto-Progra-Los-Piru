@@ -172,9 +172,8 @@ nav a {
     top: 20%;
     left: 50%;
     transform: translate(-50%, 0);
-    background: white;
+    background-color: #dba14e;
     padding: 20px;
-    border: 2px solid #ccc;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     z-index: 1000;
 }
@@ -183,12 +182,15 @@ nav a {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    ackground-color: #dba14e
 }
 
 .modal-buttons {
     display: flex;
     justify-content: space-between;
     margin-top: 10px;
+
+    color: rgba(205, 138, 57, 0.9);
 }
 
 .modal input {
