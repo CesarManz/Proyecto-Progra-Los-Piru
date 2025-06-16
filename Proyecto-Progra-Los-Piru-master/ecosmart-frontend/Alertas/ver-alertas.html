@@ -4,99 +4,7 @@
   <meta charset="UTF-8" />
   <title>Mis Alertas Configuradas</title>
   <link rel="stylesheet" href="../Principales/Estilo-prin.css" />
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), #c1d36b), url("../Public/Fondo.png");
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
-    }
-
-    main {
-      max-width: 1000px;
-      margin: 40px auto;
-      padding: 20px;
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: 16px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-    }
-
-    main h2 {
-      text-align: center;
-      color: #1D2A10;
-      margin-bottom: 1.5rem;
-      font-size: 26px;
-    }
-
-    #tabla-alertas {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .alerta-item {
-      background: #fdfdfd;
-      border-left: 6px solid #CD8A39;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      padding: 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-
-    .alerta-info {
-      flex: 1;
-      font-size: 14px;
-      color: #1D2A10;
-    }
-
-    .alerta-info p {
-      margin: 4px 0;
-    }
-
-    .alerta-acciones {
-      display: flex;
-      gap: 10px;
-    }
-
-    .alerta-acciones button {
-      border: none;
-      border-radius: 12px;
-      padding: 10px 16px;
-      cursor: pointer;
-      font-size: 16px;
-      font-weight: bold;
-      transition: background 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .alerta-acciones button:hover {
-      opacity: 0.85;
-    }
-
-    .editar {
-      background-color: #A9B147;
-      color: white;
-    }
-
-    .eliminar {
-      background-color: #F06D6D;
-      color: white;
-    }
-
-    .sin-alertas {
-      text-align: center;
-      font-style: italic;
-      color: #666;
-    }
-  </style>
+  <link rel="stylesheet" href="../Alertas/estilo-veralertas.css" />
 </head>
 <body>
   <header>
@@ -129,7 +37,34 @@
     <div id="tabla-alertas">
       <p class="sin-alertas">Cargando alertas...</p>
     </div>
+ 
+</div>
   </main>
+     <!-- Modal para editar alerta -->
+<div id="modal-editar" class="modal" style="display: none;">
+  <div class="modal-contenido">
+    <h3>Editar Alerta</h3>
+    <form id="form-editar">
+      <input type="hidden" id="alerta-id">
+      
+      <label for="umbral-minimo">Umbral Mínimo</label>
+      <input type="number" id="umbral-minimo" required>
+
+      <label for="descripcion-minimo">Descripción Mínimo</label>
+      <input type="text" id="descripcion-minimo" required>
+
+      <label for="umbral-maximo">Umbral Máximo</label>
+      <input type="number" id="umbral-maximo" required>
+
+      <label for="descripcion-maximo">Descripción Máximo</label>
+      <input type="text" id="descripcion-maximo" required>
+
+      <div class="modal-acciones">
+        <button type="button" onclick="cerrarModal()">Cancelar</button>
+        <button type="submit">Guardar</button>
+      </div>
+    </form>
+  </div>
 
   <script src="../notificacion.js"></script>
   <script>
@@ -232,5 +167,46 @@
 
     document.addEventListener("DOMContentLoaded", cargarAlertas);
   </script>
+  <script>function editarAlerta(id) {
+  const alerta = alertasSimuladas.find(a => a._id === id);
+  if (!alerta) return;
+
+  // Rellenar campos
+  document.getElementById("alerta-id").value = alerta._id;
+  document.getElementById("umbral-minimo").value = alerta.umbralMinimo;
+  document.getElementById("descripcion-minimo").value = alerta.descripcionMinimo;
+  document.getElementById("umbral-maximo").value = alerta.umbralMaximo;
+  document.getElementById("descripcion-maximo").value = alerta.descripcionMaximo;
+
+  // Mostrar modal
+  document.getElementById("modal-editar").style.display = "flex";
+}
+
+function cerrarModal() {
+  document.getElementById("modal-editar").style.display = "none";
+}
+
+document.getElementById("form-editar").addEventListener("submit", function (e) {
+  e.preventDefault();
+
+  const id = document.getElementById("alerta-id").value;
+  const umbralMinimo = parseFloat(document.getElementById("umbral-minimo").value);
+  const descripcionMinimo = document.getElementById("descripcion-minimo").value;
+  const umbralMaximo = parseFloat(document.getElementById("umbral-maximo").value);
+  const descripcionMaximo = document.getElementById("descripcion-maximo").value;
+
+  fetch(`http://localhost:5001/api/alertas/editar/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ umbralMinimo, descripcionMinimo, umbralMaximo, descripcionMaximo })
+  })
+  .then(res => {
+    if (!res.ok) throw new Error("Error al editar");
+    cerrarModal();
+    cargarAlertas(); // Recarga la lista
+  })
+  .catch(err => alert("Error al guardar los cambios: " + err.message));
+});
+</script>
 </body>
 </html>
