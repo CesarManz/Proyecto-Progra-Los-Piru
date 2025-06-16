@@ -3,14 +3,15 @@ const Parcela = require('../modelos/Parcela');
 // Crear nueva parcela
 exports.crearParcela = async (req, res) => {
   try {
-    const { nombre, coordenadas, sensores } = req.body;
-    const nuevaParcela = await Parcela.create({ nombre, coordenadas, sensores });
+    const { nombre, coordenadas, sensores, cultivos } = req.body;
+    const nuevaParcela = await Parcela.create({ nombre, coordenadas, sensores, cultivos });
     res.status(201).json(nuevaParcela);
   } catch (err) {
     console.error('❌ Error al crear parcela:', err.message);
     res.status(500).json({ error: 'Error al crear parcela' });
   }
 };
+
 
 // Obtener todas las parcelas
 exports.obtenerParcelas = async (req, res) => {

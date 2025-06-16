@@ -9,6 +9,7 @@ const parcelaSchema = new mongoose.Schema({
     }
   ],
   sensores: [String],
+  cultivos: [String],
   creada: { type: Date, default: Date.now }
 });
 

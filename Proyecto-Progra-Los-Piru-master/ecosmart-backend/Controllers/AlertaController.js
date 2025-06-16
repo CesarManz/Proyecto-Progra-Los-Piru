@@ -47,5 +47,27 @@ router.delete('/eliminar/:id', async (req, res) => {
     res.status(500).json({ mensaje: 'Error al eliminar la alerta.' });
   }
 });
+// Editar alerta por ID
+router.put("/editar/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { umbralMinimo, descripcionMinimo, umbralMaximo, descripcionMaximo } = req.body;
+
+    const alerta = await Alerta.findById(id);
+    if (!alerta) return res.status(404).json({ mensaje: "Alerta no encontrada" });
+
+    alerta.umbralMinimo = umbralMinimo;
+    alerta.descripcionMinimo = descripcionMinimo;
+    alerta.umbralMaximo = umbralMaximo;
+    alerta.descripcionMaximo = descripcionMaximo;
+
+    await alerta.save();
+    res.json({ mensaje: "✅ Alerta actualizada correctamente", alerta });
+  } catch (error) {
+    console.error("❌ Error al editar alerta:", error);
+    res.status(500).json({ mensaje: "Error al actualizar alerta", error: error.message });
+  }
+});
+
 
 module.exports = router;

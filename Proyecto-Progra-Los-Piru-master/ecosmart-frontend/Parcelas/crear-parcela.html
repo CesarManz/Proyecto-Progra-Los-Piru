@@ -209,6 +209,8 @@
       <label>Nombre:</label>
       <input type="text" id="nombre" required />
       <div id="errorNombre" class="error-msg">* El nombre es obligatorio</div>
+      <label for="cultivos">Cultivos:</label>
+      <input type="text" id="cultivos" />
 
       <label>Ubicación (haz clic en el mapa):</label>
       <div id="mapa"></div>
@@ -257,90 +259,7 @@
   display: none;
   z-index: 9999;
 "></div>
-<script>
-  function toggleNotificaciones() {
-    const box = document.getElementById("notificaciones-box");
-    const punto = document.getElementById("alerta-punto");
-
-    if (box.style.display === "block") {
-      box.style.display = "none";
-    } else {
-      cargarNotificaciones();
-      box.style.display = "block";
-      punto.style.display = "none";
-    }
-  }
-
-  async function cargarNotificaciones() {
-    try {
-      const res = await fetch("http://localhost:5001/api/activadas");
-      const alertas = await res.json();
-      const contenedor = document.getElementById("notificaciones-box");
-      contenedor.innerHTML = "";
-
-      alertas.reverse().forEach(a => {
-        const div = document.createElement("div");
-        div.className = "notificacion";
-        div.innerHTML = `
-          <div class="texto">
-            <strong>${a.parcela?.nombre || "Parcela"}</strong>
-            <div style="font-size: 0.9rem;">${a.mensaje} <span style="color: #999">(${timeAgo(new Date(a.fecha))})</span></div>
-          </div>
-          <button onclick="eliminarNotificacion('${a._id}')">✖</button>
-        `;
-        contenedor.appendChild(div);
-      });
-
-    } catch (e) {
-      console.error("❌ Error al cargar notificaciones:", e);
-    }
-  }
-
-  function eliminarNotificacion(id) {
-    fetch(`http://localhost:5001/api/activadas/eliminar/${id}`, { method: "DELETE" })
-      .then(() => cargarNotificaciones())
-      .then(() => verificarAlertasActivas());
-  }
-
-  function verificarAlertasActivas() {
-    fetch("http://localhost:5001/api/activadas")
-      .then(res => res.json())
-      .then(alertas => {
-        const punto = document.getElementById("alerta-punto");
-        if (alertas.length > 0) {
-          punto.style.display = "inline-block";
-        } else {
-          punto.style.display = "none";
-        }
-      })
-      .catch(err => {
-        console.warn("No se pudo verificar alertas activas:", err);
-      });
-  }
-
-  function timeAgo(date) {
-    const diff = Math.floor((Date.now() - date.getTime()) / 1000);
-    if (diff < 60) return "hace unos segundos";
-    if (diff < 3600) return `hace ${Math.floor(diff / 60)} min`;
-    if (diff < 86400) return `hace ${Math.floor(diff / 3600)} horas`;
-    return `hace ${Math.floor(diff / 86400)} días`;
-  }
-
-  document.addEventListener("DOMContentLoaded", () => {
-    verificarAlertasActivas();
-    setInterval(verificarAlertasActivas, 10000);
-    document.addEventListener("click", function (event) {
-      const box = document.getElementById("notificaciones-box");
-      const bell = document.querySelector(".icono-notificacion");
-      if (box.style.display === "block" && !box.contains(event.target) && !bell.contains(event.target)) {
-        box.style.display = "none";
-      }
-    });
-  });
-</script>
-
-
-
+<script src="../notificacion.js"></script>
 <script>
     function toggleMenu(event) {
         event.stopPropagation();
@@ -426,47 +345,49 @@
       return parcelas.some(p => normalizarTexto(p.nombre) === normalizarTexto(nombre));
     }
 
-    document.getElementById("formParcela").addEventListener("submit", async (e) => {
-      e.preventDefault();
+   document.getElementById("formParcela").addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-      const nombre = document.getElementById("nombre").value.trim();
-      const lat = parseFloat(document.getElementById("lat").value);
-      const lon = parseFloat(document.getElementById("lon").value);
-      const sensores = Array.from(document.querySelectorAll('#sensores-checks input:checked')).map(cb => cb.value);
+  const nombre = document.getElementById("nombre").value.trim();
+  const cultivoInput = document.getElementById("cultivos").value.trim();
+  const lat = parseFloat(document.getElementById("lat").value);
+  const lon = parseFloat(document.getElementById("lon").value);
+  const sensores = Array.from(document.querySelectorAll('#sensores-checks input:checked')).map(cb => cb.value);
 
-      // Validaciones
-      document.getElementById("errorNombre").style.display = nombre ? "none" : "block";
-      document.getElementById("errorUbicacion").style.display = isNaN(lat) || isNaN(lon) ? "block" : "none";
-      document.getElementById("errorSensores").style.display = sensores.length > 0 ? "none" : "block";
+  // Validaciones
+  document.getElementById("errorNombre").style.display = nombre ? "none" : "block";
+  document.getElementById("errorUbicacion").style.display = isNaN(lat) || isNaN(lon) ? "block" : "none";
+  document.getElementById("errorSensores").style.display = sensores.length > 0 ? "none" : "block";
 
-      if (!nombre || isNaN(lat) || isNaN(lon) || sensores.length === 0) return;
+  if (!nombre || isNaN(lat) || isNaN(lon) || sensores.length === 0) return;
 
-      if (await existeParcela(nombre)) {
-        document.getElementById("errorNombre").innerText = "* Ya existe una parcela con ese nombre";
-        document.getElementById("errorNombre").style.display = "block";
-        return;
-      }
+  if (await existeParcela(nombre)) {
+    document.getElementById("errorNombre").innerText = "* Ya existe una parcela con ese nombre";
+    document.getElementById("errorNombre").style.display = "block";
+    return;
+  }
 
-      const datos = {
-        nombre,
-        puntos: [{ lat, lng: lon }],
-        sensores
-      };
+  const datos = {
+    nombre,
+    puntos: [{ lat, lng: lon }],
+    sensores,
+    cultivos: cultivoInput ? [cultivoInput] : []
+  };
 
-      const res = await fetch("http://localhost:5001/api/parcelas", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(datos)
-      });
+  const res = await fetch("http://localhost:5001/api/parcelas", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(datos)
+  });
 
-      if (res.ok) {
-        alert("✅ Parcela creada correctamente");
-        document.getElementById("formParcela").reset();
-        if (marcador) map.removeLayer(marcador);
-      } else {
-        alert("❌ Error al crear la parcela");
-      }
-    });
+  if (res.ok) {
+    alert("✅ Parcela creada correctamente");
+    document.getElementById("formParcela").reset();
+    if (marcador) map.removeLayer(marcador);
+  } else {
+    alert("❌ Error al crear la parcela");
+  }
+});
 </script>
 </body>
 </html>
