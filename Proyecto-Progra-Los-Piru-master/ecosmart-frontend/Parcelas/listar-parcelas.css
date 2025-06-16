@@ -107,10 +107,105 @@ section.tarjeta {
 .notificacion button:hover {
     color: red;
 }
-.contenedor-anom-pron{
-    gap: 15px;
+.contenedor-anom-pron {
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    margin: 2rem auto;
+    width: 100%;
+    max-width: 1200px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
 }
-.anomalias div{
-    width: 500px;
+
+.pronosticos, .anomalias {
+    background: #fff;
+    padding: 1.5rem 2rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 800px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin: 0 auto;
+    text-align: center; /* 👈 Contenido centrado */
 }
+
+.pronosticos:hover, .anomalias:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+}
+
+/* Títulos */
+.pronosticos h2, .anomalias h2 {
+    margin-bottom: 1rem;
+    font-weight: 700;
+    font-size: 1.8rem;
+    text-align: center;
+}
+
+.pronosticos h2 {
+    color: #CD8A39;
+    text-shadow: 0 1px 2px rgba(42, 157, 143, 0.3);
+}
+
+.anomalias h2 {
+    color: #595D2B;
+    text-shadow: 0 1px 2px rgba(231, 111, 81, 0.3);
+}
+
+/* Pronóstico */
+#pronostico-dias {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/* Anomalías */
+#anomalias {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 0.75rem;
+    scrollbar-width: thin;
+    scrollbar-color: #c95211 #f5f5f5;
+}
+
+
+/* Scrollbar estilos para Webkit */
+#anomalias::-webkit-scrollbar {
+    width: 8px;
+}
+#anomalias::-webkit-scrollbar-track {
+    background: #f5f5f5;
+    border-radius: 12px;
+}
+#anomalias::-webkit-scrollbar-thumb {
+    background-color: #e76f51;
+    border-radius: 12px;
+}
+
+#pronostico-dias {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .contenedor-anom-pron {
+        flex-direction: column;
+        margin: 2rem 5%;
+    }
+    .pronosticos, .anomalias {
+        flex: 1 1 100%;
+    }
+    .pronosticos h2, .anomalias h2 {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+}
+
