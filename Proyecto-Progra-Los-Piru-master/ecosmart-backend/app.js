@@ -30,6 +30,8 @@ const productosRuta = require('./Rutas/productos');
 const lecturaController = require('./Controllers/lecturaController');
 const alertaRoutes = require('./Controllers/alertaController');
 const alertaActivadaRoutes = require('./Controllers/alertaActivadaController');
+const correoRoutes = require("./Controllers/correoController");
+
 
 // Usar rutas
 app.use('/api/usuarios', rutaUsuarios);
@@ -45,6 +47,8 @@ app.use('/api/activadas', alertaActivadaRoutes);
 app.use('/api/tareas', rutaTareas);
 app.use('/productos', productosRuta);
 app.use('/api/productos', productosRuta);
+app.use("/api", correoRoutes);
+
 
 // Ejecutar simulador de sensores
 fork(path.join(__dirname, 'simuladorSensores.js'));

@@ -69,6 +69,19 @@
           <div class="pronosticos">
               <h2>Pronóstico</h2>
               <div id="pronostico-dias" style="display: flex; gap: 1rem; flex-wrap: wrap;"></div>
+              <div style="text-align: center; margin-top: 16px;">
+            <button id="ver-detalles-pronostico" style="
+              background-color: #B5C99A;
+              border: none;
+              padding: 10px 20px;
+              border-radius: 10px;
+              font-weight: bold;
+              cursor: pointer;
+              font-family: 'Rubik', sans-serif;
+            ">
+              Ver detalles del pronóstico
+            </button>
+          </div>
           </div>
           <div class="anomalias">
               <h2>Anomalías</h2>
@@ -82,7 +95,10 @@
   </div> 
   <div class="tarjeta">
   <h2 class="titulo-seccion">Gráficos de Sensores</h2>
-  <div id="contenedor-graficos"></div>
+  <div id="contenedor-graficos">
+
+</div>
+
   </div>
 </div>
 </main>
@@ -671,6 +687,189 @@ async function mostrarGraficos() {
   });
 </script>
 
+
+
+<!-- 🌤️ Modal de Detalle de Pronóstico -->
+<div id="modalPronostico" style="
+  display: none; 
+  position: fixed; 
+  top: 0; left: 0; width: 100%; height: 100%;
+  background-color: rgba(0,0,0,0.4); 
+  z-index: 9999; 
+  justify-content: center; 
+  align-items: center;
+  font-family: 'Rubik', sans-serif;
+">
+  <div style="
+    background: white;
+    border-radius: 20px;
+    padding: 30px 40px;
+    width: 90%;
+    max-width: 850px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+  ">
+    <button onclick="cerrarModal()" style="
+      position: absolute; top: 15px; right: 20px;
+      background: none; border: none; font-size: 28px; font-weight: bold; color: #666; cursor: pointer;">×</button>
+
+    <h2 style="text-align:center; color: #1D2A10; font-size: 26px;">🔍 Análisis Climático y Recomendaciones</h2>
+    <p id="info-pronostico" style="
+  text-align: center;
+  margin: 20px auto;
+  padding: 12px 20px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1D2A10;
+  background: #EDF2EC;
+  border-left: 6px solid #B5C99A;
+  border-radius: 8px;
+  max-width: 600px;
+">
+</p>
+
+    <div id="graficoPronostico" style="margin: 30px auto 40px; max-width: 600px;">
+      <canvas id="canvasPronostico"></canvas>
+    </div>
+
+    <div id="recomendacionIA" style="
+      background: #f5f7f6;
+      border-left: 5px solid #B5C99A;
+      padding: 20px;
+      border-radius: 10px;
+      font-size: 16px;
+      line-height: 1.6;
+      color: #2F3E1D;
+      white-space: pre-wrap;
+    ">
+
+</div>
+
+  </div>
+</div>
+
+<script>
+document.getElementById("ver-detalles-pronostico").addEventListener("click", async () => {
+  const nombre = document.getElementById("selector-parcela").value;
+  const parcela = parcelasGlobal.find(p => p.nombre === nombre);
+  if (!parcela) return;
+
+  const cultivo = parcela.cultivos || "desconocido";
+  const dias = document.querySelectorAll("#pronostico-dias > div");
+  if (dias.length === 0) return alert("No hay datos de pronóstico.");
+
+  const resumen = Array.from(dias).map(d => d.innerText.replaceAll('\n', ' ')).join(". ");
+  document.getElementById("info-pronostico").innerText = `📍 Cultivo actual: ${cultivo}`;
+
+  // Enviar prompt a IA
+  const prompt = `Dado el siguiente pronóstico del clima para una parcela con cultivo de ${cultivo}, entrega recomendaciones técnicas para el agricultor considerando condiciones climáticas: ${resumen}`;
+
+  const res = await fetch("http://localhost:5000/api/generate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt })
+  });
+
+  const data = await res.json();
+  document.getElementById("recomendacionIA").innerText = data.response || "No se pudo obtener respuesta de IA.";
+
+  // Crear gráfico
+  const fechas = Array.from(dias).map(d => d.querySelector("p").innerText);
+  const temps = Array.from(dias).map(d => {
+    const match = d.innerText.match(/([0-9]+\.?[0-9]*) °C/);
+    return match ? parseFloat(match[1]) : null;
+  });
+
+  const ctx = document.getElementById("canvasPronostico").getContext("2d");
+  if (window.graficoPronosticoInstancia) window.graficoPronosticoInstancia.destroy();
+
+  window.graficoPronosticoInstancia = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: fechas,
+      datasets: [{
+        label: "Temperatura Promedio (°C)",
+        data: temps,
+        borderColor: "#CD8A39",
+        backgroundColor: "rgba(205, 138, 57, 0.15)",
+        fill: true,
+        tension: 0.4,
+        pointRadius: 5,
+        pointHoverRadius: 7
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true },
+        x: {}
+      }
+    }
+  });
+
+  document.getElementById("modalPronostico").style.display = "flex";
+});
+
+function cerrarModal() {
+  document.getElementById("modalPronostico").style.display = "none";
+}
+</script>
+
+
+<script>
+async function cargarUsuarios() {
+  try {
+    const res = await fetch("http://localhost:5001/api/usuarios/correos");
+    const usuarios = await res.json();
+    const select = document.getElementById("selector-usuarios-modal");
+
+    usuarios.forEach(u => {
+      const opt = document.createElement("option");
+      opt.value = u.correo;
+      opt.textContent = `${u.nombre} (${u.correo})`;
+      select.appendChild(opt);
+    });
+  } catch (err) {
+    console.error("❌ Error al cargar usuarios:", err);
+  }
+}
+
+async function enviarCorreoConInforme() {
+  const correo = document.getElementById("selector-usuarios-modal").value;
+  if (!correo) return alert("Selecciona un usuario destinatario.");
+
+  const contenido = document.getElementById("recomendacionIA").innerText.trim();
+  const cultivoInfo = document.getElementById("info-pronostico").innerText;
+
+  if (!contenido) return alert("Primero genera el informe.");
+
+  const body = {
+    correo,
+    asunto: "Recomendaciones climáticas para cultivo",
+    mensaje: `${cultivoInfo}\n\n${contenido}`
+  };
+
+  const res = await fetch("http://localhost:5001/api/enviar-correo", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+
+  if (res.ok) {
+    document.getElementById("confirmacion-envio").innerText = "✅ Correo enviado correctamente.";
+  } else {
+    document.getElementById("confirmacion-envio").innerText = "❌ Error al enviar correo.";
+  }
+}
+
+// Cargar usuarios al abrir modal
+document.getElementById("ver-detalles-pronostico").addEventListener("click", () => {
+  document.getElementById("selector-usuarios").innerHTML = '<option value="">Seleccionar usuario destinatario</option>';
+  cargarUsuarios();
+});
+</script>
 
 </body>
 </html>
