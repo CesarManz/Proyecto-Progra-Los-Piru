@@ -154,30 +154,31 @@
 
 </header>
 
-    <div id="tarea" class="taera">
-        <h3>Asignar Tareas</h3>
-
+<div id="tarea" class="taera">
+    <div class="tarea-content">
         <form id="formtarea">
-            <label for="tareaDestinatario">Seleccionar persona:</label>
-            <select id="destinatario" name="destinatario" required>
+            <h2>Asignar Tareas</h2>
+            <label for="destinatario">Seleccionar persona:</label>
+            <select class="dropdown" id="destinatario" name="destinatario" required>
                 <option value="">-- Cargando personas... --</option>
             </select>
+            <br><br>
+                <div class="asignar">
+                    <div class="asignar-cont">
+                        <label for="titulo">Título de la tarea:</label>
+                        <input type="text" id="titulo" name="titulo" required>
+                    </div>
+                    <div class="asignar-cont">
+                        <label for="descripcion">Descripción:</label>
+                        <textarea id="descripcion" name="descripcion" rows="3" required></textarea>
+                    </div>
+                </div>
 
             <br><br>
-
-            <label for="titulo">Título de la tarea:</label>
-            <input type="text" id="titulo" name="titulo" required>
-
-            <label for="descripcion">Descripción:</label>
-            <textarea id="descripcion" name="descripcion" rows="3" required></textarea>
-
-            <br><br>
-            <button type="submit">Asignar tarea</button>
-        </form>
-
-
-
-    <div class="Revisar">
+                <button type="submit">Asignar tarea</button>
+            </form>
+        </div>
+        <div class="Revisar">
         <h3>Las siguientes tareas se encuentran en revision: </h3>
         <!-- Mostrar todas las tareas que si estado sea "en revision"-->
     </div>

@@ -130,17 +130,54 @@ nav a {
     width: 100%;
     height: auto;
 }
+.Revisar{
+    position: fixed;
+    border: 1px solid #CD8A39;
+    border-radius: 12px;
+    background-color: #CD8A39;
+    text-align: center;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+    padding: 20px;
+    width: 50%;
+    left: 25%;
+}
 .tarea {
     display: none;
     position: fixed;
     top: 20%;
     left: 50%;
     transform: translate(-50%, 0);
-    background: white;
+    background: #CD8A39;
     padding: 20px;
     border: 2px solid #ccc;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     z-index: 1000;
+}
+.dropdown{
+    position: relative;
+    width: 220px;
+    height: 40px;
+    margin: 0 auto 20px;
+    font-family: sans-serif;
+    cursor: pointer;
+    border-radius: 10px;
+    background-color: #1D2A10;
+    color: #CD8A39;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    user-select: none;
+}
+.asignar{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 350px;
+}
+.asignar-cont{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
 }
 .tarea-content {
     display: flex;
@@ -158,4 +195,5 @@ nav a {
     padding: 8px;
     width: 100%;
     box-sizing: border-box;
+    background: #CD8A39
 }
