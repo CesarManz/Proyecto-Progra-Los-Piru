@@ -12,7 +12,6 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-
 <header>
     <div class="logo">
         <div class="item Logo" onclick="window.location.href='../Principales/Pagina-Principal.html'">
@@ -55,7 +54,7 @@
       <option value="">Seleccione una parcela</option>
     </select>
   <div id="seccion-parcela" style="display: none;">
-  <div style="margin-top: 10px; display: flex; gap: 20px; margin-left: 291px;">
+  <div style="margin-top: 10px; display: flex; gap: 20px; margin-left: 375px;">
   <button onclick="window.location.href='../parcelas/crear-parcela.html'">➕ Crear parcela</button>
   <button onclick="redirigirEditar()">✏️ Editar parcela</button>
   <button onclick="eliminarParcela()">🗑️ Eliminar parcela</button>
@@ -67,12 +66,12 @@
       <h2 style="text-align: center;">Clima Actual</h2>
       <div id="clima-actual" style="text-align: center;"></div>
       <div class="contenedor-anom-pron">
-          <div class="pronosticos" style="justify-content: left;">
-              <h2 style="text-align: left; margin-left: 20%;">Pronóstico</h2>
+          <div class="pronosticos">
+              <h2>Pronóstico</h2>
               <div id="pronostico-dias" style="display: flex; gap: 1rem; flex-wrap: wrap;"></div>
           </div>
-          <div class="anomalias" style="justify-content: right;">
-              <h2 style="text-align: right; margin-right:20%;">Anomalías</h2>
+          <div class="anomalias">
+              <h2>Anomalías</h2>
               <div id="anomalias"></div>
           </div>
       </div>
@@ -104,11 +103,11 @@
 
 <script>
     const umbrales = {
-        "Temperatura del suelo": { min: 18, max: 28 },
-        "Humedad del suelo": { min: 50, max: 70 },
-        "pH del suelo": { min: 5.5, max: 7.5 },
-        "Nivel de nutrientes": { min: 200, max: 400 }
-    };
+            "Temperatura del suelo": { min: 18, max: 28 },
+            "Humedad del suelo": { min: 50, max: 70 },
+            "pH del suelo": { min: 5.5, max: 7.5 },
+            "Nivel de nutrientes": { min: 200, max: 400 }
+        };
 
   function toggleNotificaciones() {
     const box = document.getElementById("notificaciones-box");
@@ -123,7 +122,6 @@
     }
   }
 
-  //Funcion para mostrar las alertas
   async function cargarNotificaciones() {
     try {
       const res = await fetch("http://localhost:5001/api/activadas");
@@ -179,130 +177,159 @@
     return `hace ${Math.floor(diff / 86400)} días`;
   }
 
-  async function mostrarAlertasEnAnomalias() {
-      try {
-          const res = await fetch("http://localhost:5001/api/activadas");
-          const alertas = await res.json();
-          const res2 = await fetch("http://localhost:5001/api/alertas")
-          const alertas2 = await res2.json();
-          const contenedor = document.getElementById("anomalias");
-          contenedor.innerHTML = "";
+    async function mostrarAlertasEnAnomalias() {
+        try {
+            const [resAlertas, resParcelas] = await Promise.all([
+                fetch("http://localhost:5001/api/alertas"),
+                fetch("http://localhost:5001/api/parcelas")
+            ]);
 
-          if (alertas.length === 0) {
-              contenedor.innerHTML = `<p style="color: #666; text-align: right; margin-right: 20%;">No hay anomalías registradas.</p>`;
-              return;
-          }
+            const [alertas, parcelas] = await Promise.all([
+                resAlertas.json(),
+                resParcelas.json()
+            ]);
 
+            const contenedor = document.getElementById("anomalias");
+            contenedor.innerHTML = "";
 
-          alertas.forEach(alerta => {
-              // Determinar mensaje y color según el tipo de alerta
-              const umbral = umbrales[alerta.tipo] || { min: 0, max: 100 };
-              let icono = "⚠️";
-              let tipo = alerta.tipo;
-              let descripcion = alerta.mensaje;
-              let consejo = "";
-              let fondo = "#ffeeba"; // default amarillo
+            const selector = document.getElementById("selector-parcela");
+            const parcelaSeleccionada = selector.value.trim().toLowerCase();
 
+            // Umbrales hardcodeados
+            const umbrales = {
+                "Temperatura del suelo": { min: 18, max: 28 },
+                "Humedad del suelo": { min: 50, max: 70 },
+                "pH del suelo": { min: 5.5, max: 7.5 },
+                "Nivel de nutrientes": { min: 200, max: 400 }
+            };
 
-              switch (alerta.tipo) {
-                  case "Humedad del suelo":
-                      icono = "💦";
-                      tipo = "Tipo: " + alerta.tipo;
-                      descripcion = "Descripcion: " + alerta.mensaje;
-                      if (alerta.valor < umbral.min) {
-                          consejo = "¡Tienes que regar!";
-                      } else if (alerta.valor > umbral.max) {
-                          consejo = "¡Deja de regar!";
-                      } else {
-                          consejo = "¡La humedad está en niveles óptimos!";
-                      }
-                      fondo = "#d1ecf1";
-                      break;
-                  case "pH":
-                      icono = "🌱";
-                      tipo = "Tipo: " + alerta.tipo;
-                      descripcion = "Descripcion: " + alerta.mensaje;
-                      if (alerta.valor < umbral.min) {
-                          consejo = "¡PH Bajo!";
-                      } else if (alerta.valor > umbral.max) {
-                          consejo = "¡PH Alto!";
-                      } else {
-                          consejo = "¡PH Normal!";
-                      }
-                      fondo = "#cce5ff";
-                      break;
-                  case "Nivel de nutrientes":
-                      icono = "🥕";
-                      tipo = "Tipo: " + alerta.tipo;
-                      descripcion = "Descripcion: " + alerta.mensaje;
-                      if (alerta.valor < umbral.min) {
-                          consejo = "¡Nutrientes bajos!";
-                      } else if (alerta.valor > umbral.max) {
-                          consejo = "¡Nutrientes altos!";
-                      } else {
-                          consejo = "¡Nivel de nutrientes optimos!";
-                      }
-                      fondo = "#f8d7da";
-                      break;
-                  case "Temperatura del suelo":
-                      icono = "♨️";
-                      tipo = "Tipo: " + alerta.tipo;
-                      descripcion = "Descripcion: " + alerta.mensaje;
-                      if (alerta.valor < umbral.min) {
-                          consejo = "¡El suelo esta que arde!";
-                      } else if (alerta.valor > umbral.max) {
-                          consejo = "¡El suelo esta congelandose!";
-                      } else {
-                          consejo = "¡Temperatura de suelo optima!";
-                      }
-                      fondo = "#B53324";
-                      break;
-                  default:
-                      descripcion = alerta.mensaje || "Anomalía detectada.";
-              }
+            // Validar parcela seleccionada
+            const nombresParcelas = parcelas.map(p => p.nombre.toLowerCase());
+            if (parcelaSeleccionada && !nombresParcelas.includes(parcelaSeleccionada)) {
+                contenedor.innerHTML = `<p style="color: #666; text-align: right; margin-right: 20%;">Parcela seleccionada no válida.</p>`;
+                return;
+            }
 
-              const div = document.createElement("div");
-              div.className = "alerta-anomalia";
-              div.innerHTML = `
-        <div style="
-          background-color: ${fondo};
-          border: 1px solid #ccc;
-          padding: 10px 15px;
-          margin: 10px 20%;
-          border-radius: 8px;
-          box-shadow: 0 0 5px rgba(0,0,0,0.1);
-        ">
-          <strong>${icono} ${alerta.parcela?.nombre || "Parcela"}</strong><br>
-          ${tipo}<br>
-          ${descripcion}<br>
-          ${consejo}<br>
-        </div>
-      `;
-              contenedor.appendChild(div);
-          });
+            // Filtrar alertas por parcela si se especificó
+            let alertasFiltradas = alertas.filter(alerta =>
+                !parcelaSeleccionada || alerta.parcela?.nombre?.toLowerCase() === parcelaSeleccionada
+            );
 
-      } catch (e) {
-          console.error("❌ Error al mostrar anomalías:", e);
-          document.getElementById("anomalias").innerHTML = `
-      <p style="color: red; text-align: right; margin-right: 20%;">Error al cargar anomalías.</p>
+            // Filtrar solo alertas con umbral fuera de rango
+            const alertasConProblema = alertasFiltradas.filter(alerta => {
+                const ref = umbrales[alerta.sensor];
+                if (!ref) return false; // Si no hay umbral definido, ignorar
+                return alerta.umbralMinimo < ref.min || alerta.umbralMaximo > ref.max;
+            });
+
+            if (alertasConProblema.length === 0) {
+                contenedor.innerHTML = `<p style="color: #666; text-align: right; margin-right: 20%;">No hay alertas con umbrales fuera del rango recomendado ✅</p>`;
+                return;
+            }
+
+            alertasConProblema.forEach(alerta => {
+                const ref = umbrales[alerta.sensor];
+                const valorMin = alerta.umbralMinimo;
+                const valorMax = alerta.umbralMaximo;
+
+                const fueraDeRangoMin = valorMin < ref.min;
+                const fueraDeRangoMax = valorMax > ref.max;
+
+                let icono = "⚠️", fondo = "#ffeeba", consejos = [];
+
+                switch (alerta.sensor) {
+                    case "Humedad del suelo":
+                        icono = "💦";
+                        fondo = "#d1ecf1";
+                        if (fueraDeRangoMin) consejos.push("¡Tienes que regar!");
+                        if (fueraDeRangoMax) consejos.push("¡Deja de regar!");
+                        break;
+                    case "pH del suelo":
+                        icono = "🌱";
+                        fondo = "#cce5ff";
+                        if (fueraDeRangoMin) consejos.push("¡pH muy bajo!");
+                        if (fueraDeRangoMax) consejos.push("¡pH muy alto!");
+                        break;
+                    case "Nivel de nutrientes":
+                        icono = "🥕";
+                        fondo = "#f8d7da";
+                        if (fueraDeRangoMin) consejos.push("¡Nivel de nutrientes muy bajo!");
+                        if (fueraDeRangoMax) consejos.push("¡Demasiados nutrientes!");
+                        break;
+                    case "Temperatura del suelo":
+                        icono = "♨️";
+                        fondo = "#f9d6d5";
+                        if (fueraDeRangoMin) consejos.push("¡El suelo está congelándose!");
+                        if (fueraDeRangoMax) consejos.push("¡El suelo está que arde!");
+                        break;
+                    default:
+                        if (fueraDeRangoMin) consejos.push("Valor mínimo fuera de rango.");
+                        if (fueraDeRangoMax) consejos.push("Valor máximo fuera de rango.");
+                }
+
+                const div = document.createElement("div");
+                div.className = "alerta-anomalia";
+                div.innerHTML = `
+            <div style="
+                align-items: center;
+                text-align: center;
+                width: 300px;
+                background-color: ${fondo};
+                border: 1px solid #ccc;
+                padding: 10px 15px;
+                margin: 10px 20%;
+                margin-right: 185px;
+                border-radius: 8px;
+                box-shadow: 0 0 5px rgba(0,0,0,0.1);
+            ">
+                <strong>Parcela: ${alerta.parcela?.nombre || "Desconocida"}</strong><br>
+                Sensor: ${alerta.sensor} ${icono}<br>
+                Umbral mínimo definido: <strong>${valorMin}</strong><br>
+                Umbral máximo definido: <strong>${valorMax}</strong><br>
+                ${consejos.join("<br>")}
+            </div>
+        `;
+                contenedor.appendChild(div);
+            });
+
+        } catch (error) {
+            console.error("❌ Error al mostrar anomalías:", error);
+            document.getElementById("anomalias").innerHTML = `
+        <p style="color: red; text-align: right; margin-right: 20%;">Error al cargar anomalías.</p>
     `;
-      }
-  }
+        }
+    }
 
 
 
-  document.addEventListener("DOMContentLoaded", () => {
-      mostrarAlertasEnAnomalias();
-      verificarAlertasActivas();
-      setInterval(verificarAlertasActivas, 10000);
-      document.addEventListener("click", function (event) {
-          const box = document.getElementById("notificaciones-box");
-          const bell = document.querySelector(".icono-notificacion");
-          if (box.style.display === "block" && !box.contains(event.target) && !bell.contains(event.target)) {
-              box.style.display = "none";
-          }
-      });
-  });
+
+
+
+
+
+    // Agregar evento para actualizar alertas al cambiar la selección
+    document.getElementById("selector-parcela").addEventListener("change", mostrarAlertasEnAnomalias);
+
+    // Opcional: llamar una vez al cargar la página si quieres mostrar alertas por defecto
+    // mostrarAlertasEnAnomalias();
+
+
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        mostrarAlertasEnAnomalias();
+        verificarAlertasActivas();
+        setInterval(verificarAlertasActivas, 10000);
+        document.addEventListener("click", function (event) {
+            const box = document.getElementById("notificaciones-box");
+            const bell = document.querySelector(".icono-notificacion");
+            if (box && bell && box.style.display === "block" && !box.contains(event.target) && !bell.contains(event.target)) {
+                box.style.display = "none";
+            }
+        });
+    });
+
 
 
 </script>
@@ -320,6 +347,7 @@
     }
   }
 </script>
+
 <script>
     function toggleMenu(event) {
         event.stopPropagation();
@@ -522,6 +550,7 @@ document.getElementById("selector-parcela").addEventListener("change", async (e)
 });
 
 </script>
+
 <script>
 async function obtenerClimaActual(lat, lon) {
   try {
