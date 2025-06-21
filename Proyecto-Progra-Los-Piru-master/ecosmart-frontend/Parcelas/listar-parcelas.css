@@ -208,4 +208,36 @@ section.tarjeta {
         margin-bottom: 1.5rem;
     }
 }
+.ver-detalles-pronosticos{
+                  background-color: #B5C99A;
+              border: none;
+              padding: 10px 20px;
+              border-radius: 10px;
+              font-weight: bold;
+              cursor: pointer;
+              font-family: 'Rubik', sans-serif;
+}
+.pronostico-dias{
+    display: flex; 
+    gap: 1rem; 
+    flex-wrap: wrap;
+}
+.mapa-parcela{
+    height: 400px; 
+    border-radius: 12px;
+}
+.notificacione-box{
+  position: fixed;
+  top: 70px;
+  right: 10px;
+  background: white;
+  color: #1D2A10;
+  width: 360px;
+  max-height: 500px;
+  overflow-y: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  display: none;
+  z-index: 9999;
+}
 

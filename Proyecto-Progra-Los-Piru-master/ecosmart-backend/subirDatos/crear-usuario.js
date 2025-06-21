@@ -19,6 +19,10 @@ const usuarioSchema = new mongoose.Schema({
     type: String,
     required: true,
     enum: ['agronomo', 'tecnico', 'agricultor']
+  },
+    fotoPerfil: {
+    type: String,
+    default: ''
   }
 });
 
