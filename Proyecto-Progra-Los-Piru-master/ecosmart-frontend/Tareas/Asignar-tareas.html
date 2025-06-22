@@ -72,90 +72,6 @@
     <div id="notificaciones-box" style="display: flex; flex-wrap: wrap; gap: 20px;"></div>
 </div>
 
-<script>
-  function toggleNotificaciones() {
-    const box = document.getElementById("notificaciones-box");
-    const punto = document.getElementById("alerta-punto");
-
-    if (box.style.display === "block") {
-      box.style.display = "none";
-    } else {
-      cargarNotificaciones();
-      box.style.display = "block";
-      punto.style.display = "none";
-    }
-  }
-
-  async function cargarNotificaciones() {
-    try {
-      const res = await fetch("http://localhost:5001/api/activadas");
-      const alertas = await res.json();
-      const contenedor = document.getElementById("notificaciones-box");
-      contenedor.innerHTML = "";
-
-      alertas.reverse().forEach(a => {
-        const div = document.createElement("div");
-        div.className = "notificacion";
-        div.innerHTML = `
-          <div class="texto">
-            <strong>${a.parcela?.nombre || "Parcela"}</strong>
-            <div style="font-size: 0.9rem;">${a.mensaje} <span style="color: #999">(${timeAgo(new Date(a.fecha))})</span></div>
-          </div>
-          <button onclick="eliminarNotificacion('${a._id}')">✖</button>
-        `;
-        contenedor.appendChild(div);
-      });
-
-    } catch (e) {
-      console.error("❌ Error al cargar notificaciones:", e);
-    }
-  }
-
-  function eliminarNotificacion(id) {
-    fetch(`http://localhost:5001/api/activadas/eliminar/${id}`, { method: "DELETE" })
-      .then(() => cargarNotificaciones())
-      .then(() => verificarAlertasActivas());
-  }
-
-  function verificarAlertasActivas() {
-    fetch("http://localhost:5001/api/activadas")
-      .then(res => res.json())
-      .then(alertas => {
-        const punto = document.getElementById("alerta-punto");
-        if (alertas.length > 0) {
-          punto.style.display = "inline-block";
-        } else {
-          punto.style.display = "none";
-        }
-      })
-      .catch(err => {
-        console.warn("No se pudo verificar alertas activas:", err);
-      });
-  }
-
-  function timeAgo(date) {
-    const diff = Math.floor((Date.now() - date.getTime()) / 1000);
-    if (diff < 60) return "hace unos segundos";
-    if (diff < 3600) return `hace ${Math.floor(diff / 60)} min`;
-    if (diff < 86400) return `hace ${Math.floor(diff / 3600)} horas`;
-    return `hace ${Math.floor(diff / 86400)} días`;
-  }
-
-  document.addEventListener("DOMContentLoaded", () => {
-    verificarAlertasActivas();
-    setInterval(verificarAlertasActivas, 10000);
-    document.addEventListener("click", function (event) {
-      const box = document.getElementById("notificaciones-box");
-      const bell = document.querySelector(".icono-notificacion");
-      if (box.style.display === "block" && !box.contains(event.target) && !bell.contains(event.target)) {
-        box.style.display = "none";
-      }
-    });
-  });
-</script>
-
-
-
 </header>
 <div class="Cuadrado-transparente">
 
@@ -189,9 +105,137 @@
     </div>
 </div>
 
-
-
 <script>
+    document.getElementById('formTarea').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const asignacion = document.getElementById('destinatario').value;
+        const titulo = document.getElementById('titulo').value;
+        const descripcion = document.getElementById('descripcion').value;
+
+        try {
+            const response = await fetch('http://localhost:5001/api/tareas', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ asignacion, titulo, descripcion })
+            });
+
+            const resultado = await response.json();
+
+            if (response.ok) {
+                alert('✅ Tarea asignada correctamente');
+                document.getElementById('formTarea').reset();
+            } else {
+                alert('❌ Error al asignar tarea: ' + resultado.mensaje);
+            }
+        } catch (error) {
+            console.error('❌ Error en la petición:', error);
+            alert('❌ Error al enviar la tarea');
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const response = await fetch('http://localhost:5001/api/usuarios/por-trabajo?trabajo=agricultor&trabajo=tecnico');
+            const personas = await response.json();
+
+            const select = document.getElementById('destinatario');
+            select.innerHTML = '<option value="">-- Seleccione --</option>';
+
+            personas.forEach(persona => {
+                const option = document.createElement('option');
+                option.value = persona.correo;
+                option.textContent = `${persona.nombre} (${persona.trabajo})`;
+                select.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error cargando personas:', error);
+            alert('No se pudieron cargar los usuarios.');
+        }
+    });
+
+    function toggleNotificaciones() {
+        const box = document.getElementById("notificaciones-box");
+        const punto = document.getElementById("alerta-punto");
+
+        if (box.style.display === "block") {
+            box.style.display = "none";
+        } else {
+            cargarNotificaciones();
+            box.style.display = "block";
+            punto.style.display = "none";
+        }
+    }
+
+    async function cargarNotificaciones() {
+        try {
+            const res = await fetch("http://localhost:5001/api/activadas");
+            const alertas = await res.json();
+            const contenedor = document.getElementById("notificaciones-box");
+            contenedor.innerHTML = "";
+
+            alertas.reverse().forEach(a => {
+                const div = document.createElement("div");
+                div.className = "notificacion";
+                div.innerHTML = `
+          <div class="texto">
+            <strong>${a.parcela?.nombre || "Parcela"}</strong>
+            <div style="font-size: 0.9rem;">${a.mensaje} <span style="color: #999">(${timeAgo(new Date(a.fecha))})</span></div>
+          </div>
+          <button onclick="eliminarNotificacion('${a._id}')">✖</button>
+        `;
+                contenedor.appendChild(div);
+            });
+
+        } catch (e) {
+            console.error("❌ Error al cargar notificaciones:", e);
+        }
+    }
+
+    function eliminarNotificacion(id) {
+        fetch(`http://localhost:5001/api/activadas/eliminar/${id}`, { method: "DELETE" })
+            .then(() => cargarNotificaciones())
+            .then(() => verificarAlertasActivas());
+    }
+
+    function verificarAlertasActivas() {
+        fetch("http://localhost:5001/api/activadas")
+            .then(res => res.json())
+            .then(alertas => {
+                const punto = document.getElementById("alerta-punto");
+                if (alertas.length > 0) {
+                    punto.style.display = "inline-block";
+                } else {
+                    punto.style.display = "none";
+                }
+            })
+            .catch(err => {
+                console.warn("No se pudo verificar alertas activas:", err);
+            });
+    }
+
+    function timeAgo(date) {
+        const diff = Math.floor((Date.now() - date.getTime()) / 1000);
+        if (diff < 60) return "hace unos segundos";
+        if (diff < 3600) return `hace ${Math.floor(diff / 60)} min`;
+        if (diff < 86400) return `hace ${Math.floor(diff / 3600)} horas`;
+        return `hace ${Math.floor(diff / 86400)} días`;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        verificarAlertasActivas();
+        setInterval(verificarAlertasActivas, 10000);
+        document.addEventListener("click", function (event) {
+            const box = document.getElementById("notificaciones-box");
+            const bell = document.querySelector(".icono-notificacion");
+            if (box.style.display === "block" && !box.contains(event.target) && !bell.contains(event.target)) {
+                box.style.display = "none";
+            }
+        });
+    });
+
     function toggleMenu(event) {
         event.stopPropagation();
         const menu = document.getElementById('menuPerfil');
@@ -250,62 +294,6 @@
         alert('Rol desconocido');
     }
 
-</script>
-<script>
-    document.addEventListener('DOMContentLoaded', async () => {
-        try {
-            const response = await fetch('http://localhost:5001/api/usuarios/por-trabajo?trabajo=agricultor&trabajo=tecnico');
-            const personas = await response.json();
-
-            const select = document.getElementById('destinatario');
-            select.innerHTML = '<option value="">-- Seleccione --</option>';
-
-            personas.forEach(persona => {
-                const option = document.createElement('option');
-                option.value = persona.correo;
-                option.textContent = `${persona.nombre} (${persona.trabajo})`;
-                select.appendChild(option);
-            });
-        } catch (error) {
-            console.error('Error cargando personas:', error);
-            alert('No se pudieron cargar los usuarios.');
-        }
-    });
-
-</script>
-<script>
-    document.getElementById('formTarea').addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const asignacion = document.getElementById('destinatario').value;
-        const titulo = document.getElementById('titulo').value;
-        const descripcion = document.getElementById('descripcion').value;
-
-        try {
-            const response = await fetch('http://localhost:5001/api/tareas', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ asignacion, titulo, descripcion })
-            });
-
-            const resultado = await response.json();
-
-            if (response.ok) {
-                alert('✅ Tarea asignada correctamente');
-                document.getElementById('formTarea').reset();
-            } else {
-                alert('❌ Error al asignar tarea: ' + resultado.mensaje);
-            }
-        } catch (error) {
-            console.error('❌ Error en la petición:', error);
-            alert('❌ Error al enviar la tarea');
-        }
-    });
-</script>
-
-<script>
     async function cargarTareasEnRevision() {
         const contenedor = document.querySelector('.Revisar');
 
@@ -370,7 +358,9 @@
     }
 
     document.addEventListener('DOMContentLoaded', cargarTareasEnRevision);
+
 </script>
+
 
 
 </body>

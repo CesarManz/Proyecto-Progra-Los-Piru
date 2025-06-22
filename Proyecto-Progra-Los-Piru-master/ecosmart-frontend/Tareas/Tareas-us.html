@@ -27,8 +27,11 @@
   color: red;
 }
 </style>
+
 </head>
+
 <body>
+<<<<<<< Updated upstream
  <header>
   <div class="logo">
     <div class="item Logo" onclick="window.location.href='../Principales/Pagina-Principal.html'">
@@ -52,6 +55,40 @@
       <a href="#" onclick="logout()">Cerrar sesión</a>
     </div>
   </div>
+=======
+
+<header>
+    <div class="logo">
+        <div class="item Logo" onclick="window.location.href='../Principales/Pagina-Principal.html'">
+            <img src="../Public/EcoSmart2.png" alt="Logo"/>
+        </div>
+    </div>
+    <nav id="menu">
+        <!-- Links se insertan dinámicamente según el rol -->
+        <input class="busqueda" type="search" placeholder="Buscar">
+    </nav>
+    <div class="Fondo-fo-perfil" onclick="toggleMenu(event)">
+        <img class="fo-perfil" src="../Public/user.png" alt="Foto de perfil">
+        <div id="menuPerfil" class="menu-perfil">
+            <a href="../Perfil/Perfil.html">Perfil</a>
+            <a href="#" onclick="logout()">Cerrar sesión</a>
+        </div>
+    </div>
+    <div class="icono-notificacion" onclick="toggleNotificaciones()" style="position: relative; cursor: pointer;">
+  <img src="../Public/campana.png" alt="Notificaciones" style="width: 28px; height: 28px;">
+  <span id="alerta-punto" style="
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    border: 2px solid white;
+    display: none;
+  "></span>
+</div>
+>>>>>>> Stashed changes
 </header>
  <form class="taera">
      <div class="tarea-content">
@@ -74,13 +111,11 @@
   display: none;
   z-index: 9999;
 "></div>
-
 </header>
 <div class="Cuadrado-transparente">
-
 </div>
 
-<script>//Carga la lista de tareas en la pagina dependiendo del usuario
+<script src="../js-repetidos/header.js" defer>//Carga la lista de tareas en la pagina dependiendo del usuario
     async function cargarTareas(){
 
         const correo = localStorage.getItem('correo')
@@ -111,32 +146,31 @@
         }
 
     }
-</script>
-<script>
-    document.addEventListener('DOMContentLoaded', async () => {
-        const correo = localStorage.getItem('correo');
-        const contenedor = document.querySelector('.Cuadrado-transparente');
 
-        if (!correo) {
-            contenedor.innerHTML = '<p>No hay usuario identificado.</p>';
+    document.addEventListener('DOMContentLoaded', async () => {
+    const correo = localStorage.getItem('correo');
+    const contenedor = document.querySelector('.Cuadrado-transparente');
+
+    if (!correo) {
+        contenedor.innerHTML = '<p>No hay usuario identificado.</p>';
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://localhost:5001/api/tareas/asignadas/${correo}`);
+        const tareas = await response.json();
+
+        const tareasActivas = tareas.filter(t => t.estado === 'activo');
+
+        if (tareasActivas.length === 0) {
+            contenedor.innerHTML = '<p>No tienes tareas activas.</p>';
             return;
         }
 
-        try {
-            const response = await fetch(`http://localhost:5001/api/tareas/asignadas/${correo}`);
-            const tareas = await response.json();
-
-            const tareasActivas = tareas.filter(t => t.estado === 'activo');
-
-            if (tareasActivas.length === 0) {
-                contenedor.innerHTML = '<p>No tienes tareas activas.</p>';
-                return;
-            }
-
-            tareasActivas.forEach(t => {
-                const div = document.createElement('div');
-                div.classList.add('tarea');
-                div.innerHTML = `
+        tareasActivas.forEach(t => {
+            const div = document.createElement('div');
+            div.classList.add('tarea');
+            div.innerHTML = `
                 <h4>${t.titulo}</h4>
                 <p><strong>Descripción:</strong> ${t.descripcion}</p>
                 <p><strong>Estado:</strong> <span class="estado">${t.estado}</span></p>
@@ -144,39 +178,37 @@
                 <hr>
             `;
 
-                contenedor.appendChild(div);
-            });
+            contenedor.appendChild(div);
+        });
 
-            document.querySelectorAll('.btn-terminar').forEach(btn => {
-                btn.addEventListener('click', async () => {
-                    const id = btn.getAttribute('data-id');
+        document.querySelectorAll('.btn-terminar').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const id = btn.getAttribute('data-id');
 
-                    try {
-                        const res = await fetch(`http://localhost:5001/api/tareas/${id}/estado`, {
-                            method: 'PUT',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ nuevoEstado: 'en revision' }),
-                        });
+                try {
+                    const res = await fetch(`http://localhost:5001/api/tareas/${id}/estado`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ nuevoEstado: 'en revision' }),
+                    });
 
-                        if (res.ok) {
-                            // Eliminar del DOM la tarea actual
-                            btn.closest('.tarea').remove();
-                        } else {
-                            alert('Error al actualizar la tarea');
-                        }
-                    } catch (error) {
-                        console.error('Error al cambiar estado:', error);
+                    if (res.ok) {
+                        // Eliminar del DOM la tarea actual
+                        btn.closest('.tarea').remove();
+                    } else {
+                        alert('Error al actualizar la tarea');
                     }
-                });
+                } catch (error) {
+                    console.error('Error al cambiar estado:', error);
+                }
             });
-        } catch (error) {
-            console.error('Error al cargar tareas:', error);
-            contenedor.innerHTML = '<p>Error al cargar las tareas.</p>';
-        }
-    });
-
+        });
+    } catch (error) {
+        console.error('Error al cargar tareas:', error);
+        contenedor.innerHTML = '<p>Error al cargar las tareas.</p>';
+    }
+});
 </script>
-<script src="../js-repetidos/header.js" defer></script>
 </body>

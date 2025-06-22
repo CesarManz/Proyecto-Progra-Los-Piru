@@ -82,18 +82,28 @@
             ">
               Ver detalles del pronóstico
             </button>
-          </div>
+              </div>
           </div>
           <div class="anomalias">
-              <h2>Anomalías</h2>
-              <div id="anomalias"></div>
+              <h2 style="text-align: center;">⚠️ Anomalías por Parcela ⚠️</h2>
+              <div id="alertas-parcelas"></div>
           </div>
+
+          <!-- Modal épico -->
+          <div id="modal-alerta" class="modal" style="display:none;">
+              <div class="modal-content">
+                  <span id="cerrar-modal" class="close">&times;</span>
+                  <div id="contenido-modal"></div>
+              </div>
+          </div>
+
       </div>
 
       <h2 style="text-align: center;">Ubicación de la Parcela</h2>
       <div id="mapa-parcela" style="height: 400px; border-radius: 12px;"></div>
     </section>
-  </div> 
+  </div>
+
   <div class="tarjeta">
   <h2 class="titulo-seccion">Gráficos de Sensores</h2>
   <div id="contenedor-graficos">
@@ -103,6 +113,7 @@
   </div>
 </div>
 </main>
+
 <div id="notificaciones-box" style="
   position: fixed;
   top: 70px;
@@ -119,223 +130,268 @@
 "></div>
 
 <script>
-    const umbrales = {
+/*
+Metodos de notificaciones
+ */
+    function toggleNotificaciones() {
+    const box = document.getElementById("notificaciones-box");
+    const punto = document.getElementById("alerta-punto");
+
+    if (box.style.display === "block") {
+    box.style.display = "none";
+    } else {
+    cargarNotificaciones();
+    box.style.display = "block";
+    punto.style.display = "none";
+    }
+    }
+
+    async function cargarNotificaciones() {
+    try {
+    const res = await fetch("http://localhost:5001/api/activadas");
+    const alertas = await res.json();
+    const contenedor = document.getElementById("notificaciones-box");
+    contenedor.innerHTML = "";
+
+    alertas.reverse().forEach(a => {
+    const div = document.createElement("div");
+    div.className = "notificacion";
+    div.innerHTML = `
+      <div class="texto">
+        <strong>${a.parcela?.nombre || "Parcela"}</strong>
+        <div style="font-size: 0.9rem;">${a.mensaje} <span style="color: #999">(${timeAgo(new Date(a.fecha))})</span></div>
+      </div>
+      <button onclick="eliminarNotificacion('${a._id}')">✖</button>
+    `;
+    contenedor.appendChild(div);
+    });
+
+    } catch (e) {
+    console.error("❌ Error al cargar notificaciones:", e);
+    }
+    }
+
+    function eliminarNotificacion(id) {
+    fetch(`http://localhost:5001/api/activadas/eliminar/${id}`, { method: "DELETE" })
+    .then(() => cargarNotificaciones())
+    .then(() => verificarAlertasActivas());
+    }
+
+    function verificarAlertasActivas() {
+    fetch("http://localhost:5001/api/activadas")
+    .then(res => res.json())
+    .then(alertas => {
+    const punto = document.getElementById("alerta-punto");
+    if (alertas.length > 0) {
+      punto.style.display = "inline-block";
+    } else {
+      punto.style.display = "none";
+    }
+    })
+    .catch(err => {
+    console.warn("No se pudo verificar alertas activas:", err);
+    });
+    }
+
+    function timeAgo(date) {
+    const diff = Math.floor((Date.now() - date.getTime()) / 1000);
+    if (diff < 60) return "hace unos segundos";
+    if (diff < 3600) return `hace ${Math.floor(diff / 60)} min`;
+    if (diff < 86400) return `hace ${Math.floor(diff / 3600)} horas`;
+    return `hace ${Math.floor(diff / 86400)} días`;
+    }
+
+    /*
+    Metodos de anomalias
+    */
+    async function mostrarAlertasConVentanaEmergente() {
+    try {
+        const [resAlertas, resParcelas] = await Promise.all([
+            fetch("http://localhost:5001/api/alertas"),
+            fetch("http://localhost:5001/api/parcelas")
+        ]);
+
+        const [alertas, parcelas] = await Promise.all([
+            resAlertas.json(),
+            resParcelas.json()
+        ]);
+
+        const contenedor = document.getElementById("alertas-parcelas");
+        contenedor.innerHTML = "";
+
+        const umbrales = {
             "Temperatura del suelo": { min: 18, max: 28 },
             "Humedad del suelo": { min: 50, max: 70 },
             "pH del suelo": { min: 5.5, max: 7.5 },
             "Nivel de nutrientes": { min: 200, max: 400 }
         };
 
-  function toggleNotificaciones() {
-    const box = document.getElementById("notificaciones-box");
-    const punto = document.getElementById("alerta-punto");
+        const alertasPorParcela = {};
 
-    if (box.style.display === "block") {
-      box.style.display = "none";
-    } else {
-      cargarNotificaciones();
-      box.style.display = "block";
-      punto.style.display = "none";
-    }
-  }
+        alertas.forEach(alerta => {
+            const nombre = alerta.parcela?.nombre || "Desconocida";
+            if (!alertasPorParcela[nombre]) {
+                alertasPorParcela[nombre] = [];
+            }
+            alertasPorParcela[nombre].push(alerta);
+        });
 
-  async function cargarNotificaciones() {
-    try {
-      const res = await fetch("http://localhost:5001/api/activadas");
-      const alertas = await res.json();
-      const contenedor = document.getElementById("notificaciones-box");
-      contenedor.innerHTML = "";
+        const parcelaSeleccionada = document.getElementById("selector-parcela").value;
 
-      alertas.reverse().forEach(a => {
-        const div = document.createElement("div");
-        div.className = "notificacion";
-        div.innerHTML = `
-          <div class="texto">
-            <strong>${a.parcela?.nombre || "Parcela"}</strong>
-            <div style="font-size: 0.9rem;">${a.mensaje} <span style="color: #999">(${timeAgo(new Date(a.fecha))})</span></div>
-          </div>
-          <button onclick="eliminarNotificacion('${a._id}')">✖</button>
-        `;
-        contenedor.appendChild(div);
-      });
+        let hayAlertas = false;
 
-    } catch (e) {
-      console.error("❌ Error al cargar notificaciones:", e);
-    }
-  }
+        Object.entries(alertasPorParcela).forEach(([parcela, alertas]) => {
+            if (parcelaSeleccionada && parcela !== parcelaSeleccionada) return;
 
-  function eliminarNotificacion(id) {
-    fetch(`http://localhost:5001/api/activadas/eliminar/${id}`, { method: "DELETE" })
-      .then(() => cargarNotificaciones())
-      .then(() => verificarAlertasActivas());
-  }
+            if (alertas.length > 0) {
+                hayAlertas = true;
+                const seccion = document.createElement("div");
+                seccion.innerHTML = `<h3>${parcela}</h3>`;
+                alertas.forEach((alerta, i) => {
+                    const btn = document.createElement("button");
+                    btn.className = "btn-alerta";
+                    btn.textContent = `${i + 1}. ${alerta.sensor}`;
+                    btn.onclick = () => mostrarModal(alerta, umbrales);
+                    seccion.appendChild(btn);
+                });
+                contenedor.appendChild(seccion);
+            }
+        });
 
-  function verificarAlertasActivas() {
-    fetch("http://localhost:5001/api/activadas")
-      .then(res => res.json())
-      .then(alertas => {
-        const punto = document.getElementById("alerta-punto");
-        if (alertas.length > 0) {
-          punto.style.display = "inline-block";
-        } else {
-          punto.style.display = "none";
+        // 👇 Mostrar mensaje si no hay alertas para la parcela seleccionada
+        if (!hayAlertas) {
+            const mensaje = document.createElement("p");
+            mensaje.textContent = "No se encontraron anomalías para esta parcela!";
+            mensaje.style.textAlign = "center";
+            mensaje.style.color = "red";
+            mensaje.style.marginTop = "20px";
+            contenedor.appendChild(mensaje);
         }
-      })
-      .catch(err => {
-        console.warn("No se pudo verificar alertas activas:", err);
-      });
-  }
 
-  function timeAgo(date) {
-    const diff = Math.floor((Date.now() - date.getTime()) / 1000);
-    if (diff < 60) return "hace unos segundos";
-    if (diff < 3600) return `hace ${Math.floor(diff / 60)} min`;
-    if (diff < 86400) return `hace ${Math.floor(diff / 3600)} horas`;
-    return `hace ${Math.floor(diff / 86400)} días`;
-  }
-
-    async function mostrarAlertasEnAnomalias() {
-        try {
-            const [resAlertas, resParcelas] = await Promise.all([
-                fetch("http://localhost:5001/api/alertas"),
-                fetch("http://localhost:5001/api/parcelas")
-            ]);
-
-            const [alertas, parcelas] = await Promise.all([
-                resAlertas.json(),
-                resParcelas.json()
-            ]);
-
-            const contenedor = document.getElementById("anomalias");
-            contenedor.innerHTML = "";
-
-            const selector = document.getElementById("selector-parcela");
-            const parcelaSeleccionada = selector.value.trim().toLowerCase();
-
-            // Umbrales hardcodeados
-            const umbrales = {
-                "Temperatura del suelo": { min: 18, max: 28 },
-                "Humedad del suelo": { min: 50, max: 70 },
-                "pH del suelo": { min: 5.5, max: 7.5 },
-                "Nivel de nutrientes": { min: 200, max: 400 }
-            };
-
-            // Validar parcela seleccionada
-            const nombresParcelas = parcelas.map(p => p.nombre.toLowerCase());
-            if (parcelaSeleccionada && !nombresParcelas.includes(parcelaSeleccionada)) {
-                contenedor.innerHTML = `<p style="color: #666; text-align: right; margin-right: 20%;">Parcela seleccionada no válida.</p>`;
-                return;
-            }
-
-            // Filtrar alertas por parcela si se especificó
-            let alertasFiltradas = alertas.filter(alerta =>
-                !parcelaSeleccionada || alerta.parcela?.nombre?.toLowerCase() === parcelaSeleccionada
-            );
-
-            // Filtrar solo alertas con umbral fuera de rango
-            const alertasConProblema = alertasFiltradas.filter(alerta => {
-                const ref = umbrales[alerta.sensor];
-                if (!ref) return false; // Si no hay umbral definido, ignorar
-                return alerta.umbralMinimo < ref.min || alerta.umbralMaximo > ref.max;
-            });
-
-            if (alertasConProblema.length === 0) {
-                contenedor.innerHTML = `<p style="color: #666; text-align: right; margin-right: 20%;">No hay alertas con umbrales fuera del rango recomendado ✅</p>`;
-                return;
-            }
-
-            alertasConProblema.forEach(alerta => {
-                const ref = umbrales[alerta.sensor];
-                const valorMin = alerta.umbralMinimo;
-                const valorMax = alerta.umbralMaximo;
-
-                const fueraDeRangoMin = valorMin < ref.min;
-                const fueraDeRangoMax = valorMax > ref.max;
-
-                let icono = "⚠️", fondo = "#ffeeba", consejos = [];
-
-                switch (alerta.sensor) {
-                    case "Humedad del suelo":
-                        icono = "💦";
-                        fondo = "#d1ecf1";
-                        if (fueraDeRangoMin) consejos.push("¡Tienes que regar!");
-                        if (fueraDeRangoMax) consejos.push("¡Deja de regar!");
-                        break;
-                    case "pH del suelo":
-                        icono = "🌱";
-                        fondo = "#cce5ff";
-                        if (fueraDeRangoMin) consejos.push("¡pH muy bajo!");
-                        if (fueraDeRangoMax) consejos.push("¡pH muy alto!");
-                        break;
-                    case "Nivel de nutrientes":
-                        icono = "🥕";
-                        fondo = "#f8d7da";
-                        if (fueraDeRangoMin) consejos.push("¡Nivel de nutrientes muy bajo!");
-                        if (fueraDeRangoMax) consejos.push("¡Demasiados nutrientes!");
-                        break;
-                    case "Temperatura del suelo":
-                        icono = "♨️";
-                        fondo = "#f9d6d5";
-                        if (fueraDeRangoMin) consejos.push("¡El suelo está congelándose!");
-                        if (fueraDeRangoMax) consejos.push("¡El suelo está que arde!");
-                        break;
-                    default:
-                        if (fueraDeRangoMin) consejos.push("Valor mínimo fuera de rango.");
-                        if (fueraDeRangoMax) consejos.push("Valor máximo fuera de rango.");
-                }
-
-                const div = document.createElement("div");
-                div.className = "alerta-anomalia";
-                div.innerHTML = `
-            <div style="
-                align-items: center;
-                text-align: center;
-                width: 300px;
-                background-color: ${fondo};
-                border: 1px solid #ccc;
-                padding: 10px 15px;
-                margin: 10px 20%;
-                margin-right: 185px;
-                border-radius: 8px;
-                box-shadow: 0 0 5px rgba(0,0,0,0.1);
-            ">
-                <strong>Parcela: ${alerta.parcela?.nombre || "Desconocida"}</strong><br>
-                Sensor: ${alerta.sensor} ${icono}<br>
-                Umbral mínimo definido: <strong>${valorMin}</strong><br>
-                Umbral máximo definido: <strong>${valorMax}</strong><br>
-                ${consejos.join("<br>")}
-            </div>
+    } catch (error) {
+        console.error("Error al cargar alertas:", error);
+        document.getElementById("alertas-parcelas").innerHTML = `
+            <p style="color: red;">Error al cargar las alertas.</p>
         `;
-                contenedor.appendChild(div);
-            });
+    }
+}
 
-        } catch (error) {
-            console.error("❌ Error al mostrar anomalías:", error);
-            document.getElementById("anomalias").innerHTML = `
-        <p style="color: red; text-align: right; margin-right: 20%;">Error al cargar anomalías.</p>
+    function mostrarModal(alerta, umbrales) {
+        const modal = document.getElementById("modal-alerta");
+        const contenido = document.getElementById("contenido-modal");
+
+        const ref = umbrales[alerta.sensor] || { min: -1000, max: 1000 };
+        const valorMin = alerta.umbralMinimo ?? "N/A";
+        const valorMax = alerta.umbralMaximo ?? "N/A";
+
+        const consejos = [];
+
+        switch (alerta.sensor) {
+            case "Temperatura del suelo":
+                consejos.push("¡El suelo está congelándose!");
+                consejos.push("¡El suelo está que arde!");
+                break;
+            case "Humedad del suelo":
+                consejos.push("¡Tienes que regar!");
+                consejos.push("¡Deja de regar!");
+                break;
+            case "pH del suelo":
+                consejos.push("¡pH muy bajo!");
+                consejos.push("¡pH muy alto!");
+                break;
+            case "Nivel de nutrientes":
+                consejos.push("¡Nivel de nutrientes muy bajo!");
+                consejos.push("¡Demasiados nutrientes!");
+                break;
+            default:
+                consejos.push("¡Verifica los datos!");
+        }
+
+        contenido.innerHTML = `
+        <h3>${alerta.sensor}</h3>
+        <p><strong>Umbral mínimo:</strong> ${valorMin}</p>
+        <p><strong>Umbral máximo:</strong> ${valorMax}</p>
+        <div>${consejos.map(c => `<p>${c}</p>`).join("")}</div>
     `;
-        }
+
+        modal.style.display = "block";
     }
 
+    /*
+    * Cierra el modal al hacer clic en la X
+     */
+    document.getElementById("cerrar-modal").onclick = function () {
+        document.getElementById("modal-alerta").style.display = "none";
+    };
 
+    /*
+    * Cierra el modal al hacer clic fuera del contenido
+     */
+    window.onclick = function (event) {
+        const modal = document.getElementById("modal-alerta");
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    };
 
+    function mostrarInfoSensor(sensor, umbrales) {
+        const contenedorInfo = document.getElementById("info-sensor");
+        const ref = umbrales[sensor] || { min: -1000, max: 1000 };
 
+        const consejos = [];
 
+        switch (sensor) {
+            case "Humedad del suelo":
+                consejos.push("¡Tienes que regar!");
+                consejos.push("¡Deja de regar!");
+                break;
+            case "pH del suelo":
+                consejos.push("¡pH muy bajo!");
+                consejos.push("¡pH muy alto!");
+                break;
+            case "Nivel de nutrientes":
+                consejos.push("¡Nivel de nutrientes muy bajo!");
+                consejos.push("¡Demasiados nutrientes!");
+                break;
+            case "Temperatura del suelo":
+                consejos.push("¡El suelo está congelándose!");
+                consejos.push("¡El suelo está que arde!");
+                break;
+            default:
+                consejos.push("¡Valores fuera del rango ideal!");
+        }
 
+        contenedorInfo.innerHTML = `
+        <div style="
+            background-color: #f8f9fa;
+            border: 1px solid #ccc;
+            padding: 16px;
+            margin-top: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        ">
+            <h3>${sensor}</h3>
+            <p><strong>Umbral mínimo:</strong> ${ref.min}</p>
+            <p><strong>Umbral máximo:</strong> ${ref.max}</p>
+            <div style="margin-top: 10px;">
+                ${consejos.map(c => `<p>${c}</p>`).join("")}
+            </div>
+        </div>
+    `;
+    }
 
+    /*
+    * Cambia al cambiar de parcela
+     */
+    document.getElementById("selector-parcela").addEventListener("change", mostrarAlertasConVentanaEmergente);
 
-    // Agregar evento para actualizar alertas al cambiar la selección
-    document.getElementById("selector-parcela").addEventListener("change", mostrarAlertasEnAnomalias);
-
-    // Opcional: llamar una vez al cargar la página si quieres mostrar alertas por defecto
-    // mostrarAlertasEnAnomalias();
-
-
-
-
+  //-------------------------------------------------------------
     document.addEventListener("DOMContentLoaded", () => {
-
-        mostrarAlertasEnAnomalias();
+        mostrarAlertasConVentanaEmergente();
         verificarAlertasActivas();
         setInterval(verificarAlertasActivas, 10000);
         document.addEventListener("click", function (event) {
@@ -347,179 +403,167 @@
         });
     });
 
-
-
-</script>
-
-<script>
-  function redirigirEditar() {
-    const select = document.getElementById("selector-parcela");
-    const nombreSeleccionado = select.value;
-
-    const parcela = parcelasGlobal.find(p => p.nombre === nombreSeleccionado);
-    if (parcela && parcela._id) {
-      window.location.href = `editar-parcela.html?id=${parcela._id}`;
-    } else {
-      alert("Selecciona una parcela válida.");
-    }
-  }
-</script>
-
-<script>
     let parcelasGlobal = [];
     let chartInstances = [];
 
     async function obtenerParcelas() {
-      try {
-        const res = await fetch("http://localhost:5001/api/parcelas");
-        const parcelas = await res.json();
-        const select = document.getElementById("selector-parcela");
-       select.innerHTML = '<option value="">Seleccione una parcela</option>';
-        parcelasGlobal = parcelas;
-        parcelas.forEach(parcela => {
-          const option = document.createElement("option");
-          option.value = parcela.nombre;
-          option.textContent = `Parcela - ${parcela.nombre}`;
-          select.appendChild(option);
-        });
-      } catch (err) {
-        console.error("Error cargando parcelas:", err);
-      }
-    }
-
-async function obtenerHistorial(nombre) {
-  try {
-    const res = await fetch(`http://localhost:5001/api/lecturas/historial/nombre/${encodeURIComponent(nombre)}`);
-    return await res.json();
-  } catch (err) {
-    console.error("Error cargando historial:", err);
-    return [];
-  }
-}
-
-
-  function limpiarGraficos() {
-      chartInstances.forEach(chart => chart.destroy());
-      chartInstances = [];
-      document.getElementById("contenedor-graficos").innerHTML = "";
-    }
-
-  function generarGrafico(datos, tipo, color) {
-  const contenedor = document.getElementById("contenedor-graficos");
-
-  // Limitar a los últimos 10 datos
-  const ultimosDatos = datos.slice(-10);
-
-  // Crear tarjeta visual para el gráfico
-  const tarjeta = document.createElement("div");
-  tarjeta.style.background = "rgba(255, 255, 255, 0.8)";
-  tarjeta.style.borderRadius = "12px";
-  tarjeta.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.2)";
-  tarjeta.style.padding = "16px";
-  tarjeta.style.margin = "20px auto";
-  tarjeta.style.maxWidth = "500px";
-  tarjeta.style.width = "100%";
-
-  const titulo = document.createElement("h4");
-  titulo.textContent = tipo;
-  titulo.style.color = "#1D2A10";
-  titulo.style.textAlign = "center";
-  titulo.style.marginBottom = "10px";
-  tarjeta.appendChild(titulo);
-
-  const canvas = document.createElement("canvas");
-  canvas.width = 400;
-  canvas.height = 250;
-  tarjeta.appendChild(canvas);
-  contenedor.appendChild(tarjeta);
-
-  const labels = ultimosDatos.map(d => d.fecha);
-  const valores = ultimosDatos.map(d => d.valor);
-
-  const chart = new Chart(canvas.getContext("2d"), {
-    type: "line",
-    data: {
-      labels: labels,
-      datasets: [{
-        label: tipo,
-        data: valores,
-        borderColor: color,
-        backgroundColor: "rgba(205,138,57,0.2)",
-        pointBackgroundColor: "#1D2A10",
-        fill: true,
-        tension: 0.4
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: { legend: { display: false } },
-      animation: { duration: 600 },
-      scales: {
-        y: {
-          ticks: { color: "#1D2A10" }
-        },
-        x: {
-          ticks: { color: "#1D2A10" }
+        try {
+            const res = await fetch("http://localhost:5001/api/parcelas");
+            const parcelas = await res.json();
+            const select = document.getElementById("selector-parcela");
+            select.innerHTML = '<option value="">Seleccione una parcela</option>';
+            parcelasGlobal = parcelas;
+            parcelas.forEach(parcela => {
+                const option = document.createElement("option");
+                option.value = parcela.nombre;
+                option.textContent = `Parcela - ${parcela.nombre}`;
+                select.appendChild(option);
+            });
+        } catch (err) {
+            console.error("Error cargando parcelas:", err);
         }
-      }
-    }
-  });
-
-  chartInstances.push(chart);
-}
-
-
-document.getElementById("selector-parcela").addEventListener("change", async (e) => {
-  const valor = e.target.value;
-  if (!valor) return;
-
-  const nombre = valor;
-
-  let parcela = parcelasGlobal.find(p => p.nombre === nombre);
-  if (!parcela) return;
-
-  document.getElementById("seccion-parcela").style.display = "block";
-    limpiarGraficos();
-
-  const historial = await obtenerHistorial(nombre);
-    // Agrupar por tipo normalizado
-  const tiposMap = new Map();
-
-  historial.forEach(d => {
-    const key = d.tipo.trim().toLowerCase();
-    if (!tiposMap.has(key)) tiposMap.set(key, []);
-    tiposMap.get(key).push(d);
-  });
-
-  [...tiposMap.entries()].forEach(([tipo, datos], index) => {
-    const color = ['#CD8A39', '#1D2A10', '#A4C400', '#E6B800', '#4682B4', '#1DA1F2'][index % 6];
-    const nombreFormateado = tipo.charAt(0).toUpperCase() + tipo.slice(1);
-    generarGrafico(datos, nombreFormateado, color);
-  });
-
-  if (parcela?.puntos?.length) {
-    const { lat, lng } = parcela.puntos[0];
-    await obtenerClimaActual(lat, lng);
-    await obtenerPronostico(lat, lng);
-    mostrarMapa(parcela.puntos);
-  }
-});
-
-</script>
-
-<script>
-async function obtenerClimaActual(lat, lon) {
-  try {
-    const res = await fetch(`http://localhost:5001/api/climaActual?lat=${lat}&lon=${lon}`);
-    const data = await res.json();
-
-    if (!data.descripcion || !data.icono || !data.temperatura) {
-      console.warn("Datos de clima incompletos:", data);
-      return;
     }
 
-    const clima = document.getElementById("clima-actual");
-    clima.innerHTML = `
+    async function obtenerHistorial(nombre) {
+        try {
+            const res = await fetch(`http://localhost:5001/api/lecturas/historial/nombre/${encodeURIComponent(nombre)}`);
+            return await res.json();
+        } catch (err) {
+            console.error("Error cargando historial:", err);
+            return [];
+        }
+    }
+
+    function limpiarGraficos() {
+        chartInstances.forEach(chart => chart.destroy());
+        chartInstances = [];
+        document.getElementById("contenedor-graficos").innerHTML = "";
+    }
+
+    function generarGrafico(datos, tipo, color) {
+        const contenedor = document.getElementById("contenedor-graficos");
+
+        // Limitar a los últimos 10 datos
+        const ultimosDatos = datos.slice(-10);
+
+        // Crear tarjeta visual para el gráfico
+        const tarjeta = document.createElement("div");
+        tarjeta.style.background = "rgba(255, 255, 255, 0.8)";
+        tarjeta.style.borderRadius = "12px";
+        tarjeta.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.2)";
+        tarjeta.style.padding = "16px";
+        tarjeta.style.margin = "20px auto";
+        tarjeta.style.maxWidth = "500px";
+        tarjeta.style.width = "100%";
+
+        const titulo = document.createElement("h4");
+        titulo.textContent = tipo;
+        titulo.style.color = "#1D2A10";
+        titulo.style.textAlign = "center";
+        titulo.style.marginBottom = "10px";
+        tarjeta.appendChild(titulo);
+
+        const canvas = document.createElement("canvas");
+        canvas.width = 400;
+        canvas.height = 250;
+        tarjeta.appendChild(canvas);
+        contenedor.appendChild(tarjeta);
+
+        const labels = ultimosDatos.map(d => d.fecha);
+        const valores = ultimosDatos.map(d => d.valor);
+
+        const chart = new Chart(canvas.getContext("2d"), {
+            type: "line",
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: tipo,
+                    data: valores,
+                    borderColor: color,
+                    backgroundColor: "rgba(205,138,57,0.2)",
+                    pointBackgroundColor: "#1D2A10",
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                animation: { duration: 600 },
+                scales: {
+                    y: {
+                        ticks: { color: "#1D2A10" }
+                    },
+                    x: {
+                        ticks: { color: "#1D2A10" }
+                    }
+                }
+            }
+        });
+
+        chartInstances.push(chart);
+    }
+
+    document.getElementById("selector-parcela").addEventListener("change", async (e) => {
+        const valor = e.target.value;
+        if (!valor) return;
+
+        const nombre = valor;
+
+        let parcela = parcelasGlobal.find(p => p.nombre === nombre);
+        if (!parcela) return;
+
+        document.getElementById("seccion-parcela").style.display = "block";
+        limpiarGraficos();
+
+        const historial = await obtenerHistorial(nombre);
+        // Agrupar por tipo normalizado
+        const tiposMap = new Map();
+
+        historial.forEach(d => {
+            const key = d.tipo.trim().toLowerCase();
+            if (!tiposMap.has(key)) tiposMap.set(key, []);
+            tiposMap.get(key).push(d);
+        });
+
+        [...tiposMap.entries()].forEach(([tipo, datos], index) => {
+            const color = ['#CD8A39', '#1D2A10', '#A4C400', '#E6B800', '#4682B4', '#1DA1F2'][index % 6];
+            const nombreFormateado = tipo.charAt(0).toUpperCase() + tipo.slice(1);
+            generarGrafico(datos, nombreFormateado, color);
+        });
+
+        if (parcela?.puntos?.length) {
+            const { lat, lng } = parcela.puntos[0];
+            await obtenerClimaActual(lat, lng);
+            await obtenerPronostico(lat, lng);
+            mostrarMapa(parcela.puntos);
+        }
+    });
+
+    function redirigirEditar() {
+        const select = document.getElementById("selector-parcela");
+        const nombreSeleccionado = select.value;
+
+        const parcela = parcelasGlobal.find(p => p.nombre === nombreSeleccionado);
+        if (parcela && parcela._id) {
+            window.location.href = `editar-parcela.html?id=${parcela._id}`;
+        } else {
+            alert("Selecciona una parcela válida.");
+        }
+    }
+
+    async function obtenerClimaActual(lat, lon) {
+        try {
+            const res = await fetch(`http://localhost:5001/api/climaActual?lat=${lat}&lon=${lon}`);
+            const data = await res.json();
+
+            if (!data.descripcion || !data.icono || !data.temperatura) {
+                console.warn("Datos de clima incompletos:", data);
+                return;
+            }
+
+            const clima = document.getElementById("clima-actual");
+            clima.innerHTML = `
       <p><strong>Clima actual</strong></p>
       <p>${data.descripcion}</p>
       <p><img src="https://openweathermap.org/img/wn/${data.icono}@2x.png" /></p>
@@ -527,168 +571,118 @@ async function obtenerClimaActual(lat, lon) {
       <p>Humedad: ${data.humedad}%</p>
       <p>Viento: ${data.viento} m/s</p>
     `;
-  } catch (err) {
-    console.error("Error obteniendo clima actual:", err);
-  }
-}
+        } catch (err) {
+            console.error("Error obteniendo clima actual:", err);
+        }
+    }
 
-  async function obtenerPronostico(lat, lon) {
-    try {
-      const res = await fetch(`http://localhost:5001/api/pronostico?lat=${lat}&lon=${lon}`);
-      const datos = await res.json();
-      const dias = document.getElementById("pronostico-dias");
-      dias.innerHTML = "";
-      const agrupado = {};
+    async function obtenerPronostico(lat, lon) {
+        try {
+            const res = await fetch(`http://localhost:5001/api/pronostico?lat=${lat}&lon=${lon}`);
+            const datos = await res.json();
+            const dias = document.getElementById("pronostico-dias");
+            dias.innerHTML = "";
+            const agrupado = {};
 
-      datos.list.forEach(item => {
-        const fecha = item.dt_txt.split(" ")[0];
-        if (!agrupado[fecha]) agrupado[fecha] = [];
-        agrupado[fecha].push(item);
-      });
+            datos.list.forEach(item => {
+                const fecha = item.dt_txt.split(" ")[0];
+                if (!agrupado[fecha]) agrupado[fecha] = [];
+                agrupado[fecha].push(item);
+            });
 
-      Object.entries(agrupado).slice(0, 5).forEach(([fecha, items]) => {
-        const promedio = items.reduce((acc, d) => acc + d.main.temp, 0) / items.length;
-        dias.innerHTML += `
+            Object.entries(agrupado).slice(0, 5).forEach(([fecha, items]) => {
+                const promedio = items.reduce((acc, d) => acc + d.main.temp, 0) / items.length;
+                dias.innerHTML += `
           <div style="background:#fff; padding:1rem; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.1); text-align:center;">
             <p><strong>${fecha}</strong></p>
             <img src="https://openweathermap.org/img/wn/${items[0].weather[0].icon}@2x.png" />
             <p>${items[0].weather[0].description}</p>
             <p>${promedio.toFixed(1)} °C</p>
           </div>`;
-      });
-    } catch (err) {
-      console.error("Error obteniendo pronóstico:", err);
+            });
+        } catch (err) {
+            console.error("Error obteniendo pronóstico:", err);
+        }
     }
-  }
 
-  function mostrarMapa(puntos) {
-    const mapaDiv = document.getElementById("mapa-parcela");
-    mapaDiv.innerHTML = "";
-    mapaDiv._leaflet_id = null;
-    const mapa = L.map("mapa-parcela").setView([puntos[0].lat, puntos[0].lng], 16);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(mapa);
-    const coords = puntos.map(p => [p.lat, p.lng]);
-    coords.forEach(coord => {
-      L.marker(coord).addTo(mapa);
-    });
-  }
+    function mostrarMapa(puntos) {
+        const mapaDiv = document.getElementById("mapa-parcela");
+        mapaDiv.innerHTML = "";
+        mapaDiv._leaflet_id = null;
+        const mapa = L.map("mapa-parcela").setView([puntos[0].lat, puntos[0].lng], 16);
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(mapa);
+        const coords = puntos.map(p => [p.lat, p.lng]);
+        coords.forEach(coord => {
+            L.marker(coord).addTo(mapa);
+        });
+    }
 
-</script>
-<script>
     const nombre = localStorage.getItem("nombreUsuario");
     if (nombre) {
-      document.getElementById("nombre-usuario").textContent = nombre;
-    }
-</script>
-<script>
-async function mostrarGraficos() {
-  const select = document.getElementById("selector-parcela");
-  const nombre = select.value;
-  if (!nombre) {
-    alert("Selecciona una parcela primero");
-    return;
-  }
-}
-</script>
-<script>
-  function eliminarParcela() {
-    const select = document.getElementById("selector-parcela");
-    const nombreSeleccionado = select.value;
-    if (!nombreSeleccionado) {
-      alert("Selecciona una parcela válida.");
-      return;
+        document.getElementById("nombre-usuario").textContent = nombre;
     }
 
-    const parcela = parcelasGlobal.find(p => p.nombre === nombreSeleccionado);
-    if (!parcela || !parcela._id) {
-      alert("No se encontró la parcela.");
-      return;
+    async function mostrarGraficos() {
+        const select = document.getElementById("selector-parcela");
+        const nombre = select.value;
+        if (!nombre) {
+            alert("Selecciona una parcela primero");
+            return;
+        }
     }
 
-    if (!confirm(`¿Estás seguro de eliminar la parcela "${nombreSeleccionado}"?`)) return;
+    function eliminarParcela() {
+        const select = document.getElementById("selector-parcela");
+        const nombreSeleccionado = select.value;
+        if (!nombreSeleccionado) {
+            alert("Selecciona una parcela válida.");
+            return;
+        }
 
-    fetch(`http://localhost:5001/api/parcelas/${parcela._id}`, {
-      method: "DELETE"
-    })
-    .then(res => res.json())
-    .then(data => {
-      alert("✅ Parcela eliminada con éxito.");
-      location.reload();
-    })
-    .catch(err => {
-      console.error("Error al eliminar:", err);
-      alert("❌ Error al eliminar la parcela.");
+        const parcela = parcelasGlobal.find(p => p.nombre === nombreSeleccionado);
+        if (!parcela || !parcela._id) {
+            alert("No se encontró la parcela.");
+            return;
+        }
+
+        if (!confirm(`¿Estás seguro de eliminar la parcela "${nombreSeleccionado}"?`)) return;
+
+        fetch(`http://localhost:5001/api/parcelas/${parcela._id}`, {
+            method: "DELETE"
+        })
+            .then(res => res.json())
+            .then(data => {
+                alert("✅ Parcela eliminada con éxito.");
+                location.reload();
+            })
+            .catch(err => {
+                console.error("Error al eliminar:", err);
+                alert("❌ Error al eliminar la parcela.");
+            });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        obtenerParcelas();
     });
-  }
-</script>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    obtenerParcelas();
-  });
 </script>
 
+<!-- Modal de Detalle de Pronóstico -->
+<div id="modalPronostico" class="modal-pronostico">
+    <div class="modal-contenido">
+        <button onclick="cerrarModal()" class="modal-cerrar">×</button>
 
+        <h2 class="modal-titulo">🔍 Análisis Climático y Recomendaciones</h2>
 
-<!-- 🌤️ Modal de Detalle de Pronóstico -->
-<div id="modalPronostico" style="
-  display: none; 
-  position: fixed; 
-  top: 0; left: 0; width: 100%; height: 100%;
-  background-color: rgba(0,0,0,0.4); 
-  z-index: 9999; 
-  justify-content: center; 
-  align-items: center;
-  font-family: 'Rubik', sans-serif;
-">
-  <div style="
-    background: white;
-    border-radius: 20px;
-    padding: 30px 40px;
-    width: 90%;
-    max-width: 850px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    position: relative;
-    max-height: 90vh;
-    overflow-y: auto;
-  ">
-    <button onclick="cerrarModal()" style="
-      position: absolute; top: 15px; right: 20px;
-      background: none; border: none; font-size: 28px; font-weight: bold; color: #666; cursor: pointer;">×</button>
+        <p id="info-pronostico" class="modal-info"></p>
 
-    <h2 style="text-align:center; color: #1D2A10; font-size: 26px;">🔍 Análisis Climático y Recomendaciones</h2>
-    <p id="info-pronostico" style="
-  text-align: center;
-  margin: 20px auto;
-  padding: 12px 20px;
-  font-size: 18px;
-  font-weight: 600;
-  color: #1D2A10;
-  background: #EDF2EC;
-  border-left: 6px solid #B5C99A;
-  border-radius: 8px;
-  max-width: 600px;
-">
-</p>
+        <div id="graficoPronostico" class="modal-grafico">
+            <canvas id="canvasPronostico"></canvas>
+        </div>
 
-    <div id="graficoPronostico" style="margin: 30px auto 40px; max-width: 600px;">
-      <canvas id="canvasPronostico"></canvas>
+        <div id="recomendacionIA" class="modal-recomendacion"></div>
     </div>
-
-    <div id="recomendacionIA" style="
-      background: #f5f7f6;
-      border-left: 5px solid #B5C99A;
-      padding: 20px;
-      border-radius: 10px;
-      font-size: 16px;
-      line-height: 1.6;
-      color: #2F3E1D;
-      white-space: pre-wrap;
-    ">
-
 </div>
 
-  </div>
-</div>
 
 <script>
 document.getElementById("ver-detalles-pronostico").addEventListener("click", async () => {
@@ -756,7 +750,6 @@ function cerrarModal() {
   document.getElementById("modalPronostico").style.display = "none";
 }
 </script>
-
 
 <script>
 async function cargarUsuarios() {
