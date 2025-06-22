@@ -109,6 +109,54 @@ router.get('/por-trabajo', async (req, res) => {
     res.status(500).json({ mensaje: 'Error al obtener usuarios por trabajo' });
   }
 });
+// Obtener usuario específico por correo
+router.get('/:correo', async (req, res) => {
+  const correo = req.params.correo;
+
+  try {
+    const usuario = await Usuario.findOne({ correo });
+
+    if (!usuario) {
+      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+    }
+
+    res.json({
+      nombre: usuario.nombre,
+      correo: usuario.correo,
+      trabajo: usuario.trabajo,
+      fotoPerfil: usuario.fotoPerfil || '',
+    });
+  } catch (err) {
+    console.error('❌ Error al obtener usuario por correo:', err.message);
+    res.status(500).json({ mensaje: 'Error al obtener usuario' });
+  }
+});
+// Actualizar foto de perfil de un usuario
+router.put('/foto', async (req, res) => {
+  const { correo, fotoPerfil } = req.body;
+
+  if (!correo || !fotoPerfil) {
+    return res.status(400).json({ mensaje: 'Correo y fotoPerfil son obligatorios' });
+  }
+
+  try {
+    const usuario = await Usuario.findOne({ correo });
+
+    if (!usuario) {
+      return res.status(404).json({ mensaje: 'Usuario no encontrado' });
+    }
+
+    usuario.fotoPerfil = fotoPerfil;
+    await usuario.save();
+
+    res.json({ mensaje: 'Foto de perfil actualizada correctamente' });
+  } catch (err) {
+    console.error('❌ Error al actualizar foto de perfil:', err.message);
+    res.status(500).json({ mensaje: 'Error al actualizar foto de perfil' });
+  }
+});
+
+
 
 
 // ✅ Login de usuario

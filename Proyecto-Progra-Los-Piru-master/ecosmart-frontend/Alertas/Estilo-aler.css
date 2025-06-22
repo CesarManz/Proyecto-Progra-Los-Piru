@@ -13,6 +13,12 @@ header nav input.busqueda {
   max-width: 220px;
 }
 
+/* Asegura que las notificaciones se posicionen respecto al header */
+header {
+  position: relative;
+  z-index: 10;
+}
+
 /* Contenedor principal */
 main {
   max-width: 1000px;
@@ -110,4 +116,20 @@ form button:hover {
 
 .notificacion button:hover {
   color: #CD8A39;
+}
+
+/* Caja flotante de notificaciones (posicionada correctamente dentro del header) */
+.notificaciones-box {
+  position: absolute;
+  top: 70px;
+  right: 40px;
+  background: white;
+  color: #1D2A10;
+  width: 360px;
+  max-height: 500px;
+  overflow-y: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: none;
+  z-index: 9999;
 }
