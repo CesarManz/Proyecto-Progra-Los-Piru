@@ -54,8 +54,8 @@
     <div class="chat-messages" id="chatMessages"></div>
 
     <div class="chat-input">
-      <input type="text" id="chatInput" placeholder="Escriba su mensaje" />
-      <button onclick="nuevoChat()">
+      <input type="text" id="chatInput" placeholder="Escribe tu mensaje..." />
+      <button onclick="nuevoChat()" title="Nuevo Chat">
         <img class="newChat" src="../Public/nuevoChat.png" alt="Nuevo Chat" />
       </button>
     </div>
@@ -98,7 +98,6 @@
     return chatId;
   }
 
-
   async function cargarListaChats() {
     const contenedor = document.querySelector('.chats');
     contenedor.innerHTML = '';
@@ -116,16 +115,19 @@
         div.innerText = chat.pregunta || 'Chat sin título';
 
         div.onclick = async () => {
-          //Se guarda el ID de la conversación actual
           localStorage.setItem('chatId', chat.chatId);
           chatActualId = chat.chatId;
 
+          // Ocultar preguntas rápidas al seleccionar un chat previo
+          const preguntas = document.querySelector('.fastQuestions');
+          if (preguntas) {
+            preguntas.style.display = 'none';
+          }
+
           try {
-            //Se le pide al backend todos los mensajes del chatId
             const res = await fetch(`http://localhost:5001/api/chat/conversacion/${chat.chatId}`);
             const mensajes = await res.json();
 
-            //Se transforma el array de {pregunta, respuesta} en formato [{user}, {bot}, ...]
             const formateados = mensajes.map(m => [
               { sender: 'user', text: m.pregunta },
               { sender: 'bot', text: m.respuesta }
@@ -136,7 +138,6 @@
             console.error('❌ Error al cargar conversación:', err);
           }
         };
-
 
         const eliminar = document.createElement('button');
         eliminar.className = 'eliminar';
@@ -210,8 +211,23 @@
   const temasPermitidos = [
     'planta', 'cultivo', 'suelo', 'riego', 'fertilizante', 'pesticida',
     'plaga', 'enfermedad', 'rotación', 'compost', 'abonado', 'invernadero',
-    'hortaliza', 'germinación', 'raíces', 'ecología', 'biodegradable', 'sustrato', 'insecto', 'bicho'
+    'hortaliza', 'germinación', 'raíces', 'ecología', 'biodegradable', 'sustrato',
+    'insecto', 'bicho', 'hojas', 'flores', 'frutas', 'semilla', 'polinización',
+    'fungicida', 'micorriza', 'poda', 'abono', 'cosecha', 'semillero',
+    'almácigo', 'biotecnología', 'control biológico', 'organismo beneficioso',
+    'plaguicida', 'microorganismo', 'fertilización foliar', 'mulching',
+    'enraizamiento', 'permacultura', 'agroecología', 'cultivo hidropónico',
+    'cultivo orgánico', 'biodiversidad', 'microclima', 'bioma',
+    'nutrientes', 'toxinas', 'abono verde', 'carbono orgánico', 'ph suelo',
+    'materia orgánica', 'polen', 'agua', 'drenaje', 'sembrar', 'labranza',
+    'capullo', 'pétalo', 'estambre', 'estigma', 'carpelo', 'corola', 'inflorescencia',
+    'floración', 'polen', 'nectar', 'jardinería', 'aroma', 'perfume', 'floricultura',
+    'rosal', 'jazmín', 'margarita', 'orquídea', 'clavel', 'tulipán', 'geranio',
+    'hibisco', 'lavanda', 'alegría', 'petunia', 'dalia', 'azucena', 'girasol',
+    'crisantemo', 'anémona', 'azalea', 'gardenia', 'violeta', 'begonia'
   ];
+
+
 
   function esPreguntaValida(texto) {
     const lower = texto.toLowerCase();
@@ -228,7 +244,6 @@
       preguntas.style.display = 'none';
     }
 
-    // Filtro: solo preguntas relacionadas con plantas
     if (!esPreguntaValida(userText)) {
       appendMessage('user', userText);
       appendMessage('bot', '🌱 Lo siento, solo puedo responder preguntas relacionadas con plantas, agricultura o ecología.');
@@ -245,10 +260,18 @@
     if (!questionText) input.value = '';
 
     const chatBox = document.getElementById('chatMessages');
+
+    // Crear burbuja "escribiendo..."
     const loadingBubble = document.createElement('div');
     loadingBubble.className = 'msg bot';
-    loadingBubble.innerHTML = `<span class="typing-dots"><span></span><span></span><span></span></span>`;
+    loadingBubble.id = 'loading-bubble';
+    loadingBubble.innerHTML = `
+<div class="typing-container">
+  <div class="typing-dots"><span></span><span></span><span></span></div>
+</div>`;
+
     chatBox.appendChild(loadingBubble);
+    chatBox.scrollTop = chatBox.scrollHeight;
 
     const chats = getChats();
     const chat = chats.find(c => c.id === chatActualId);
@@ -259,18 +282,25 @@
     });
     historialTexto += `${userText}\n`;
 
-    const botResponse = await askDeepSeek(historialTexto);
+    try {
+      const botResponse = await askDeepSeek(historialTexto);
 
-    if (!chat.nombre || chat.nombre === 'Chat sin título') {
-      chat.nombre = userText.length > 30 ? userText.slice(0, 30) + '...' : userText;
+      if (!chat.nombre || chat.nombre === 'Chat sin título') {
+        chat.nombre = userText.length > 30 ? userText.slice(0, 30) + '...' : userText;
+      }
+
+      chat.mensajes.push({ sender: 'user', text: userText });
+      chat.mensajes.push({ sender: 'bot', text: botResponse });
+      saveChats(chats);
+      cargarListaChats();
+
+      // Reemplaza animación con respuesta
+      loadingBubble.innerHTML = botResponse;
+    } catch (err) {
+      console.error('❌ Error al obtener respuesta:', err);
+      if (loadingBubble) loadingBubble.remove();
+      appendMessage('bot', '⚠️ Hubo un problema al generar la respuesta. Intenta de nuevo.');
     }
-
-    chat.mensajes.push({ sender: 'user', text: userText });
-    chat.mensajes.push({ sender: 'bot', text: botResponse });
-    saveChats(chats);
-    cargarListaChats();
-
-    loadingBubble.innerHTML = botResponse;
 
     const correo = localStorage.getItem('correo');
     const chatId = localStorage.getItem('chatId');
@@ -283,7 +313,7 @@
           correo: correo,
           chatId: chatId,
           pregunta: userText,
-          respuesta: botResponse
+          respuesta: loadingBubble.innerHTML || ''
         })
       })
               .then(res => res.json())
@@ -333,8 +363,9 @@
       }
     });
   };
-
 </script>
+
+
 
 
 </body>

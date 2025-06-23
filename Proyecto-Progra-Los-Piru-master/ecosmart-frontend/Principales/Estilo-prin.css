@@ -157,7 +157,6 @@ button:hover {
   color: #1D2A10;
 }
 
-/* Responsive para pantallas pequeñas */
 @media (max-width: 700px) {
   .tareas-pendientes {
     flex-direction: column;

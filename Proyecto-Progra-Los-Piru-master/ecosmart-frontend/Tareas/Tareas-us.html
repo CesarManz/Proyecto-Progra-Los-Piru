@@ -2,12 +2,13 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
-    <title>Ver tareas</title>
+    <title>Ver Tareas</title>
     <link rel="stylesheet" href="../CSS-Repetidos/body-html.css" />
     <link rel="stylesheet" href="../CSS-Repetidos/header.css" />
     <link rel="stylesheet" href="Estilo-prin.css" />
     <link rel="stylesheet" href="../CSS-Repetidos/notificaciones.css" />
     <link rel="stylesheet" href="../Tareas/tareas.css" />
+    <link rel="icon" href="../Public/EcoSmart%20MiniLogo.png" type="image/png">
     <style>
         .notificacion {
             display: flex;
@@ -96,9 +97,7 @@
 </main>
 
 <script src="../js-repetidos/header.js"></script>
-
 <script>
-    // Carga la lista de tareas en la página dependiendo del usuario
     async function cargarTareas() {
         const correo = localStorage.getItem('correo');
         if (!correo) return;
