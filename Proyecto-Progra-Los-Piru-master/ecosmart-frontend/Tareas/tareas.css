@@ -110,30 +110,6 @@ nav#menu {
     border-radius: 10px;
 }
 
-form.tarea {
-    background-color: #dba14e;
-    padding: 20px;
-    border-radius: 15px;
-    width: 90%;
-    max-width: 1000px;
-    margin: 20px auto;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    text-align: center;
-}
-
-form.tarea h1 {
-    margin-bottom: 25px;
-    font-weight: normal;
-    color: #000;
-}
-
-.tarea-content {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    color: #1D2A10;
-}
-
 .tarea-content #Tareas-container {
     margin-top: 10px;
 }
@@ -175,12 +151,67 @@ button:hover {
     color: #1D2A10;
 }
 
-/* Asegura que el contenido de tareas dentro de #Tareas-container se vea bien */
+
 .tarea {
-    background-color: #CD8A39;
-    padding: 15px;
+    display: none;
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    background-color: #dba14e;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    z-index: 1000;
+}
+.tarea-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: #dba14e
+}
+
+.tarea-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+
+    color: rgba(205, 138, 57, 0.9);
+}
+
+.tarea input {
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+.dropdown {
+    position: relative;
+    width: 220px;
+    height: 30px;
+    margin: 0 auto 20px;
+    font-family: sans-serif;
+    cursor: pointer;
     border-radius: 10px;
-    color: #1D2A10;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-    margin-bottom: 15px;
+    background-color: #1D2A10;
+    color: #CD8A39;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    user-select: none;
+}
+.dropdown-options {
+    position: absolute;
+    text-align: center;
+    align-items: center;
+    top: 100%;
+    left: 0;
+    width: 200px;
+    max-height: 150px;
+    overflow-y: auto;
+    border-radius: 5px;
+    border-top: none;
+    border-radius: 0 0 5px 5px;
+    z-index: 10;
+    box-sizing: border-box;
+    display: none;
 }
