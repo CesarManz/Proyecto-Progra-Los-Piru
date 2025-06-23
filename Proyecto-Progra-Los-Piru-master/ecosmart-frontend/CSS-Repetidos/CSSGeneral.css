@@ -5,11 +5,7 @@ html {
 }
 
 body {
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), #c1d36b), url("../Public/Fondo.png");
-    background-attachment: fixed;
-    background-color: #595D2B;
-    background-position: center;
-    background-size: cover;
+    background-color: #c1d36b;
     color: #1D2A10;
     font-family: 'Segoe UI', sans-serif;
     height: 100vh;
