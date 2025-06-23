@@ -13,11 +13,9 @@
 
 <body>
  <header>
-  <div class="logo">
-    <div class="item Logo" onclick="window.location.href='../Principales/Pagina-Principal.html'">
-      <img src="../Public/EcoSmart2.png" alt="Logo"/>
-    </div>
-  </div>
+     <div class="logo" onclick="window.location.href='../Principales/Pagina-Principal.html'">
+         <img src="../Public/EcoSmart2.png" alt="Logo EcoSmart" class="logo-ecosmart"/>
+     </div>
 
   <nav id="menu">
     <input class="busqueda" type="search" placeholder="Buscar">
@@ -37,35 +35,37 @@
   </div>
 </header>
 
-<div class="Cuadrado-transparente">
-    <div class="Tareas-pendientes">
-        <div class="texto">
-            <h1>Resumen</h1>
-            <h3>Tareas pendientes (x)</h3>
-            <h3>Tareas en revision (x)</h3>
-            <h3>Tareas terminadas (x)</h3>
+ <div class="cuadrado-transparente">
+     <div class="tareas-pendientes">
+         <div class="texto">
+             <h1>Resumen</h1>
+             <h3>Tareas pendientes (x)</h3>
+             <h3>Tareas en revisión (x)</h3>
+             <h3>Tareas terminadas (x)</h3>
+         </div>
 
-        </div>
-        <div class="imagenes">
-            <div class="item tareas" onclick="window.location.href='../Tareas/Tareas-us.html'">
-                <img  src="../Public/Tareas.png" alt="Tareas" />
-                <h4>Tareas</h4>
-            </div>
-            <div class="item alertas" onclick="window.location.href='../Alertas/ver-alertas.html'">
-                <img src="../Public/Alertas.png" alt="Alertas" />
-                <h4>Alertas</h4>
-            </div>
-        </div>
-    </div>
+         <div class="imagenes">
+             <div class="item tareas" onclick="window.location.href='../Tareas/Tareas-us.html'">
+                 <img src="../Public/Tareas.png" alt="Tareas" />
+                 <h4>Tareas</h4>
+             </div>
 
-    <h1 class="tit-parcelas">Parcelas</h1>
-    <div class="Ver-parcelas" id="parcelasContainer"></div>
-    <br><br/>
-    <button onclick="window.location.href='../Parcelas/listar-parcelas.html'">
-        Ver Parcelas
-    </button>
+             <div class="item alertas" onclick="window.location.href='../Alertas/ver-alertas.html'">
+                 <img src="../Public/Alertas.png" alt="Alertas" />
+                 <h4>Alertas</h4>
+             </div>
+         </div>
+     </div>
 
-</div>
+     <h1 class="tit-parcelas">Parcelas</h1>
+     <div class="ver-parcelas" id="parcelasContainer"></div>
+
+     <button onclick="window.location.href='../Parcelas/listar-parcelas.html'">
+         Ver Parcelas
+     </button>
+ </div>
+
+
   <div id="notificaciones-box" style="
   position: fixed;
   top: 70px;
@@ -80,7 +80,7 @@
   display: none;
   z-index: 9999;
 "></div>
-<script src="../notificacion.js"></script>  
+<script src="../notificacion.js"></script>
 
 <script>
     async function cargarParcelas() {

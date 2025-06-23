@@ -1,3 +1,4 @@
+/* HEADER PRINCIPAL */
 header {
     background-color: #1D2A10;
     height: 64px;
@@ -7,122 +8,214 @@ header {
     justify-content: space-between;
     color: #CD8A39;
     position: relative;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4); /* Sombra para profundidad */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Fuente moderna */
+    user-select: none; /* Evita selección accidental */
 }
 
-/* Logo */
+/* LOGO */
 .logo {
     display: flex;
     align-items: center;
+    cursor: pointer;
+    transition: transform 0.25s ease;
 }
 
 .logo img {
-    height: 44px;
-    display: block;
+    height: 125px;
+    width: auto;
+    object-fit: contain;
+    transition: transform 0.3s ease;
 }
 
-/* Menú de navegación */
+.logo:hover,
+.logo:focus {
+    transform: scale(1.08);
+    outline: none;
+}
+
+/* MENÚ / NAVEGACIÓN */
 nav {
     display: flex;
     align-items: center;
-    gap: 20px;
     flex: 1;
     margin-left: 28px;
+    gap: 24px;
 }
 
 nav a {
     color: #CD8A39;
     text-decoration: none;
-    font-weight: bold;
+    font-weight: 600;
     font-size: 16px;
+    position: relative;
+    padding: 6px 0;
+    transition: color 0.25s ease;
 }
 
-/* Buscador */
+nav a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: #CD8A39;
+    transition: width 0.3s ease;
+}
+
+nav a:hover,
+nav a:focus {
+    color: #fff;
+}
+
+nav a:hover::after,
+nav a:focus::after {
+    width: 100%;
+}
+
+/* BUSCADOR */
 .busqueda {
     background-color: #CD8A39;
-    padding: 6px 14px;
+    color: #1D2A10;
+    padding: 6px 14px 6px 36px; /* espacio para icono */
     height: 34px;
     border: none;
     border-radius: 6px;
     font-size: 15px;
     margin-left: auto;
+    transition: box-shadow 0.3s ease, background-color 0.3s ease;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%231D2A10" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M21.71 20.29l-5.388-5.388a7.5 7.5 0 10-1.414 1.414l5.388 5.388a1 1 0 001.414-1.414zM4 10a6 6 0 1112 0 6 6 0 01-12 0z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: 10px center;
+    cursor: text;
 }
 
-/* Campana */
+.busqueda:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(205, 138, 57, 0.6);
+    background-color: #e4b54b;
+}
+
+/* CAMPANA DE NOTIFICACIÓN */
 .icono-notificacion {
     display: flex;
     align-items: center;
     margin-left: 18px;
     cursor: pointer;
     position: relative;
+    transition: transform 0.3s ease;
 }
 
 .icono-notificacion img {
-    height: 24px;
-    width: 24px;
+    height: 26px;
+    width: 26px;
     display: block;
 }
 
+.icono-notificacion:hover,
+.icono-notificacion:focus {
+    transform: scale(1.2);
+    outline: none;
+}
+
+/* PUNTO DE ALERTA */
 #alerta-punto {
     position: absolute;
-    top: -5px;
-    right: -5px;
-    width: 9px;
-    height: 9px;
-    background-color: red;
+    top: -4px;
+    right: -4px;
+    width: 10px;
+    height: 10px;
+    background-color: #ff3b3b;
     border: 2px solid white;
     border-radius: 50%;
-    display: none;
+    display: none; /* mostrar cuando haya notificaciones */
+    animation: pulseAlert 1.5s infinite;
 }
 
-/* Perfil */
-.fo-perfil {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-left: 18px;
+@keyframes pulseAlert {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.6; }
 }
 
+/* PERFIL */
 .Fondo-fo-perfil {
-    background: rgba(205, 138, 57, 0.3);
-    text-align: right;
+    background: rgba(205, 138, 57, 0.25);
     border-radius: 50%;
     display: inline-block;
     position: relative;
     cursor: pointer;
+    padding: 6px;
+    transition: background 0.3s ease;
+}
+
+.Fondo-fo-perfil:hover,
+.Fondo-fo-perfil:focus {
+    background: rgba(205, 138, 57, 0.5);
+    outline: none;
 }
 
 .fo-perfil {
-    margin: 5px;
     width: 40px;
     height: 40px;
     border-radius: 50%;
+    display: block;
+    object-fit: cover;
 }
 
+/* MENÚ PERFIL */
 .menu-perfil {
     display: none;
     position: absolute;
     top: 60px;
     right: 0;
-    background: rgba(205, 138, 57, 0.5);
+    background: rgba(205, 138, 57, 0.95);
     border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-    width: 150px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    width: 180px;
     z-index: 100;
+    overflow: hidden;
+    font-weight: 600;
+    font-size: 15px;
 }
 
 .menu-perfil a {
     display: block;
-    padding: 10px;
-    color: #333;
+    padding: 14px 18px;
+    color: #fff;
     text-decoration: none;
+    transition: background 0.25s ease;
 }
 
-.menu-perfil a:hover {
-    background: rgba(205, 138, 57, 0.9);
-    border-radius: 10px;
+.menu-perfil a:hover,
+.menu-perfil a:focus {
+    background: rgba(255, 255, 255, 0.15);
+    outline: none;
 }
 
+/* CLASE EXTRA OPCIONAL PARA LOGO EN OTRAS PARTES */
 .ecosmart {
     width: 150px;
     height: auto;
+}
+
+/* RESPONSIVE: ajusta el header en pantallas menores */
+@media (max-width: 720px) {
+    header {
+        padding: 0 16px;
+        height: 56px;
+    }
+
+    nav {
+        margin-left: 16px;
+        gap: 16px;
+    }
+
+    nav a {
+        font-size: 14px;
+    }
+
+    .busqueda {
+        display: none; /* ocultar buscador en móviles para ahorrar espacio */
+    }
 }
