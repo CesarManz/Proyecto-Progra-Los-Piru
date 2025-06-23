@@ -2,14 +2,14 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
-    <title>Ver tareas</title>
+    <title>Asignar Tareas</title>
     <link rel="stylesheet" href="../CSS-Repetidos/body-html.css" />
     <link rel="stylesheet" href="../CSS-Repetidos/header.css" />
     <link rel="stylesheet" href="../CSS-Repetidos/Cua-transparente.css" />
     <link rel="stylesheet" href="Estilo-prin.css" />
     <link rel="stylesheet" href="../CSS-Repetidos/notificaciones.css" />
-    <link rel="icon" href="../Public/EcoSmart%20MiniLogo.png" type="image/png">
     <link rel="stylesheet" href="../Tareas/tareas.css" />
+    <link rel="icon" href="../Public/EcoSmart%20MiniLogo.png" type="image/png">
     <style>
         .notificacion {
             display: flex;
@@ -59,7 +59,7 @@
     </div>
 </header>
 
-
+<div class="Cuadrado-transparente">
     <div id="notificaciones-box" style="
       position: fixed;
       top: 70px;
@@ -75,13 +75,17 @@
       z-index: 9999;
     "></div>
 
-<div id="tarea" class="tarea">
-    <div class="tarea-content">
+    <!-- Este div parece duplicado, quizá no necesario -->
+    <!-- <div id="notificaciones-box" style="display: flex; flex-wrap: wrap; gap: 20px;"></div> -->
+
+    <div class="Asignar">
         <h3>Asignar Tareas</h3>
+        <h4>Seleccione a quien quiere asignar la tarea</h4>
+
         <form id="formTarea">
             <label for="destinatario">Seleccionar persona:</label>
-            <select class="dropdown" id="destinatario" name="destinatario" required>
-                <option class="dropdown-options" value="">-- Cargando personas... --</option>
+            <select id="destinatario" name="destinatario" required>
+                <option value="">-- Cargando personas... --</option>
             </select>
 
             <br /><br />
@@ -93,16 +97,15 @@
             <textarea id="descripcion" name="descripcion" rows="3" required></textarea>
 
             <br /><br />
-            <button class="tarea-buttons" type="submit">Asignar tarea</button>
+            <button type="submit">Asignar tarea</button>
         </form>
     </div>
-</div>
 
     <div class="Revisar">
         <h3>Las siguientes tareas se encuentran en revisión:</h3>
         <!-- Aquí se mostrarán las tareas en revisión dinámicamente -->
     </div>
-
+</div>
 
 <script>
     function toggleNotificaciones() {
@@ -365,5 +368,6 @@
 
     document.addEventListener('DOMContentLoaded', cargarTareasEnRevision);
 </script>
+
 </body>
 </html>
