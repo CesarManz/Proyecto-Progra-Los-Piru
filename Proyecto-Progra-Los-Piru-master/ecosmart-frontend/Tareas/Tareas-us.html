@@ -1,212 +1,194 @@
 <!DOCTYPE html>
-<html lang="es"></html>
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Ver tareas</title>
-    <link rel="stylesheet" href="tareas.css">
-    <style>.notificacion {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  background: #fffefb;
-  color: #1D2A10;
-  border-bottom: 1px solid #e0dfdb;
-}
-.notificacion strong {
-  color: #CD8A39;
-}
-.notificacion button {
-  background: none;
-  border: none;
-  color: #bbb;
-  cursor: pointer;
-  font-size: 16px;
-}
-.notificacion button:hover {
-  color: red;
-}
-</style>
-
+    <link rel="stylesheet" href="../CSS-Repetidos/body-html.css" />
+    <link rel="stylesheet" href="../CSS-Repetidos/header.css" />
+    <link rel="stylesheet" href="Estilo-prin.css" />
+    <link rel="stylesheet" href="../CSS-Repetidos/notificaciones.css" />
+    <link rel="stylesheet" href="../Tareas/tareas.css" />
+    <style>
+        .notificacion {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: #fffefb;
+            color: #1D2A10;
+            border-bottom: 1px solid #e0dfdb;
+        }
+        .notificacion strong {
+            color: #CD8A39;
+        }
+        .notificacion button {
+            background: none;
+            border: none;
+            color: #bbb;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .notificacion button:hover {
+            color: red;
+        }
+    </style>
 </head>
 
 <body>
-<<<<<<< Updated upstream
- <header>
-     <div class="logo" onclick="window.location.href='../Principales/Pagina-Principal.html'">
-         <img src="../Public/EcoSmart2.png" alt="Logo EcoSmart" class="logo-ecosmart"/>
-     </div>
-
-  <nav id="menu">
-    <input class="busqueda" type="search" placeholder="Buscar">
-  </nav>
-
-  <div class="icono-notificacion" onclick="toggleNotificaciones()">
-    <img src="../Public/campana.png" alt="Notificaciones">
-    <span id="alerta-punto"></span>
-  </div>
-
-  <div class="Fondo-fo-perfil" onclick="toggleMenu(event)">
-    <img class="fo-perfil" id="fotoPerfilHeader" src="../Public/user.png" alt="Foto de perfil">
-    <div id="menuPerfil" class="menu-perfil">
-      <a href="../Perfil/Perfil.html">Perfil</a>
-      <a href="#" onclick="logout()">Cerrar sesión</a>
-    </div>
-  </div>
-=======
-
 <header>
-    <div class="logo">
-        <div class="item Logo" onclick="window.location.href='../Principales/Pagina-Principal.html'">
-            <img src="../Public/EcoSmart2.png" alt="Logo"/>
-        </div>
+    <div class="logo" onclick="window.location.href='../Principales/Pagina-Principal.html'">
+        <img src="../Public/EcoSmart2.png" alt="Logo EcoSmart" class="logo-ecosmart" />
     </div>
+
     <nav id="menu">
-        <!-- Links se insertan dinámicamente según el rol -->
-        <input class="busqueda" type="search" placeholder="Buscar">
+        <input class="busqueda" type="search" placeholder="Buscar" />
     </nav>
+
+    <div class="icono-notificacion" onclick="toggleNotificaciones()" style="position: relative; cursor: pointer;">
+        <img src="../Public/campana.png" alt="Notificaciones" style="width: 28px; height: 28px;" />
+        <span id="alerta-punto" style="
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 10px;
+        height: 10px;
+        background-color: red;
+        border-radius: 50%;
+        border: 2px solid white;
+        display: none;
+      "></span>
+    </div>
+
     <div class="Fondo-fo-perfil" onclick="toggleMenu(event)">
-        <img class="fo-perfil" src="../Public/user.png" alt="Foto de perfil">
+        <img class="fo-perfil" id="fotoPerfilHeader" src="../Public/user.png" alt="Foto de perfil" />
         <div id="menuPerfil" class="menu-perfil">
             <a href="../Perfil/Perfil.html">Perfil</a>
             <a href="#" onclick="logout()">Cerrar sesión</a>
         </div>
     </div>
-    <div class="icono-notificacion" onclick="toggleNotificaciones()" style="position: relative; cursor: pointer;">
-  <img src="../Public/campana.png" alt="Notificaciones" style="width: 28px; height: 28px;">
-  <span id="alerta-punto" style="
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    width: 10px;
-    height: 10px;
-    background-color: red;
-    border-radius: 50%;
-    border: 2px solid white;
-    display: none;
-  "></span>
-</div>
->>>>>>> Stashed changes
 </header>
- <form class="taera">
-     <div class="tarea-content">
-         <h1> Tareas </h1>
-         <div class="tarea-content" id="Tareas-container"></div>
-     </div>
-    <br><br/>
-</form>
-<div id="notificaciones-box" style="
-  position: fixed;
-  top: 70px;
-  right: 10px;
-  background: white;
-  color: #1D2A10;
-  width: 360px;
-  max-height: 500px;
-  overflow-y: auto;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  display: none;
-  z-index: 9999;
-"></div>
-</header>
-<div class="Cuadrado-transparente">
-</div>
 
-<script src="../js-repetidos/header.js" defer>//Carga la lista de tareas en la pagina dependiendo del usuario
-    async function cargarTareas(){
+<main>
+    <form class="tarea">
+        <div class="tarea-content">
+            <h1>Tareas</h1>
+            <div class="tarea-content" id="Tareas-container"></div>
+        </div>
+        <br /><br />
+    </form>
 
-        const correo = localStorage.getItem('correo')
+    <div id="notificaciones-box" style="
+      position: fixed;
+      top: 70px;
+      right: 10px;
+      background: white;
+      color: #1D2A10;
+      width: 360px;
+      max-height: 500px;
+      overflow-y: auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: none;
+      z-index: 9999;
+    "></div>
+
+    <div class="Cuadrado-transparente"></div>
+</main>
+
+<script src="../js-repetidos/header.js"></script>
+
+<script>
+    // Carga la lista de tareas en la página dependiendo del usuario
+    async function cargarTareas() {
+        const correo = localStorage.getItem('correo');
         if (!correo) return;
 
-        try{
+        try {
             const response = await fetch('http://localhost:5001/api/tareas');
             const tareas = await response.json();
 
-            const container = document.getElementById('Tareas-container')
-            container.innerHTML= '';
+            const container = document.getElementById('Tareas-container');
+            container.innerHTML = '';
 
             tareas.slice().forEach(p => {
                 const div = document.createElement('div');
                 div.className = 'tarea';
-                div.innerHTML=`
-                <div class="contenido-tarea">
-                    <div class="Info-tarea">
-                        <h3>${p.estado}</h3>
-
-                    </div>
-                </div>
-            `;
-        })
-
-        } catch (error){
-            console.error("Error al cargar tareas", error)
+                div.innerHTML = `
+            <div class="contenido-tarea">
+              <div class="Info-tarea">
+                <h3>${p.estado}</h3>
+              </div>
+            </div>
+          `;
+                container.appendChild(div);
+            });
+        } catch (error) {
+            console.error("Error al cargar tareas", error);
         }
-
     }
 
     document.addEventListener('DOMContentLoaded', async () => {
-    const correo = localStorage.getItem('correo');
-    const contenedor = document.querySelector('.Cuadrado-transparente');
+        const correo = localStorage.getItem('correo');
+        const contenedor = document.querySelector('.Cuadrado-transparente');
 
-    if (!correo) {
-        contenedor.innerHTML = '<p>No hay usuario identificado.</p>';
-        return;
-    }
-
-    try {
-        const response = await fetch(`http://localhost:5001/api/tareas/asignadas/${correo}`);
-        const tareas = await response.json();
-
-        const tareasActivas = tareas.filter(t => t.estado === 'activo');
-
-        if (tareasActivas.length === 0) {
-            contenedor.innerHTML = '<p>No tienes tareas activas.</p>';
+        if (!correo) {
+            contenedor.innerHTML = '<p>No hay usuario identificado.</p>';
             return;
         }
 
-        tareasActivas.forEach(t => {
-            const div = document.createElement('div');
-            div.classList.add('tarea');
-            div.innerHTML = `
-                <h4>${t.titulo}</h4>
-                <p><strong>Descripción:</strong> ${t.descripcion}</p>
-                <p><strong>Estado:</strong> <span class="estado">${t.estado}</span></p>
-                <button class="btn-terminar" data-id="${t._id}">Terminar</button>
-                <hr>
-            `;
+        try {
+            const response = await fetch(`http://localhost:5001/api/tareas/asignadas/${correo}`);
+            const tareas = await response.json();
 
-            contenedor.appendChild(div);
-        });
+            const tareasActivas = tareas.filter(t => t.estado === 'activo');
 
-        document.querySelectorAll('.btn-terminar').forEach(btn => {
-            btn.addEventListener('click', async () => {
-                const id = btn.getAttribute('data-id');
+            if (tareasActivas.length === 0) {
+                contenedor.innerHTML = '<p>No tienes tareas activas.</p>';
+                return;
+            }
 
-                try {
-                    const res = await fetch(`http://localhost:5001/api/tareas/${id}/estado`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ nuevoEstado: 'en revision' }),
-                    });
+            tareasActivas.forEach(t => {
+                const div = document.createElement('div');
+                div.classList.add('tarea');
+                div.innerHTML = `
+            <h4>${t.titulo}</h4>
+            <p><strong>Descripción:</strong> ${t.descripcion}</p>
+            <p><strong>Estado:</strong> <span class="estado">${t.estado}</span></p>
+            <button class="btn-terminar" data-id="${t._id}">Terminar</button>
+            <hr>
+          `;
 
-                    if (res.ok) {
-                        // Eliminar del DOM la tarea actual
-                        btn.closest('.tarea').remove();
-                    } else {
-                        alert('Error al actualizar la tarea');
-                    }
-                } catch (error) {
-                    console.error('Error al cambiar estado:', error);
-                }
+                contenedor.appendChild(div);
             });
-        });
-    } catch (error) {
-        console.error('Error al cargar tareas:', error);
-        contenedor.innerHTML = '<p>Error al cargar las tareas.</p>';
-    }
-});
+
+            document.querySelectorAll('.btn-terminar').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const id = btn.getAttribute('data-id');
+
+                    try {
+                        const res = await fetch(`http://localhost:5001/api/tareas/${id}/estado`, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ nuevoEstado: 'en revision' }),
+                        });
+
+                        if (res.ok) {
+                            btn.closest('.tarea').remove();
+                        } else {
+                            alert('Error al actualizar la tarea');
+                        }
+                    } catch (error) {
+                        console.error('Error al cambiar estado:', error);
+                    }
+                });
+            });
+        } catch (error) {
+            console.error('Error al cargar tareas:', error);
+            contenedor.innerHTML = '<p>Error al cargar las tareas.</p>';
+        }
+    });
 </script>
 </body>
+</html>

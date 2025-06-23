@@ -1,26 +1,3 @@
-.logo {
-  display: flex;
-  align-items: center;
-  padding-left: 20px;
-  cursor: pointer;
-}
-
-.logo-ecosmart {
-  height: 42px;      /* Ajusta según preferencia */
-  width: auto;
-  object-fit: contain;
-  background: none;
-  border-radius: 0;
-  box-shadow: none;
-  padding: 0;
-  margin: 0;
-  transition: transform 0.2s ease;
-}
-
-.logo-ecosmart:hover {
-  transform: scale(1.05);
-}
-
 /* Contenedor principal de resumen y botones */
 .tareas-pendientes {
   display: flex;

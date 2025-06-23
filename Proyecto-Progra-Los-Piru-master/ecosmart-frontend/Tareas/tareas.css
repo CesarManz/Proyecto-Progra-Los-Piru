@@ -2,26 +2,18 @@ html {
     font-size: 1em;
     line-height: 1.4;
 }
+
 body {
     margin: 0;
-    height: 100vh;
+    min-height: 100vh;
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), #c1d36b), url("../Public/Fondo.png");
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
-    font-family: Arial, sans-serif;
-    color: white;
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background-size: cover;
-    background-color: #595D2B;
+    font-family: 'Segoe UI', sans-serif, Arial, sans-serif;
     color: #1D2A10;
 }
 
-.ecosmart{
-    width: 150px;
-    height: auto;
-}
 header {
     background-color: #1D2A10;
     padding: 10px 20px;
@@ -30,37 +22,77 @@ header {
     align-items: center;
     color: #CD8A39;
     height: 50px;
+    position: relative;
+    z-index: 10;
 }
-.Fondo-fo-perfil{
-    background: rgba(205, 138, 57, 0.3);
-    text-align: right;
+
+.logo, .logo-ecosmart {
+    cursor: pointer;
+    height: 40px;
+    user-select: none;
+}
+
+nav#menu {
+    flex-grow: 1;
+    margin: 0 20px;
+}
+
+.busqueda {
+    background-color: #CD8A39;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    color: #1D2A10;
+    font-weight: bold;
+    width: 200px;
+}
+
+.icono-notificacion {
+    position: relative;
+    cursor: pointer;
+}
+
+.icono-notificacion img {
+    width: 28px;
+    height: 28px;
+}
+
+#alerta-punto {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    background-color: red;
     border-radius: 50%;
+    border: 2px solid white;
+    display: none; /* Mostrar con JS cuando haya notificaciones */
 }
 
 .Fondo-fo-perfil {
     display: inline-block;
     position: relative;
     cursor: pointer;
+    background: rgba(205, 138, 57, 0.3);
+    border-radius: 50%;
+    padding: 2px;
 }
 
-.fo-perfil{
-    margin-top: 5px;
-    margin-left: 5px;
-    margin-right: 5px;
-    align-items: center;
+.fo-perfil {
     width: 40px;
     height: 40px;
     border-radius: 50%;
+    display: block;
 }
 
 .menu-perfil {
-    display: none;
+    display: none; /* Se muestra con JS */
     position: absolute;
-    top: 60px;
+    top: 55px;
     right: 0;
-    background: rgba(205, 138, 57, 0.5);
+    background: rgba(205, 138, 57, 0.85);
     border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
     width: 150px;
     z-index: 100;
 }
@@ -68,33 +100,48 @@ header {
 .menu-perfil a {
     display: block;
     padding: 10px;
-    color: #333;
+    color: #1D2A10;
     text-decoration: none;
+    font-weight: bold;
 }
 
 .menu-perfil a:hover {
-    background: rgba(205, 138, 57, 0.9);
+    background: rgba(205, 138, 57, 1);
     border-radius: 10px;
 }
-form {
+
+form.tarea {
     background-color: #dba14e;
-    padding: 15px 15px;
+    padding: 20px;
     border-radius: 15px;
-    width: 1000px;
+    width: 90%;
+    max-width: 1000px;
     margin: 20px auto;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     text-align: center;
-    align-items: center;;
 }
-form h2 {
+
+form.tarea h1 {
     margin-bottom: 25px;
     font-weight: normal;
-    color: #000000;
+    color: #000;
 }
+
+.tarea-content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    color: #1D2A10;
+}
+
+.tarea-content #Tareas-container {
+    margin-top: 10px;
+}
+
 button {
     width: 100%;
     padding: 10px;
-    margin-bottom: 10px;
+    margin-top: 10px;
     border-radius: 20px;
     border: none;
     font-size: 16px;
@@ -102,98 +149,38 @@ button {
     cursor: pointer;
     background-color: #1D2A10;
     color: rgba(205, 138, 57, 0.9);
-}
-nav a {
-    color: #CD8A39;
-    text-decoration: none;
-    font-weight: bold;
-    margin: 0 10px;
-}
-.busqueda {
-    background-color: #CD8A39;
-    padding: 5px;
-    border: none;
-    border-radius: 4px;
+    transition: background-color 0.3s ease;
 }
 
-.item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border-radius: 30px;
-    width: 150px;
-    color: white;
-    text-align: center;
+button:hover {
+    background-color: #CD8A39;
+    color: #1D2A10;
 }
 
-.item img {
-    width: 100%;
-    height: auto;
-}
-.Revisar{
-    position: fixed;
-    border: 1px solid #CD8A39;
-    border-radius: 12px;
-    background-color: #CD8A39;
-    text-align: center;
-    box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+.Cuadrado-transparente {
+    margin: 20px auto;
+    max-width: 1000px;
     padding: 20px;
-    width: 50%;
-    left: 25%;
+    background-color: rgba(205, 138, 57, 0.2);
+    border-radius: 15px;
+    color: #1D2A10;
+    min-height: 200px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
+
+/* Scroll para el contenedor de notificaciones */
+#notificaciones-box {
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 0.9rem;
+    color: #1D2A10;
+}
+
+/* Asegura que el contenido de tareas dentro de #Tareas-container se vea bien */
 .tarea {
-    display: none;
-    position: fixed;
-    top: 20%;
-    left: 50%;
-    transform: translate(-50%, 0);
-    background: #CD8A39;
-    padding: 20px;
-    border: 2px solid #ccc;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    z-index: 1000;
-}
-.dropdown{
-    position: relative;
-    width: 220px;
-    height: 40px;
-    margin: 0 auto 20px;
-    font-family: sans-serif;
-    cursor: pointer;
+    background-color: #CD8A39;
+    padding: 15px;
     border-radius: 10px;
-    background-color: #1D2A10;
-    color: #CD8A39;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-    user-select: none;
-}
-.asignar{
-    display: flex;
-    flex-wrap: wrap;
-    gap: 350px;
-}
-.asignar-cont{
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-}
-.tarea-content {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.tarea-buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
-}
-
-.tarea input {
-    padding: 8px;
-    width: 100%;
-    box-sizing: border-box;
-    background: #CD8A39
+    color: #1D2A10;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    margin-bottom: 15px;
 }
