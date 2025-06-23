@@ -10,10 +10,10 @@
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 </head>
 <body>
- <header>
-   <div class="logo" onclick="window.location.href='../Principales/Pagina-Principal.html'">
-     <img src="../Public/EcoSmart2.png" alt="Logo EcoSmart" class="logo-ecosmart"/>
-   </div>
+<header>
+  <div class="logo" onclick="window.location.href='../Principales/Pagina-Principal.html'">
+    <img src="../Public/EcoSmart2.png" alt="Logo EcoSmart" class="logo-ecosmart"/>
+  </div>
 
   <nav id="menu">
     <input class="busqueda" type="search" placeholder="Buscar">
@@ -37,7 +37,7 @@
   <h2>Editar Parcela</h2>
   <form id="formEditar">
     <label>Nombre:</label>
-    <input type="text" id="nombre" required />
+    <input type="text" id="nombre" required autofocus />
     <div id="errorNombre" class="error-msg">* El nombre es obligatorio</div>
 
     <label for="cultivos">Cultivos:</label>
@@ -125,7 +125,6 @@
   };
 
   const enlaces = linksPorRol[trabajo];
-
   if (enlaces) {
     enlaces.forEach(link => {
       const a = document.createElement('a');
@@ -154,33 +153,41 @@
   map.on("click", function (e) {
     const { lat, lng } = e.latlng;
     if (marcador) map.removeLayer(marcador);
-    marcador = L.marker([lat, lng]).addTo(map);
+    marcador = L.marker([lat, lng], { draggable: false }).addTo(map);
     document.getElementById("lat").value = lat.toFixed(6);
     document.getElementById("lon").value = lng.toFixed(6);
     ubicacionModificada = true;
   });
 
   async function cargarParcela() {
-    const res = await fetch(`http://localhost:5001/api/parcelas/${idParcela}`);
-    const data = await res.json();
-    nombreOriginal = data.nombre;
+    try {
+      const res = await fetch(`http://localhost:5001/api/parcelas/${idParcela}`);
+      const data = await res.json();
+      nombreOriginal = data.nombre;
 
-    document.getElementById("nombre").value = data.nombre;
-    if (data.coordenadas && data.coordenadas.lat && data.coordenadas.lon) {
-      document.getElementById("lat").value = data.coordenadas.lat;
-      document.getElementById("lon").value = data.coordenadas.lon;
-      marcador = L.marker([data.coordenadas.lat, data.coordenadas.lon]).addTo(map);
-      map.setView([data.coordenadas.lat, data.coordenadas.lon], 15);
-    }
+      document.getElementById("nombre").value = data.nombre;
 
-    if (data.sensores && Array.isArray(data.sensores)) {
-      document.querySelectorAll('#sensores-checks input[type="checkbox"]').forEach(cb => {
-        cb.checked = data.sensores.includes(cb.value);
-      });
-    }
+      if (data.puntos && data.puntos.length > 0) {
+        const lat = data.puntos[0].lat;
+        const lon = data.puntos[0].lng;
+        document.getElementById("lat").value = lat;
+        document.getElementById("lon").value = lon;
 
-    if (data.cultivos && data.cultivos.length > 0) {
-      document.getElementById("cultivos").value = data.cultivos.join(", ");
+        marcador = L.marker([lat, lon], { draggable: false, title: "Ubicación actual" }).addTo(map);
+        map.setView([lat, lon], 15);
+      }
+
+      if (data.sensores && Array.isArray(data.sensores)) {
+        document.querySelectorAll('#sensores-checks input[type="checkbox"]').forEach(cb => {
+          cb.checked = data.sensores.includes(cb.value);
+        });
+      }
+
+      if (data.cultivos && data.cultivos.length > 0) {
+        document.getElementById("cultivos").value = data.cultivos.join(", ");
+      }
+    } catch (err) {
+      alert("❌ Error al cargar los datos de la parcela.");
     }
   }
 
@@ -199,12 +206,13 @@
     const sensoresSeleccionados = Array.from(document.querySelectorAll('#sensores-checks input:checked')).map(cb => cb.value);
     const cultivosTexto = document.getElementById("cultivos").value.trim();
 
-    let datos = { nombre };
-    datos.cultivos = cultivosTexto ? cultivosTexto.split(",").map(c => c.trim()) : [];
-    datos.sensores = sensoresSeleccionados;
+    if (!nombre || nombre.trim().length === 0) {
+      document.getElementById("errorNombre").innerText = "* El nombre es obligatorio";
+      document.getElementById("errorNombre").style.display = "block";
+      return;
+    }
 
-    document.getElementById("errorNombre").style.display = nombre ? "none" : "block";
-    if (!nombre) return;
+    document.getElementById("errorNombre").style.display = "none";
 
     if (await existeParcela(nombre)) {
       document.getElementById("errorNombre").innerText = "* Ya existe una parcela con ese nombre";
@@ -212,20 +220,30 @@
       return;
     }
 
+    let datos = { nombre };
+    datos.cultivos = cultivosTexto ? cultivosTexto.split(",").map(c => c.trim()) : [];
+    datos.sensores = sensoresSeleccionados;
+
     if (ubicacionModificada) {
       const lat = parseFloat(document.getElementById("lat").value);
       const lon = parseFloat(document.getElementById("lon").value);
-      datos.coordenadas = { lat, lon };
+      datos.puntos = [{ lat, lng: lon }];
     }
 
-    await fetch(`http://localhost:5001/api/parcelas/${idParcela}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(datos)
-    });
+    try {
+      const response = await fetch(`http://localhost:5001/api/parcelas/${idParcela}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(datos)
+      });
 
-    alert("✅ Parcela actualizada con éxito");
-    window.location.href = "listar-parcelas.html";
+      if (!response.ok) throw new Error("Error en la actualización");
+
+      alert("✅ Parcela actualizada con éxito");
+      window.location.href = "listar-parcelas.html";
+    } catch (err) {
+      alert("❌ Error al guardar la parcela.");
+    }
   });
 </script>
 </body>
