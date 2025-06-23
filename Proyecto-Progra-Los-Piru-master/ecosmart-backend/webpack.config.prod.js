@@ -7,7 +7,7 @@ module.exports = merge(common, {
   mode: 'production',
   plugins: [
     new HtmlWebpackPlugin({
-      template: './consultas.html',
+      template: './chatbot.html',
     }),
     new CopyPlugin({
       patterns: [
