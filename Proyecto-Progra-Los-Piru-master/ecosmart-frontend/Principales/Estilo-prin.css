@@ -6,7 +6,7 @@
   flex-wrap: wrap;
   padding: 30px;
   gap: 30px;
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(240, 242, 189, 0.85); /* F0F2BD */
   border-radius: 20px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
 }
@@ -14,7 +14,7 @@
 /* Texto resumen */
 .texto {
   flex: 1;
-  color: #1D2A10;
+  color: #4B352A;
 }
 
 .texto h1 {
@@ -25,7 +25,7 @@
 .texto h3 {
   font-size: 1.2rem;
   margin: 8px 0;
-  color: #4B5320;
+  color: #CA7842;
 }
 
 /* Contenedor de los botones visuales */
@@ -39,11 +39,11 @@
 
 /* Cada botón (tareas / alertas) */
 .item {
-  background: #A9B147;
+  background: #CA7842;
   border-radius: 24px;
   width: 150px;
   padding: 20px;
-  color: white;
+  color: #fff;
   text-align: center;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -69,24 +69,25 @@
 
 /* Colores específicos */
 .tareas {
-  background: #A9B147;
+  background: #CA7842;
 }
 
 .alertas {
-  background: #F06D6D;
+  background: #B2CD9C;
+  color: #4B352A;
 }
 
 .tareas:hover {
-  background: #8f9c3a;
+  background: #B25C2A;
 }
 
 .alertas:hover {
-  background: #d65c5c;
+  background: #A0B88A;
 }
 
 /* Título de "Parcelas" */
 .tit-parcelas {
-  color: #1D2A10;
+  color: #4B352A;
   font-size: 2rem;
   text-align: center;
   margin: 40px 0 20px;
@@ -106,7 +107,7 @@
 .parcela {
   border-radius: 16px;
   padding: 15px;
-  background-color: #A9B147;
+  background-color: #B2CD9C;
   width: 280px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
   transition: transform 0.3s ease;
@@ -132,29 +133,29 @@
 .info-parcela h3,
 .info-parcela p {
   margin: 0;
-  color: #1D2A10;
+  color: #4B352A;
   font-size: 1rem;
 }
 
 /* Botón de "Ver Parcelas" */
 button {
-  background-color: #1D2A10;
-  color: #CD8A39;
+  background-color: #CA7842;
+  color: #fff;
   padding: 16px 40px;
   border-radius: 30px;
   font-weight: bold;
   font-size: 1.1rem;
   border: none;
   cursor: pointer;
-  box-shadow: 0 6px 20px rgba(205, 138, 57, 0.3);
+  box-shadow: 0 6px 20px rgba(202, 120, 66, 0.3);
   transition: all 0.3s ease;
   display: block;
   margin: 0 auto;
 }
 
 button:hover {
-  background-color: #CD8A39;
-  color: #1D2A10;
+  background-color: #4B352A;
+  color: #F0F2BD;
 }
 
 @media (max-width: 700px) {

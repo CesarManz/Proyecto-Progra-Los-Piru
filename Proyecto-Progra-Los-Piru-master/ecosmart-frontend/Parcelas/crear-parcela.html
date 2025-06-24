@@ -3,21 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <title>Crear Parcela</title>
+  <link rel="stylesheet" href="../CSS-Repetidos/CSSGeneral.css" />
   <link rel="stylesheet" href="../Principales/Estilo-prin.css" />
   <link rel="stylesheet" href="../CSS-Repetidos/header.css" />
+<<<<<<< HEAD
+=======
+  <link rel="stylesheet" href="../CSS-Repetidos/estilo-notificaciones.css" />
+>>>>>>> 8c2d77b7655d9835bfa63d8f2ff5b7e5fc3a88cb
   <link rel="stylesheet" href="../Parcelas/crear-parcela.css" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <link rel="icon" href="../Public/EcoSmart%20MiniLogo.png" type="image/png">
 </head>
 <body>
+
 <header>
   <div class="logo" onclick="window.location.href='../Principales/Pagina-Principal.html'">
-    <img src="../Public/EcoSmart2.png" alt="Logo EcoSmart" class="logo-ecosmart"/>
+    <img src="../Public/EcoSmart2.png" alt="Logo EcoSmart" class="logo-ecosmart" />
   </div>
 
   <nav id="menu">
-    <input class="busqueda" type="search" placeholder="Buscar">
+    <input class="busqueda" type="search" placeholder="Buscar" />
   </nav>
 
   <div class="icono-notificacion" onclick="toggleNotificaciones()">
@@ -31,6 +37,21 @@
       <a href="../Perfil/Perfil.html">Perfil</a>
       <a href="#" onclick="logout()">Cerrar sesión</a>
     </div>
+  </div>
+
+  <div class="icono-notificacion" onclick="toggleNotificaciones()" style="position: relative; cursor: pointer;">
+    <img src="../Public/campana.png" alt="Notificaciones" style="width: 28px; height: 28px;">
+    <span id="alerta-punto" style="
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    border: 2px solid white;
+    display: none;
+  "></span>
   </div>
 </header>
   <div id="notificaciones-box" class="notificacion-box" style="display: none;"></div>

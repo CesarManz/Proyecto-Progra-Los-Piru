@@ -1,58 +1,95 @@
-/* Tarjeta de alerta */
-.alerta-item {
-  background: #ffffff;
-  border-left: 6px solid #CD8A39;
+/* === Contenedor principal === */
+main {
+  max-width: 1000px;
+  margin: 40px auto;
   padding: 24px;
-  margin: 20px 0;
+  background: rgba(255, 255, 255, 0.97);
   border-radius: 20px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* === Título principal === */
+main h2 {
+  text-align: center;
+  color: #1D2A10;
+  font-size: 28px;
+  margin-bottom: 1.5rem;
+  font-weight: bold;
+}
+
+/* === Lista de alertas === */
+#tabla-alertas {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+/* === Tarjeta de alerta === */
+.alerta-item {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 20px;
+  background: #ffffff;
+  border-left: 6px solid #CD8A39;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   transition: transform 0.2s ease;
 }
 
 .alerta-item:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
 }
 
-.alerta-item .info {
+/* === Información de alerta === */
+.alerta-info {
   flex: 1;
   font-size: 15px;
-  line-height: 1.6;
   color: #1D2A10;
+  line-height: 1.6;
 }
 
-.alerta-item .info strong {
-  font-size: 16px;
+.alerta-info p {
+  margin: 4px 0;
+}
+
+.alerta-info strong {
   color: #CD8A39;
 }
 
-/* Botones de acción */
-.alerta-item .acciones {
+/* === Botones de acción === */
+.alerta-acciones {
   display: flex;
   flex-direction: row;
-  gap: 12px;
+  gap: 10px;
   margin-top: 6px;
 }
 
-.alerta-item .acciones button {
-  background: #1D2A10;
-  color: #fff;
+.alerta-acciones button {
   border: none;
-  border-radius: 12px;
-  padding: 10px 12px;
-  font-size: 16px;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: opacity 0.2s ease;
 }
 
-.alerta-item .acciones button:hover {
-  background: #CD8A39;
+.alerta-acciones button:hover {
+  opacity: 0.85;
 }
 
-/* Modal de edición */
+.alerta-acciones .editar {
+  background-color: #A9B147;
+}
+
+.alerta-acciones .eliminar {
+  background-color: #F06D6D;
+}
+
+/* === Modal de edición === */
 .modal {
   position: fixed;
   top: 0; left: 0;
@@ -76,15 +113,15 @@
 }
 
 .modal-contenido h3 {
-  margin-top: 0;
-  color: #1D2A10;
   text-align: center;
   font-size: 20px;
+  color: #1D2A10;
+  margin-bottom: 20px;
 }
 
 .modal-contenido label {
   display: block;
-  margin-top: 14px;
+  margin-top: 12px;
   font-weight: bold;
   color: #1D2A10;
 }
@@ -96,13 +133,14 @@
   border-radius: 8px;
   border: 1px solid #ccc;
   font-size: 14px;
+  box-sizing: border-box;
 }
 
 .modal-acciones {
   display: flex;
   justify-content: flex-end;
-  margin-top: 20px;
   gap: 10px;
+  margin-top: 20px;
 }
 
 .modal-acciones button {
@@ -124,7 +162,7 @@
   color: black;
 }
 
-/* Notificaciones emergentes */
+/* === Notificaciones flotantes === */
 #notificaciones-box {
   position: absolute;
   top: 80px;
@@ -136,7 +174,6 @@
   border-radius: 14px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.15);
   z-index: 1000;
-  font-family: "IBM Plex Sans", sans-serif;
 }
 
 .notificacion {
@@ -145,7 +182,10 @@
   border-bottom: 1px solid #eee;
   font-size: 14px;
   color: #1D2A10;
-  line-height: 1.5;
+}
+
+.notificacion strong {
+  color: #CD8A39;
 }
 
 .notificacion .cerrar {
@@ -158,37 +198,16 @@
   font-weight: bold;
   background: none;
   border: none;
-  padding: 0;
-  line-height: 1;
 }
 
-.notificacion strong {
-  color: #CD8A39;
-  font-weight: bold;
+/* === Auxiliares === */
+.sin-alertas {
+  text-align: center;
+  font-style: italic;
+  color: #666;
+  margin-top: 2rem;
 }
 
-.notificacion button {
-  background: none;
-  border: none;
-  color: #bbb;
-  cursor: pointer;
-  font-size: 18px;
-  transition: color 0.3s ease;
-}
-
-.notificacion button:hover {
-  color: #ff3b3b;
-}
-
-/* Contenedor de perfil + notificaciones */
-.contenedor-perfil-notificaciones {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-right: 20px;
-}
-
-/* Animaciones */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -197,76 +216,4 @@
 @keyframes slideIn {
   from { transform: translateY(-20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
-}
-
-/* --- CSS embebido desde ver-alertas.html --- */
-body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), #c1d36b), url("../Public/Fondo.png");
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-}
-
-main {
-  max-width: 1000px;
-  margin: 40px auto;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-}
-
-main h2 {
-  text-align: center;
-  color: #1D2A10;
-  margin-bottom: 1.5rem;
-  font-size: 26px;
-}
-
-#tabla-alertas {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.alerta-info {
-  flex: 1;
-  font-size: 14px;
-  color: #1D2A10;
-}
-
-.alerta-info p {
-  margin: 4px 0;
-}
-
-.alerta-acciones {
-  display: flex;
-  gap: 10px;
-}
-
-.alerta-acciones button {
-  border: none;
-  border-radius: 12px;
-  padding: 10px 12px;
-  background: #1D2A10;
-  color: white;
-  cursor: pointer;
-}
-
-.editar {
-  background-color: #A9B147;
-  color: white;
-}
-
-.eliminar {
-  background-color: #F06D6D;
-  color: white;
-}
-
-.sin-alertas {
-  text-align: center;
-  font-style: italic;
-  color: #666;
 }

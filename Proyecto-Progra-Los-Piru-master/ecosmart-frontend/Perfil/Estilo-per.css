@@ -1,87 +1,5 @@
-html {
-    font-size: 1em;
-    line-height: 1.4;
-}
-body {
-    margin: 0;
-    height: 100vh;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), #c1d36b), url("../Public/Fondo.png");
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    font-family: Arial, sans-serif;
-    color: white;
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background-size: cover;
-    background-color: #595D2B;
-    color: #1D2A10;
-}
-header {
-    background-color: #1D2A10;
-    padding: 10px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: #CD8A39;
-    height: 50px;
-}
-nav a {
-    color: #CD8A39;
-    text-decoration: none;
-    font-weight: bold;
-    margin: 0 10px;
-}
-.busqueda {
-    background-color: #CD8A39;
-    padding: 5px;
-    border: none;
-    border-radius: 4px;
-}
-.Fondo-fo-perfil {
-    background: rgba(205, 138, 57, 0.3);
-    text-align: right;
-    border-radius: 50%;
-    display: inline-block;
-    position: relative;
-    cursor: pointer;
-}
-.fo-perfil {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-}
-.menu-perfil {
-    display: none;
-    position: absolute;
-    top: 60px;
-    right: 0;
-    background: rgba(205, 138, 57, 0.5);
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-    width: 150px;
-    z-index: 100;
-}
-.menu-perfil a {
-    display: block;
-    padding: 10px;
-    color: #333;
-    text-decoration: none;
-}
-.menu-perfil a:hover {
-    background: rgba(205, 138, 57, 0.9);
-    border-radius: 10px;
-}
-.ecosmart{
-    width: 150px;
-    height: auto;
-}
-
-/* CSS Principal de la pagina*/
-
-/* Contenedor principal: foto de perfil + datos */
 .Cuadrado-transparente {
-    background: rgba(255, 255, 205, 0.3);
+    background: rgba(240, 242, 189, 0.3); /* #F0F2BD */
     padding: 20px;
     width: 70%;
     height: 15%;
@@ -90,11 +8,20 @@ nav a {
     display: flex;
     align-items: center;
     gap: 30px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeIn 0.6s ease-out forwards;
 }
 
-/* Circulo que va detrás de la foto de perfil */
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .Fondo-Foto-perfil {
-    background: rgba(205, 138, 57, 0.3);
+    background: rgba(202, 120, 66, 0.3); /* #CA7842 */
     border-radius: 50%;
     padding: 0.25px;
     display: flex;
@@ -102,56 +29,59 @@ nav a {
     justify-content: center;
 }
 
-/* Tamaño de la foto de perfil */
 .Foto-perfil {
     width: 100px;
     height: 100px;
     object-fit: cover;
     border-radius: 50%;
-}
-/* Al pasar el cursor por la imagen de perfil cambia a el cursor a puntero */
-#fotoPerfil{
     cursor: pointer;
 }
 
-/* CSS de la foto seleccionada al cambiarla */
-#selectorFoto{
+#fotoPerfil {
+    cursor: pointer;
+}
+
+#selectorFoto {
     width: 100px;
     height: auto;
     object-fit: cover;
     border-radius: 50%;
+    display: none; /* ocultamos input file */
 }
 
-/* Datos del usuario */
 .datos-usuario {
     font-size: 16px;
-    color: black;
+    color: #4B352A; /* color principal */
     text-align: left;
     padding-bottom: 10px;
-    flex: 1; /* Toma el espacio disponible */
+    flex: 1;
 }
 
-/* Nombre del usuario */
-#nombreUsuario{
+#nombreUsuario {
     font-weight: bold;
     font-size: 25px;
+    color: #CA7842; /* acento */
 }
 
-/* Contener de la foto de perfil y del icono del lado para remover la imagen */
-.fotoPerfilContenedor{
+.cargando {
+    font-style: italic;
+    color: #999;
+}
+
+.fotoPerfilContenedor {
     display: flex;
     align-items: center;
     gap: 5px;
 }
 
-/* Estilo de la imagen que permite remover la imagen de perfil */
-.removeImage{
+.removeImage {
     width: 25px;
     height: auto;
     margin-top: 75px;
     margin-right: 0px;
     cursor: pointer;
 }
+
 .item {
     display: flex;
     flex-direction: column;
@@ -160,13 +90,15 @@ nav a {
     width: 150px;
     color: white;
     text-align: center;
+    background-color: #CA7842; /* acento */
 }
 
 .item img {
     width: 100%;
     height: auto;
 }
-.alertapunto{
+
+.alertapunto {
     position: absolute;
     top: 0px;
     right: 0px;
@@ -177,18 +109,18 @@ nav a {
     border: 2px solid white;
     display: none;
 }
-.notificaciones-box{
-  position: fixed;
-  top: 70px;
-  right: 10px;
-  background: white;
-  color: #1D2A10;
-  width: 360px;
-  max-height: 500px;
-  overflow-y: auto;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  display: none;
-  z-index: 9999;
-  display: none;
+
+.notificaciones-box {
+    position: fixed;
+    top: 70px;
+    right: 10px;
+    background: #F0F2BD; /* fondo suave */
+    color: #4B352A; /* texto oscuro */
+    width: 360px;
+    max-height: 500px;
+    overflow-y: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: none;
+    z-index: 9999;
 }
