@@ -3,35 +3,45 @@
 <head>
   <meta charset="UTF-8" />
   <title>Mis Alertas Configuradas</title>
+  <link rel="stylesheet" href="../CSS-Repetidos/CSSGeneral.css" />
   <link rel="stylesheet" href="../Principales/Estilo-prin.css" />
   <link rel="stylesheet" href="../Alertas/estilo-veralertas.css" />
-  <link rel="stylesheet" href="../CSS-Repetidos/header.css">
-  <link rel="stylesheet" href="../CSS-Repetidos/notificaciones.css">
   <link rel="icon" href="../Public/EcoSmart%20MiniLogo.png" type="image/png">
 </head>
 <body>
 <header>
   <div class="logo" onclick="window.location.href='../Principales/Pagina-Principal.html'">
-    <img src="../Public/EcoSmart2.png" alt="Logo EcoSmart" class="logo-ecosmart"/>
+    <img src="../Public/EcoSmart2.png" alt="Logo EcoSmart" class="logo-ecosmart" />
   </div>
 
   <nav id="menu">
-    <input class="busqueda" type="search" placeholder="Buscar">
+    <input class="busqueda" type="search" placeholder="Buscar" />
   </nav>
 
-  <div class="icono-notificacion" onclick="toggleNotificaciones()">
-    <img src="../Public/campana.png" alt="Notificaciones">
-    <span id="alerta-punto"></span>
-  </div>
-
   <div class="Fondo-fo-perfil" onclick="toggleMenu(event)">
-    <img class="fo-perfil" id="fotoPerfilHeader" src="../Public/user.png" alt="Foto de perfil">
+    <img class="fo-perfil" id="fotoPerfilHeader" src="../Public/user.png" alt="Foto de perfil" />
     <div id="menuPerfil" class="menu-perfil">
       <a href="../Perfil/Perfil.html">Perfil</a>
       <a href="#" onclick="logout()">Cerrar sesión</a>
     </div>
   </div>
+
+  <div class="icono-notificacion" onclick="toggleNotificaciones()" style="position: relative; cursor: pointer;">
+    <img src="../Public/campana.png" alt="Notificaciones" style="width: 28px; height: 28px;">
+    <span id="alerta-punto" style="
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    border: 2px solid white;
+    display: none;
+  "></span>
+  </div>
 </header>
+
   <div id="notificaciones-box"></div>
 
   <main>
@@ -147,19 +157,19 @@
         { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
         { texto: "Parcelas", href: "../parcelas/listar-parcelas.html" },
         { texto: "Administrar usuarios", href: "../Administrar-Usuarios/Administrar-usuarios.html" },
-        { texto: "Preguntas", href: "../Deepseek/consultas.html" },
+        { texto: "Deepseek", href: "../Deepseek/chatbot.html" },
       ],
       agronomo: [
         { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
         { texto: "Parcelas", href: "../parcelas/listar-parcelas.html" },
-        { texto: "Preguntas", href: "../Deepseek/consultas.html" },
+        { texto: "Deepseek", href: "../Deepseek/chatbot.html" },
         { texto: "Inventario", href: "../Inventario/Inventario.html" },
         { texto: "Asignar tareas", href: "../Tareas/Asignar-tareas.html" }
       ],
       agricultor: [
         { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
         { texto: "Parcelas", href: "../parcelas/listar-parcelas.html" },
-        { texto: "Preguntas", href: "../Deepseek/consultas.html" }
+        { texto: "Deepseek", href: "../Deepseek/chatbot.html" }
       ]
     };
 

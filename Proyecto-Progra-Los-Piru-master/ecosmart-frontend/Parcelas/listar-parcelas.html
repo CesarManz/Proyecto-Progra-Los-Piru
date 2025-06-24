@@ -4,9 +4,8 @@
   <meta charset="UTF-8" />
   <title>Parcelas</title>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../CSS-Repetidos/CSSGeneral.css" />
   <link rel="stylesheet" href="../Parcelas/listar-parcelas.css">
-  <link rel="stylesheet" href="../CSS-Repetidos/body-html.css">
-  <link rel="stylesheet" href="../CSS-Repetidos/header.css">
   <link rel="stylesheet" href="../Principales/Estilo-prin.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
     <link rel="icon" href="../Public/EcoSmart%20MiniLogo.png" type="image/png">
@@ -14,26 +13,27 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+
 <header>
     <div class="logo" onclick="window.location.href='../Principales/Pagina-Principal.html'">
-        <img src="../Public/EcoSmart2.png" alt="Logo EcoSmart" class="logo-ecosmart"/>
+        <img src="../Public/EcoSmart2.png" alt="Logo EcoSmart" class="logo-ecosmart" />
     </div>
 
     <nav id="menu">
-        <!-- Links se insertan dinámicamente según el rol -->
-        <input class="busqueda" type="search" placeholder="Buscar">
+        <input class="busqueda" type="search" placeholder="Buscar" />
     </nav>
 
     <div class="Fondo-fo-perfil" onclick="toggleMenu(event)">
-        <img class="fo-perfil" src="../Public/user.png" alt="Foto de perfil">
+        <img class="fo-perfil" id="fotoPerfilHeader" src="../Public/user.png" alt="Foto de perfil" />
         <div id="menuPerfil" class="menu-perfil">
             <a href="../Perfil/Perfil.html">Perfil</a>
             <a href="#" onclick="logout()">Cerrar sesión</a>
         </div>
     </div>
+
     <div class="icono-notificacion" onclick="toggleNotificaciones()" style="position: relative; cursor: pointer;">
-  <img src="../Public/campana.png" alt="Notificaciones" style="width: 28px; height: 28px;">
-  <span id="alerta-punto" style="
+        <img src="../Public/campana.png" alt="Notificaciones" style="width: 28px; height: 28px;">
+        <span id="alerta-punto" style="
     position: absolute;
     top: 0px;
     right: 0px;
@@ -44,8 +44,7 @@
     border: 2px solid white;
     display: none;
   "></span>
-</div>
-
+    </div>
 </header>
 
 <main>
@@ -54,7 +53,7 @@
       <option value="">Seleccione una parcela</option>
     </select>
   <div id="seccion-parcela" style="display: none;">
-  <div style="margin-top: 10px; display: flex; gap: 20px; margin-left: 375px;">
+  <div style="margin-top: 10px; display: flex; gap: 10px; margin-left: 20px;">
   <button onclick="window.location.href='../parcelas/crear-parcela.html'">➕ Crear parcela</button>
   <button onclick="redirigirEditar()">✏️ Editar parcela</button>
   <button onclick="eliminarParcela()">🗑️ Eliminar parcela</button>
@@ -681,7 +680,6 @@ Metodos de notificaciones
         <div id="recomendacionIA" class="modal-recomendacion"></div>
     </div>
 </div>
-
 
 <script>
 document.getElementById("ver-detalles-pronostico").addEventListener("click", async () => {

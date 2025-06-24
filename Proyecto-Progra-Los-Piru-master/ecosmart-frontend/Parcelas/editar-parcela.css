@@ -1,149 +1,175 @@
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), #c1d36b), url("../Public/Fondo.png");
-      background-size: cover;
-      background-attachment: fixed;
-      color: #1D2A10;
-    }
+main {
+    max-width: 700px;
+    margin: 2rem auto;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 30px 35px;
+    border-radius: 18px;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.18);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #2E3B12;
+}
 
-    main {
-      max-width: 700px;
-      margin: 2rem auto;
-      background: rgba(255, 255, 255, 0.9);
-      padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 12px 24px rgba(0,0,0,0.2);
-    }
+h2 {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 1.8rem;
+    font-weight: 700;
+    color: #395214;
+    text-shadow: 1px 1px 2px rgba(205, 138, 57, 0.5);
+}
 
-    h2 {
-      text-align: center;
-      font-size: 1.8rem;
-      margin-bottom: 1.5rem;
-    }
+form label {
+    display: block;
+    margin-top: 1.3rem;
+    font-weight: 600;
+    color: #556B2F;
+}
 
-    form label {
-      display: block;
-      margin-top: 1rem;
-      font-weight: 600;
-    }
+form input,
+form select {
+    width: 100%;
+    padding: 12px 14px;
+    margin-top: 6px;
+    border: 1.5px solid #aebf87;
+    border-radius: 10px;
+    font-size: 1.05rem;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
+    transition: border-color 0.3s ease;
+}
 
-    form input, form select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 6px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1rem;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    }
+form input:focus,
+form select:focus {
+    border-color: #CD8A39;
+    outline: none;
+    box-shadow: 0 0 8px rgba(205, 138, 57, 0.5);
+}
 
-    input:read-only {
-      background-color: #f4f4f4;
-      color: #555;
-    }
+input:read-only {
+    background-color: #f9f9f4;
+    color: #777a6a;
+    cursor: not-allowed;
+}
 
-    button {
-      margin-top: 2rem;
-      width: 100%;
-      background-color: #1D2A10;
-      color: white;
-      border: none;
-      padding: 12px;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
+button {
+    margin-top: 2.5rem;
+    width: 100%;
+    background-color: #395214;
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 14px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(57, 82, 20, 0.6);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
 
-    button:hover {
-      background-color: #CD8A39;
-      color: #1D2A10;
-    }
+button:hover {
+    background-color: #CD8A39;
+    color: #1D2A10;
+    box-shadow: 0 8px 20px rgba(205, 138, 57, 0.8);
+}
 
-    #mapa {
-      height: 400px;
-      border: 2px solid #1D2A10;
-      border-radius: 10px;
-      margin-top: 0.5rem;
-    }
+#mapa {
+    height: 400px;
+    border: 3px solid #395214;
+    border-radius: 14px;
+    margin-top: 1rem;
+    box-shadow: 0 4px 12px rgba(57, 82, 20, 0.3);
+}
 
-    .error-msg {
-      color: red;
-      font-size: 0.9rem;
-      margin-top: 4px;
-      display: none;
-    }
-    .sensor-checkboxes {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 10px;
+.error-msg {
+    color: #D63A3A;
+    font-size: 0.9rem;
+    margin-top: 6px;
+    display: none;
+    font-weight: 600;
+}
+
+.sensor-checkboxes {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 14px;
 }
 
 .sensor-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(255,255,255,0.8);
-  border-radius: 8px;
-  padding: 8px 12px;
-  font-size: 1rem;
-  color: #1D2A10;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(229, 235, 211, 0.9);
+    border-radius: 12px;
+    padding: 10px 15px;
+    font-size: 1rem;
+    color: #395214;
+    box-shadow: 0 3px 8px rgba(57, 82, 20, 0.2);
+    transition: background-color 0.3s ease;
+}
+
+.sensor-row:hover {
+    background-color: rgba(205, 138, 57, 0.15);
 }
 
 .sensor-row input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  accent-color: #1D2A10;
-  cursor: pointer;
+    width: 20px;
+    height: 20px;
+    accent-color: #395214;
+    cursor: pointer;
 }
+
 .notificacion {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  background: #fffefb;
-  color: #1D2A10;
-  border-bottom: 1px solid #e0dfdb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 18px;
+    background: #fffefb;
+    color: #395214;
+    border-bottom: 1px solid #d9d9ce;
+    font-weight: 600;
 }
+
 .notificacion strong {
-  color: #CD8A39;
+    color: #CD8A39;
 }
+
 .notificacion button {
-  background: none;
-  border: none;
-  color: #bbb;
-  cursor: pointer;
-  font-size: 16px;
+    background: none;
+    border: none;
+    color: #888c7f;
+    cursor: pointer;
+    font-size: 17px;
+    transition: color 0.25s ease;
 }
+
 .notificacion button:hover {
-  color: red;
+    color: #D63A3A;
 }
-.alerta-punto{
+
+.alerta-punto {
     position: absolute;
-    top: 0px;
-    right: 0px;
-    width: 10px;
-    height: 10px;
-    background-color: red;
+    top: 4px;
+    right: 4px;
+    width: 12px;
+    height: 12px;
+    background-color: #D63A3A;
     border-radius: 50%;
     border: 2px solid white;
     display: none;
 }
-.notificacion-box{
-  position: fixed;
-  top: 70px;
-  right: 10px;
-  background: white;
-  color: #1D2A10;
-  width: 360px;
-  max-height: 500px;
-  overflow-y: auto;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  display: none;
-  z-index: 9999;
+
+.notificacion-box {
+    position: fixed;
+    top: 70px;
+    right: 12px;
+    background: white;
+    color: #395214;
+    width: 380px;
+    max-height: 520px;
+    overflow-y: auto;
+    border-radius: 14px;
+    box-shadow: 0 6px 16px rgba(57, 82, 20, 0.25);
+    display: none;
+    z-index: 9999;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
