@@ -89,6 +89,12 @@ nav a:focus::after {
 }
 
 /* ========== BUSCADOR ========== */
+.contenedor-busqueda {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+
 .busqueda {
     background-color: #CA7842;
     background-image: url('data:image/svg+xml;utf8,<svg fill="%234B352A" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M21.71 20.29l-5.388-5.388a7.5 7.5 0 10-1.414 1.414l5.388 5.388a1 1 0 001.414-1.414zM4 10a6 6 0 1112 0 6 6 0 01-12 0z"/></svg>');
@@ -100,7 +106,6 @@ nav a:focus::after {
     cursor: text;
     font-size: 15px;
     height: 34px;
-    margin-left: auto;
     padding: 6px 14px 6px 36px;
     transition: box-shadow 0.3s ease, background-color 0.3s ease;
 }
@@ -111,14 +116,23 @@ nav a:focus::after {
     outline: none;
 }
 
+/* ========== LÍNEA SEPARADORA ========== */
+.linea-separadora {
+    height: 26px;
+    width: 1px;
+    background-color: #B2CD9C;
+    margin: 0 16px;
+    opacity: 0.6;
+}
+
 /* ========== ICONO DE NOTIFICACIÓN ========== */
 .icono-notificacion {
     align-items: center;
     cursor: pointer;
     display: flex;
-    margin-left: 18px;
     position: relative;
     transition: transform 0.3s ease;
+    margin-right: 16px; /* espacio a la derecha */
 }
 
 .icono-notificacion img {
@@ -153,9 +167,9 @@ nav a:focus::after {
     border-radius: 50%;
     cursor: pointer;
     display: inline-block;
-    padding: 6px;
     position: relative;
     transition: background 0.3s ease;
+    margin-left: 16px; /* separación desde la línea */
 }
 
 .Fondo-fo-perfil:hover,
@@ -169,7 +183,7 @@ nav a:focus::after {
     display: block;
     height: 40px;
     object-fit: cover;
-    width: 40px;
+    width: auto;
 }
 
 /* ========== MENÚ PERFIL ========== */
@@ -229,11 +243,11 @@ nav a:focus::after {
     color: red;
 }
 
+/* ========== CONTENEDOR PERFIL Y NOTIFICACIONES ========== */
 .contenedor-perfil-notificaciones {
     align-items: center;
     display: flex;
-    gap: 10px;
-    margin-right: 20px;
+    margin-left: 20px;
 }
 
 /* ========== ELEMENTOS ADICIONALES ========== */
@@ -270,6 +284,7 @@ nav a:focus::after {
         font-size: 14px;
     }
 
+    .contenedor-busqueda,
     .busqueda {
         display: none;
     }
