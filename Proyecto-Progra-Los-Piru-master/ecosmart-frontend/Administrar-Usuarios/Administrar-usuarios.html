@@ -1,61 +1,60 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Administrar Usuarios</title>
-    <link rel="stylesheet" href="../CSS-Repetidos/CSSGeneral.css">
-    <link rel="stylesheet" href="../Administrar-Usuarios/admin-us.css">
-    <link rel="icon" href="../Public/EcoSmart%20MiniLogo.png" type="image/png">
+    <link rel="stylesheet" href="../CSS-Repetidos/CSSGeneral.css" />
+    <link rel="stylesheet" href="admin-us.css" />
+    <link rel="icon" href="../Public/EcoSmart%20MiniLogo.png" type="image/png" />
 </head>
-
 <body>
 <header>
     <div class="logo" onclick="window.location.href='../Principales/Pagina-Principal.html'">
-        <img src="../Public/EcoSmart2.png" alt="Logo EcoSmart" class="logo-ecosmart"/>
+        <img src="../Public/EcoSmart2.png" alt="Logo EcoSmart" class="logo-ecosmart" />
     </div>
 
     <nav id="menu">
-        <!-- Links se insertan dinámicamente según el rol -->
-        <input class="busqueda" type="search" placeholder="Buscar">
+        <input class="busqueda" type="search" placeholder="Buscar" />
     </nav>
 
     <div class="Fondo-fo-perfil" onclick="toggleMenu(event)">
-        <img class="fo-perfil" src="../Public/user.png" alt="Foto de perfil">
+        <img class="fo-perfil" src="../Public/user.png" alt="Foto de perfil" />
         <div id="menuPerfil" class="menu-perfil">
             <a href="../Perfil/Perfil.html">Perfil</a>
             <a href="#" onclick="logout()">Cerrar sesión</a>
         </div>
     </div>
-    <div class="icono-notificacion" onclick="toggleNotificaciones()" style="position: relative; cursor: pointer;">
-  <img src="../Public/campana.png" alt="Notificaciones" style="width: 28px; height: 28px;">
-  <span id="alerta-punto" style="
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    width: 10px;
-    height: 10px;
-    background-color: red;
-    border-radius: 50%;
-    border: 2px solid white;
-    display: none;
-  "></span>
-</div>
 
+    <div class="icono-notificacion" onclick="toggleNotificaciones()" style="position: relative; cursor: pointer;">
+        <img src="../Public/campana.png" alt="Notificaciones" style="width: 28px; height: 28px;" />
+        <span id="alerta-punto" style="
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 10px;
+        height: 10px;
+        background-color: red;
+        border-radius: 50%;
+        border: 2px solid white;
+        display: none;
+      "></span>
+    </div>
 </header>
 
 <h2>Administrar Usuarios</h2>
-<div id="usuariosContainer" style="display: flex; flex-wrap: wrap; gap: 20px;"></div>
 
-<!-- Modal -->
-<div id="modal" class="modal">
+<div id="usuariosContainer"></div>
+
+<!-- Modal de actualización -->
+<div id="modal" class="modal" style="display:none;">
     <div class="modal-content">
         <h3>Actualizar Usuario</h3>
         <form id="modalForm">
-            <input type="hidden" id="modalCorreoActual">
+            <input type="hidden" id="modalCorreoActual" />
             <label for="modalNuevoNombre">Nuevo Nombre:</label>
-            <input type="text" id="modalNuevoNombre" required><br>
+            <input type="text" id="modalNuevoNombre" required />
             <label for="modalNuevoCorreo">Nuevo Correo:</label>
-            <input type="email" id="modalNuevoCorreo" required><br>
+            <input type="email" id="modalNuevoCorreo" required />
             <div class="modal-buttons">
                 <button type="submit">Guardar</button>
                 <button type="button" onclick="cerrarModal()">Cancelar</button>
@@ -63,130 +62,66 @@
         </form>
     </div>
 </div>
+
+<!-- Notificaciones -->
 <div id="notificaciones-box" style="
-  position: fixed;
-  top: 70px;
-  right: 10px;
-  background: white;
-  color: #1D2A10;
-  width: 360px;
-  max-height: 500px;
-  overflow-y: auto;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  display: none;
-  z-index: 9999;
-"></div>
+    position: fixed;
+    top: 70px;
+    right: 10px;
+    background: white;
+    color: #1D2A10;
+    width: 360px;
+    max-height: 500px;
+    overflow-y: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: none;
+    z-index: 9999;
+  "></div>
 
-<script>
-  function toggleNotificaciones() {
-    const box = document.getElementById("notificaciones-box");
-    const punto = document.getElementById("alerta-punto");
-
-    if (box.style.display === "block") {
-      box.style.display = "none";
-    } else {
-      cargarNotificaciones();
-      box.style.display = "block";
-      punto.style.display = "none";
-    }
-  }
-
-  async function cargarNotificaciones() {
-    try {
-      const res = await fetch("http://localhost:5001/api/activadas");
-      const alertas = await res.json();
-      const contenedor = document.getElementById("notificaciones-box");
-      contenedor.innerHTML = "";
-
-      alertas.reverse().forEach(a => {
-        const div = document.createElement("div");
-        div.className = "notificacion";
-        div.innerHTML = `
-          <div class="texto">
-            <strong>${a.parcela?.nombre || "Parcela"}</strong>
-            <div style="font-size: 0.9rem;">${a.mensaje} <span style="color: #999">(${timeAgo(new Date(a.fecha))})</span></div>
-          </div>
-          <button onclick="eliminarNotificacion('${a._id}')">✖</button>
-        `;
-        contenedor.appendChild(div);
-      });
-
-    } catch (e) {
-      console.error("❌ Error al cargar notificaciones:", e);
-    }
-  }
-
-  function eliminarNotificacion(id) {
-    fetch(`http://localhost:5001/api/activadas/eliminar/${id}`, { method: "DELETE" })
-      .then(() => cargarNotificaciones())
-      .then(() => verificarAlertasActivas());
-  }
-
-  function verificarAlertasActivas() {
-    fetch("http://localhost:5001/api/activadas")
-      .then(res => res.json())
-      .then(alertas => {
-        const punto = document.getElementById("alerta-punto");
-        if (alertas.length > 0) {
-          punto.style.display = "inline-block";
-        } else {
-          punto.style.display = "none";
-        }
-      })
-      .catch(err => {
-        console.warn("No se pudo verificar alertas activas:", err);
-      });
-  }
-
-  function timeAgo(date) {
-    const diff = Math.floor((Date.now() - date.getTime()) / 1000);
-    if (diff < 60) return "hace unos segundos";
-    if (diff < 3600) return `hace ${Math.floor(diff / 60)} min`;
-    if (diff < 86400) return `hace ${Math.floor(diff / 3600)} horas`;
-    return `hace ${Math.floor(diff / 86400)} días`;
-  }
-
-  document.addEventListener("DOMContentLoaded", () => {
-    verificarAlertasActivas();
-    setInterval(verificarAlertasActivas, 10000);
-    document.addEventListener("click", function (event) {
-      const box = document.getElementById("notificaciones-box");
-      const bell = document.querySelector(".icono-notificacion");
-      if (box.style.display === "block" && !box.contains(event.target) && !bell.contains(event.target)) {
-        box.style.display = "none";
-      }
-    });
-  });
-</script>
-
+<!-- Scripts -->
 <script>
     async function cargarUsuarios() {
         try {
-            const response = await fetch('http://localhost:5001/api/usuarios/correos');
-            const usuarios = await response.json();
+            const res = await fetch('http://localhost:5001/api/usuarios/correos');
+            const usuarios = await res.json();
             const container = document.getElementById('usuariosContainer');
             container.innerHTML = '';
 
             usuarios.forEach(usuario => {
-                const card = document.createElement('div');
-                card.className = 'usuario-card';
+                const row = document.createElement('div');
+                row.className = 'usuario-row';
 
-                const imgSrc = usuario.imagen || 'https://via.placeholder.com/100';
+                const imagen = usuario.imagen || 'https://via.placeholder.com/100';
 
-                card.innerHTML = `
-            <img src="${imgSrc}" alt="Foto de ${usuario.nombre}" class="usuario-img">
-            <p><strong>${usuario.nombre || '(Sin nombre)'}</strong></p>
-            <p>${usuario.correo}</p>
-            <button onclick="abrirModal('${usuario.correo}', '${usuario.nombre || ''}')">Actualizar</button>
-            <button onclick="eliminarUsuario('${usuario.correo}')">Eliminar</button>
+                row.innerHTML = `
+            <div class="usuario-img" style="background-image: url('${imagen}')"></div>
+            <div class="usuario-info">
+              <span class="usuario-email">${usuario.correo}</span>
+              <span class="usuario-nombre">${usuario.nombre || 'Sin nombre'}</span>
+              <span class="usuario-rol">${usuario.trabajo || 'Sin rol'}</span>
+            </div>
+            <div class="usuario-actions">
+              <button onclick="abrirModal('${usuario.correo}', '${usuario.nombre || ''}')">Actualizar</button>
+              <button onclick="eliminarUsuario('${usuario.correo}')">Eliminar</button>
+            </div>
           `;
-
-                container.appendChild(card);
+                container.appendChild(row);
             });
         } catch (err) {
             console.error('Error al cargar usuarios:', err);
         }
+    }
+
+    function abrirModal(correo, nombre) {
+        document.getElementById('modalCorreoActual').value = correo;
+        document.getElementById('modalNuevoNombre').value = nombre;
+        document.getElementById('modalNuevoCorreo').value = correo;
+        document.getElementById('modal').style.display = 'block';
+    }
+
+    function cerrarModal() {
+        document.getElementById('modal').style.display = 'none';
     }
 
     async function eliminarUsuario(correo) {
@@ -205,17 +140,6 @@
             alert('Error al eliminar usuario');
             console.error(err);
         }
-    }
-
-    function abrirModal(correo, nombre) {
-        document.getElementById('modalCorreoActual').value = correo;
-        document.getElementById('modalNuevoNombre').value = nombre;
-        document.getElementById('modalNuevoCorreo').value = correo;
-        document.getElementById('modal').style.display = 'block';
-    }
-
-    function cerrarModal() {
-        document.getElementById('modal').style.display = 'none';
     }
 
     document.getElementById('modalForm').addEventListener('submit', async function (e) {
@@ -240,10 +164,83 @@
         }
     });
 
-    window.onload = cargarUsuarios;
+    // Notificaciones
+    function toggleNotificaciones() {
+        const box = document.getElementById("notificaciones-box");
+        const punto = document.getElementById("alerta-punto");
+        if (box.style.display === "block") {
+            box.style.display = "none";
+        } else {
+            cargarNotificaciones();
+            box.style.display = "block";
+            punto.style.display = "none";
+        }
+    }
+
+    async function cargarNotificaciones() {
+        try {
+            const res = await fetch("http://localhost:5001/api/activadas");
+            const alertas = await res.json();
+            const contenedor = document.getElementById("notificaciones-box");
+            contenedor.innerHTML = "";
+
+            alertas.reverse().forEach(a => {
+                const div = document.createElement("div");
+                div.className = "notificacion";
+                div.innerHTML = `
+            <div class="texto">
+              <strong>${a.parcela?.nombre || "Parcela"}</strong>
+              <div style="font-size: 0.9rem;">${a.mensaje} <span style="color: #999">(${timeAgo(new Date(a.fecha))})</span></div>
+            </div>
+            <button onclick="eliminarNotificacion('${a._id}')">✖</button>
+          `;
+                contenedor.appendChild(div);
+            });
+        } catch (e) {
+            console.error("❌ Error al cargar notificaciones:", e);
+        }
+    }
+
+    function eliminarNotificacion(id) {
+        fetch(`http://localhost:5001/api/activadas/eliminar/${id}`, { method: "DELETE" })
+            .then(() => cargarNotificaciones())
+            .then(() => verificarAlertasActivas());
+    }
+
+    function verificarAlertasActivas() {
+        fetch("http://localhost:5001/api/activadas")
+            .then(res => res.json())
+            .then(alertas => {
+                const punto = document.getElementById("alerta-punto");
+                punto.style.display = alertas.length > 0 ? "inline-block" : "none";
+            })
+            .catch(err => {
+                console.warn("No se pudo verificar alertas activas:", err);
+            });
+    }
+
+    function timeAgo(date) {
+        const diff = Math.floor((Date.now() - date.getTime()) / 1000);
+        if (diff < 60) return "hace unos segundos";
+        if (diff < 3600) return `hace ${Math.floor(diff / 60)} min`;
+        if (diff < 86400) return `hace ${Math.floor(diff / 3600)} horas`;
+        return `hace ${Math.floor(diff / 86400)} días`;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        cargarUsuarios();
+        verificarAlertasActivas();
+        setInterval(verificarAlertasActivas, 10000);
+        document.addEventListener("click", function (event) {
+            const box = document.getElementById("notificaciones-box");
+            const bell = document.querySelector(".icono-notificacion");
+            if (box.style.display === "block" && !box.contains(event.target) && !bell.contains(event.target)) {
+                box.style.display = "none";
+            }
+        });
+    });
 </script>
 
 <script src="../js-repetidos/header.js"></script>
-
 </body>
 </html>

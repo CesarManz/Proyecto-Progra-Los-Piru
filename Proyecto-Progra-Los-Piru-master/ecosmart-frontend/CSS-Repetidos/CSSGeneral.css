@@ -5,8 +5,8 @@ html {
 }
 
 body {
-    background-color: #c1d36b;
-    color: #1D2A10;
+    background-color: #F0F2BD;
+    color: #4B352A;
     font-family: 'Segoe UI', sans-serif;
     height: 100vh;
     margin: 0;
@@ -15,9 +15,9 @@ body {
 /* ========== HEADER PRINCIPAL ========== */
 header {
     align-items: center;
-    background-color: #1D2A10;
+    background-color: #4B352A;
     box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-    color: #CD8A39;
+    color: #CA7842;
     display: flex;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     height: 64px;
@@ -58,7 +58,7 @@ nav {
 }
 
 nav a {
-    color: #CD8A39;
+    color: #CA7842;
     font-size: 16px;
     font-weight: 600;
     padding: 6px 0;
@@ -68,7 +68,7 @@ nav a {
 }
 
 nav a::after {
-    background-color: #CD8A39;
+    background-color: #CA7842;
     bottom: 0;
     content: '';
     height: 2px;
@@ -80,7 +80,7 @@ nav a::after {
 
 nav a:hover,
 nav a:focus {
-    color: #fff;
+    color: #F0F2BD;
 }
 
 nav a:hover::after,
@@ -90,13 +90,13 @@ nav a:focus::after {
 
 /* ========== BUSCADOR ========== */
 .busqueda {
-    background-color: #CD8A39;
-    background-image: url('data:image/svg+xml;utf8,<svg fill="%231D2A10" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M21.71 20.29l-5.388-5.388a7.5 7.5 0 10-1.414 1.414l5.388 5.388a1 1 0 001.414-1.414zM4 10a6 6 0 1112 0 6 6 0 01-12 0z"/></svg>');
+    background-color: #CA7842;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%234B352A" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M21.71 20.29l-5.388-5.388a7.5 7.5 0 10-1.414 1.414l5.388 5.388a1 1 0 001.414-1.414zM4 10a6 6 0 1112 0 6 6 0 01-12 0z"/></svg>');
     background-position: 10px center;
     background-repeat: no-repeat;
     border: none;
     border-radius: 6px;
-    color: #1D2A10;
+    color: #4B352A;
     cursor: text;
     font-size: 15px;
     height: 34px;
@@ -106,8 +106,8 @@ nav a:focus::after {
 }
 
 .busqueda:focus {
-    background-color: #e4b54b;
-    box-shadow: 0 0 0 3px rgba(205, 138, 57, 0.6);
+    background-color: #B2CD9C;
+    box-shadow: 0 0 0 3px rgba(202, 120, 66, 0.6);
     outline: none;
 }
 
@@ -147,14 +147,9 @@ nav a:focus::after {
     width: 10px;
 }
 
-@keyframes pulseAlert {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.3); opacity: 0.6; }
-}
-
 /* ========== PERFIL ========== */
 .Fondo-fo-perfil {
-    background: rgba(205, 138, 57, 0.25);
+    background: rgba(202, 120, 66, 0.25);
     border-radius: 50%;
     cursor: pointer;
     display: inline-block;
@@ -165,7 +160,7 @@ nav a:focus::after {
 
 .Fondo-fo-perfil:hover,
 .Fondo-fo-perfil:focus {
-    background: rgba(205, 138, 57, 0.5);
+    background: rgba(202, 120, 66, 0.5);
     outline: none;
 }
 
@@ -179,7 +174,7 @@ nav a:focus::after {
 
 /* ========== MENÚ PERFIL ========== */
 .menu-perfil {
-    background: rgba(205, 138, 57, 0.95);
+    background: rgba(202, 120, 66, 0.95);
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     display: none;
@@ -210,22 +205,22 @@ nav a:focus::after {
 /* ========== NOTIFICACIONES ========== */
 .notificacion {
     align-items: center;
-    background: #fffefb;
+    background: #F0F2BD;
     border-bottom: 1px solid #e0dfdb;
-    color: #1D2A10;
+    color: #4B352A;
     display: flex;
     justify-content: space-between;
     padding: 12px 16px;
 }
 
 .notificacion strong {
-    color: #CD8A39;
+    color: #CA7842;
 }
 
 .notificacion button {
     background: none;
     border: none;
-    color: #bbb;
+    color: #999;
     cursor: pointer;
     font-size: 16px;
 }
@@ -243,9 +238,9 @@ nav a:focus::after {
 
 /* ========== ELEMENTOS ADICIONALES ========== */
 .Cuadrado-transparente {
-    background: rgba(205, 138, 57, 0.4);
+    background: rgba(202, 120, 66, 0.4);
     border-radius: 12px;
-    color: #CD8A39;
+    color: #CA7842;
     margin-left: 50px;
     margin-right: auto;
     margin-top: 50px;
@@ -278,4 +273,9 @@ nav a:focus::after {
     .busqueda {
         display: none;
     }
+}
+
+@keyframes pulseAlert {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.6; }
 }

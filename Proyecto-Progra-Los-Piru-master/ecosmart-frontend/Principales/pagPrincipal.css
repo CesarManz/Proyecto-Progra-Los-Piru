@@ -1,7 +1,7 @@
 .cuadrado-transparente {
     max-width: 1100px;
     margin: 30px auto;
-    background: rgba(255 255 255 / 0.85);
+    background: rgba(240, 242, 189, 0.85); /* F0F2BD */
     border-radius: 16px;
     box-shadow: 0 8px 20px rgb(0 0 0 / 0.15);
     padding: 25px 40px;
@@ -24,14 +24,14 @@
     font-size: 2.5rem;
     margin-bottom: 15px;
     font-weight: 700;
-    color: #395214;
-    text-shadow: 1px 1px 3px rgba(205, 138, 57, 0.5);
+    color: #4B352A;
+    text-shadow: 1px 1px 3px rgba(202, 120, 66, 0.5); /* CA7842 */
 }
 
 .tareas-pendientes .texto h3 {
     font-weight: 600;
     margin: 8px 0;
-    color: #577622;
+    color: #CA7842;
 }
 
 .imagenes {
@@ -43,20 +43,20 @@
 }
 
 .imagenes .item {
-    background: #dbae41;
+    background: #CA7842;
     border-radius: 14px;
     width: 140px;
     padding: 18px 10px;
     text-align: center;
     cursor: pointer;
-    box-shadow: 0 4px 10px rgb(205 138 57 / 0.5);
+    box-shadow: 0 4px 10px rgba(202, 120, 66, 0.5);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     user-select: none;
 }
 
 .imagenes .item:hover {
     transform: translateY(-6px);
-    box-shadow: 0 8px 20px rgb(205 138 57 / 0.8);
+    box-shadow: 0 8px 20px rgba(202, 120, 66, 0.8);
 }
 
 .imagenes img {
@@ -68,16 +68,16 @@
 .imagenes h4 {
     font-size: 1.15rem;
     font-weight: 700;
-    color: #3a5210;
+    color: #4B352A;
     margin: 0;
 }
 
 .tit-parcelas {
-    color: #395214;
+    color: #4B352A;
     font-weight: 700;
     font-size: 2rem;
     margin-bottom: 20px;
-    border-bottom: 3px solid #dbae41;
+    border-bottom: 3px solid #CA7842;
     padding-bottom: 6px;
     width: fit-content;
 }
@@ -91,7 +91,7 @@
 }
 
 .parcela {
-    background: #f7f9ef;
+    background: #B2CD9C;
     border-radius: 12px;
     width: 30%;
     box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
@@ -121,15 +121,15 @@
 }
 
 .info-parcela h3 {
-    color: #3a5210;
+    color: #4B352A;
     font-weight: 700;
     font-size: 1.25rem;
     margin: 0;
 }
 
 button {
-    background-color: #395214;
-    color: white;
+    background-color: #CA7842;
+    color: #fff;
     border: none;
     border-radius: 25px;
     padding: 14px 28px;
@@ -144,7 +144,7 @@ button {
 }
 
 button:hover {
-    background-color: #2a3d0f;
+    background-color: #B25C2A;
     box-shadow: 0 6px 18px rgb(0 0 0 / 0.2);
 }
 

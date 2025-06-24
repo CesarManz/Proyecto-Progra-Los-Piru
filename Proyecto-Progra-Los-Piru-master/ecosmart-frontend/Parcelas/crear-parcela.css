@@ -4,20 +4,21 @@ main {
   background: rgba(255, 255, 255, 0.9);
   padding: 30px;
   border-radius: 16px;
-  box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+  box-shadow: 0 12px 24px rgba(29, 42, 16, 0.25); /* sombra verde oscuro suave */
 }
 
 h2 {
   text-align: center;
   font-size: 1.8rem;
   margin-bottom: 1.5rem;
-  color: #1D2A10;
+  color: #1D2A10; /* verde oscuro */
 }
 
 form label {
   display: block;
   margin-top: 1rem;
   font-weight: 600;
+  color: #395214; /* verde medio para legibilidad */
 }
 
 form input,
@@ -25,10 +26,18 @@ form select {
   width: 100%;
   padding: 10px;
   margin-top: 6px;
-  border: 1px solid #ccc;
+  border: 1.5px solid #A9B147; /* verde oliva suave */
   border-radius: 8px;
   font-size: 1rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 6px rgba(169, 177, 71, 0.25); /* sombra verde oliva */
+  transition: border-color 0.3s ease;
+}
+
+form input:focus,
+form select:focus {
+  border-color: #CD8A39; /* dorado para foco */
+  outline: none;
+  box-shadow: 0 0 8px #CD8A39;
 }
 
 .sensor-checkboxes {
@@ -42,12 +51,18 @@ form select {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: rgba(255,255,255,0.8);
+  background: rgba(205, 138, 57, 0.15); /* dorado claro transparente */
   border-radius: 8px;
   padding: 8px 12px;
   font-size: 1rem;
   color: #1D2A10;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(29, 42, 16, 0.1);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.sensor-checkboxes label:hover {
+  background: rgba(205, 138, 57, 0.3);
 }
 
 .sensor-checkboxes input[type="checkbox"] {
@@ -58,7 +73,7 @@ form select {
 }
 
 .error-msg {
-  color: red;
+  color: #F06D6D; /* rojo suave de tu paleta para error */
   font-size: 0.9rem;
   margin-top: 4px;
   display: none;
@@ -76,11 +91,13 @@ button {
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  box-shadow: 0 4px 12px rgba(205, 138, 57, 0.4);
 }
 
 button:hover {
   background-color: #CD8A39;
   color: #1D2A10;
+  box-shadow: 0 6px 18px rgba(29, 42, 16, 0.6);
 }
 
 #mapa {
@@ -95,25 +112,23 @@ nav a {
   text-decoration: none;
   font-weight: bold;
   margin: 0 10px;
+  transition: color 0.3s ease;
 }
 
-.sensor-checkboxes {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 10px;
+nav a:hover {
+  color: #A9B147;
 }
 
 .sensor-row {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: rgba(255,255,255,0.8);
+  background: rgba(255, 255, 255, 0.85);
   border-radius: 8px;
   padding: 8px 12px;
   font-size: 1rem;
   color: #1D2A10;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(29, 42, 16, 0.1);
 }
 
 .sensor-row input[type="checkbox"] {
@@ -122,6 +137,7 @@ nav a {
   accent-color: #1D2A10;
   cursor: pointer;
 }
+
 .notificacion {
   display: flex;
   justify-content: space-between;
@@ -131,9 +147,11 @@ nav a {
   color: #1D2A10;
   border-bottom: 1px solid #e0dfdb;
 }
+
 .notificacion strong {
   color: #CD8A39;
 }
+
 .notificacion button {
   background: none;
   border: none;
@@ -141,10 +159,12 @@ nav a {
   cursor: pointer;
   font-size: 16px;
 }
+
 .notificacion button:hover {
-  color: red;
+  color: #F06D6D;
 }
-.notificacion-box{
+
+.notificacion-box {
   position: fixed;
   top: 70px;
   right: 10px;
@@ -154,9 +174,7 @@ nav a {
   max-height: 500px;
   overflow-y: auto;
   border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(29, 42, 16, 0.15);
   display: none;
   z-index: 9999;
 }
-
-
