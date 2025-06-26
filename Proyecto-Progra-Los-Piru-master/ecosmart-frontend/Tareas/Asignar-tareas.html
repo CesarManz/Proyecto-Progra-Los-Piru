@@ -85,14 +85,14 @@
     <!-- Este div parece duplicado, quizá no necesario -->
     <!-- <div id="notificaciones-box" style="display: flex; flex-wrap: wrap; gap: 20px;"></div> -->
 
-    <div id="Asignar" >
+    <div id="Asignar" class="Asignar">
         <h3>Asignar Tareas</h3>
         <h4>Seleccione a quien quiere asignar la tarea</h4>
         <div class="tarea-content">
             <form id="formTarea">
                 <label for="destinatario">Seleccionar persona:</label>
-                <select class="dropdown" id="destinatario" name="destinatario" required>
-                    <option class="dropdown-options" value="">-- Cargando personas... --</option>
+                <select id="destinatario" name="destinatario" required>
+                    <option value="">-- Cargando personas... --</option>
                 </select>
 
                 <br /><br />
@@ -108,6 +108,8 @@
             </form>
 
         </div>
+
+
     </div>
 
     <div class="Revisar">

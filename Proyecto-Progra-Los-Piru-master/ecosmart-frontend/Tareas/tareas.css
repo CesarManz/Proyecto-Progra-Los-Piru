@@ -19,7 +19,7 @@
 
 .tarea-content {
     margin: 20px auto;
-    height: 100px;
+    height: auto;
     max-width: 1000px;
     display: flex;
     border-radius: 16px;
