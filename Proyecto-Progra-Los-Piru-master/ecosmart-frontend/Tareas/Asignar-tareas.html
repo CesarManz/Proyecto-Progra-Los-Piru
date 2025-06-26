@@ -35,17 +35,12 @@
 <body>
 <header>
     <div class="logo" onclick="window.location.href='../Principales/Pagina-Principal.html'">
-        <img src="../Public/EcoSmart2.png" alt="Logo EcoSmart" class="logo-ecosmart" />
+        <img src="../Public/EcoAlt.png" alt="Logo EcoSmart" class="logo-ecosmart" />
     </div>
 
     <nav id="menu">
         <input class="busqueda" type="search" placeholder="Buscar" />
     </nav>
-
-    <div class="icono-notificacion" onclick="toggleNotificaciones()">
-        <img src="../Public/campana.png" alt="Notificaciones" />
-        <span id="alerta-punto"></span>
-    </div>
 
     <div class="Fondo-fo-perfil" onclick="toggleMenu(event)">
         <img class="fo-perfil" id="fotoPerfilHeader" src="../Public/user.png" alt="Foto de perfil" />
@@ -53,6 +48,21 @@
             <a href="../Perfil/Perfil.html">Perfil</a>
             <a href="#" onclick="logout()">Cerrar sesión</a>
         </div>
+    </div>
+
+    <div class="icono-notificacion" onclick="toggleNotificaciones()" style="position: relative; cursor: pointer;">
+        <img src="../Public/campana.png" alt="Notificaciones" style="width: 28px; height: 28px;">
+        <span id="alerta-punto" style="
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    border: 2px solid white;
+    display: none;
+  "></span>
     </div>
 </header>
 
@@ -75,27 +85,29 @@
     <!-- Este div parece duplicado, quizá no necesario -->
     <!-- <div id="notificaciones-box" style="display: flex; flex-wrap: wrap; gap: 20px;"></div> -->
 
-    <div class="Asignar">
+    <div id="Asignar" >
         <h3>Asignar Tareas</h3>
         <h4>Seleccione a quien quiere asignar la tarea</h4>
+        <div class="tarea-content">
+            <form id="formTarea">
+                <label for="destinatario">Seleccionar persona:</label>
+                <select class="dropdown" id="destinatario" name="destinatario" required>
+                    <option class="dropdown-options" value="">-- Cargando personas... --</option>
+                </select>
 
-        <form id="formTarea">
-            <label for="destinatario">Seleccionar persona:</label>
-            <select id="destinatario" name="destinatario" required>
-                <option value="">-- Cargando personas... --</option>
-            </select>
+                <br /><br />
 
-            <br /><br />
+                <label for="titulo">Título de la tarea:</label>
+                <input type="text" id="titulo" name="titulo" required />
 
-            <label for="titulo">Título de la tarea:</label>
-            <input type="text" id="titulo" name="titulo" required />
+                <label for="descripcion">Descripción:</label>
+                <textarea id="descripcion" name="descripcion" rows="3" required></textarea>
 
-            <label for="descripcion">Descripción:</label>
-            <textarea id="descripcion" name="descripcion" rows="3" required></textarea>
+                <br /><br />
+                <button class="tarea-buttons" type="submit">Asignar tarea</button>
+            </form>
 
-            <br /><br />
-            <button type="submit">Asignar tarea</button>
-        </form>
+        </div>
     </div>
 
     <div class="Revisar">

@@ -16,31 +16,27 @@
     color: #1D2A10;
 }
 
-
-.tarea {
-    display: none;
-    position: fixed;
-    top: 20%;
-    left: 50%;
-    transform: translate(-50%, 0);
-    background-color: #dba14e;
-    padding: 20px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    z-index: 1000;
-}
 .tarea-content {
+    margin: 20px auto;
+    max-width: 1000px;
     display: flex;
+    border-radius: 16px;
     flex-direction: column;
     gap: 10px;
-    background-color: #dba14e
+    background-color: #cd8a39
 }
 
 .tarea-buttons {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
-
-    color: rgba(205, 138, 57, 0.9);
+    border-radius: 10px;
+    background-color: #ca7842;
+    color: #4b352a;
+    height: 30px;
+    width: 150px;
+    border: none;
+}
+.tarea-buttons:hover {
+    background-color: #CD8A39;
+    color: #1D2A10;
 }
 
 .tarea input {
@@ -49,15 +45,16 @@
     box-sizing: border-box;
 }
 .dropdown {
+    border: none;
     position: relative;
     width: 220px;
-    height: 30px;
+    height: 40px;
     margin: 0 auto 20px;
     font-family: sans-serif;
     cursor: pointer;
     border-radius: 10px;
-    background-color: #1D2A10;
-    color: #CD8A39;
+    background-color: rgb(202, 120, 66);
+    color: rgb(75, 53, 42);
     display: flex;
     justify-content: center;
     align-items: center;
