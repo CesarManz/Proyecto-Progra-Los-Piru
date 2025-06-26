@@ -16,8 +16,10 @@
     color: #1D2A10;
 }
 
+
 .tarea-content {
     margin: 20px auto;
+    height: 100px;
     max-width: 1000px;
     display: flex;
     border-radius: 16px;
