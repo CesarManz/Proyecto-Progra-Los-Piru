@@ -36,27 +36,12 @@
 <body>
 <header>
     <div class="logo" onclick="window.location.href='../Principales/Pagina-Principal.html'">
-        <img src="../Public/EcoSmart2.png" alt="Logo EcoSmart" class="logo-ecosmart" />
+        <img src="../Public/EcoAlt.png" alt="Logo EcoSmart" class="logo-ecosmart" />
     </div>
 
     <nav id="menu">
         <input class="busqueda" type="search" placeholder="Buscar" />
     </nav>
-
-    <div class="icono-notificacion" onclick="toggleNotificaciones()" style="position: relative; cursor: pointer;">
-        <img src="../Public/campana.png" alt="Notificaciones" style="width: 28px; height: 28px;" />
-        <span id="alerta-punto" style="
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 10px;
-        height: 10px;
-        background-color: red;
-        border-radius: 50%;
-        border: 2px solid white;
-        display: none;
-      "></span>
-    </div>
 
     <div class="Fondo-fo-perfil" onclick="toggleMenu(event)">
         <img class="fo-perfil" id="fotoPerfilHeader" src="../Public/user.png" alt="Foto de perfil" />
@@ -65,31 +50,31 @@
             <a href="#" onclick="logout()">Cerrar sesión</a>
         </div>
     </div>
+
+    <div class="icono-notificacion" onclick="toggleNotificaciones()" style="position: relative; cursor: pointer;">
+        <img src="../Public/campana.png" alt="Notificaciones" style="width: 28px; height: 28px;">
+        <span id="alerta-punto" style="
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    border: 2px solid white;
+    display: none;
+  "></span>
+    </div>
 </header>
 
 <main>
-    <form class="tarea">
+    <form class="tarea-content">
         <div class="tarea-content">
             <h1>Tareas</h1>
             <div class="tarea-content" id="Tareas-container"></div>
         </div>
         <br /><br />
     </form>
-
-    <div id="notificaciones-box" style="
-      position: fixed;
-      top: 70px;
-      right: 10px;
-      background: white;
-      color: #1D2A10;
-      width: 360px;
-      max-height: 500px;
-      overflow-y: auto;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      display: none;
-      z-index: 9999;
-    "></div>
 
     <div class="Cuadrado-transparente"></div>
 </main>

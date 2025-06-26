@@ -30,6 +30,8 @@
 }
 
 .columna {
+    margin-right: 20px;
+    margin-left: 20px;
     flex: 1;
     background: white;
     padding: 15px;
@@ -47,8 +49,9 @@
 .formulario {
     max-width: 500px;
     margin: 0 auto 30px;
+    margin-top: 30px;
     padding: 20px;
-    background: #CD8A39;
+    background: #ca7842;
     border-radius: 8px;
     box-shadow: 0 0 8px rgba(0,0,0,0.1);
 }
@@ -67,11 +70,13 @@
     font-size: 16px;
     border-radius: 5px;
     border: 1px solid #ccc;
+    background: #f0f2bd;
 }
 
 .formulario button {
-    background-color: #28a745;
-    color: black;
+    width: 99%;
+    background-color: #1d2a10;
+    color: #cd8a39;
     border: none;
     cursor: pointer;
 }
@@ -80,8 +85,9 @@
     background-color: #218838;
 }
 .columna {
+
     flex: 1;
-    background: #CD8A39;
+    background: #ca7842;
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 0 8px rgba(0,0,0,0.1);
@@ -93,4 +99,29 @@
     margin-bottom: 10px;
     padding: 10px;
     border-radius: 5px;
+}
+.dropdown {
+    border: none;
+    position:  relative;
+
+    height: 40px;
+    margin: 0 auto 20px;
+    font-family: sans-serif;
+    cursor: pointer;
+    border-radius: 10px;
+    background-color: rgb(75, 53, 42);
+    color: rgb(205, 138, 57);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    user-select: none;
+}
+.card{
+    max-width: 900px;
+    margin: 0 auto;
+    background: rgba(205, 138, 57, 0.1);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 8px 20px rgba(45, 79, 43, 0.3);
 }
