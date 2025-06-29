@@ -127,9 +127,7 @@
 "></div>
 
 <script>
-/*
-Metodos de notificaciones
- */
+    /* Metodos de notificaciones */
     function toggleNotificaciones() {
     const box = document.getElementById("notificaciones-box");
     const punto = document.getElementById("alerta-punto");
@@ -198,177 +196,183 @@ Metodos de notificaciones
     return `hace ${Math.floor(diff / 86400)} días`;
     }
 
-    /*
-    Metodos de anomalias
-    */
-
+    /* Metodos de anomalias */
     async function mostrarAlertasConVentanaEmergente() {
-    try {
-        const [resAlertas, resParcelas] = await Promise.all([
-            fetch("http://localhost:5001/api/alertas"),
-            fetch("http://localhost:5001/api/parcelas")
-        ]);
+        try {
+            // Solo usamos alertas configuradas (no alertasConfig)
+            const [resAlertas, resParcelas] = await Promise.all([
+                fetch("http://localhost:5001/api/alertas"),
+                fetch("http://localhost:5001/api/parcelas")
+            ]);
 
-        const [alertas, parcelas] = await Promise.all([
-            resAlertas.json(),
-            resParcelas.json()
-        ]);
+            const [alertas, parcelas] = await Promise.all([
+                resAlertas.json(),
+                resParcelas.json()
+            ]);
 
-        const contenedor = document.getElementById("alertas-parcelas");
-        contenedor.innerHTML = "";
+            const contenedor = document.getElementById("alertas-parcelas");
+            contenedor.innerHTML = "";
 
-        const umbrales = {
-            "Temperatura del suelo": { min: 18, max: 28 },
-            "Humedad del suelo": { min: 50, max: 70 },
-            "pH del suelo": { min: 5.5, max: 7.5 },
-            "Nivel de nutrientes": { min: 200, max: 400 }
-        };
+            // Umbrales fijos
+            const umbrales = {
+                "temperatura del suelo": { min: 18, max: 28 },
+                "humedad del suelo": { min: 50, max: 70 },
+                "ph del suelo": { min: 5.5, max: 7.5 },
+                "nivel de nutrientes": { min: 200, max: 400 }
+            };
 
-        const alertasPorParcela = {};
+            const alertasPorParcela = {};
 
-        alertas.forEach(alerta => {
-            const nombre = alerta.parcela?.nombre || "Desconocida";
-            if (!alertasPorParcela[nombre]) {
-                alertasPorParcela[nombre] = [];
+            alertas.forEach(alerta => {
+                const nombre = alerta.parcela?.nombre || "Desconocida";
+                if (!alertasPorParcela[nombre]) {
+                    alertasPorParcela[nombre] = [];
+                }
+                alertasPorParcela[nombre].push(alerta);
+            });
+
+            const parcelaSeleccionada = document.getElementById("selector-parcela").value;
+
+            let hayAlertas = false;
+
+            Object.entries(alertasPorParcela).forEach(([parcela, alertas]) => {
+                if (parcelaSeleccionada && parcela !== parcelaSeleccionada) return;
+
+                if (alertas.length > 0) {
+                    hayAlertas = true;
+                    const seccion = document.createElement("div");
+                    seccion.innerHTML = `<h3>${parcela}</h3>`;
+                    alertas.forEach((alerta, i) => {
+                        const btn = document.createElement("button");
+                        btn.className = "btn-alerta";
+                        btn.textContent = `${i + 1}. ${alerta.sensor || alerta.tipo || "Sensor desconocido"}`;
+                        btn.onclick = () => mostrarModal(alerta, umbrales);
+                        seccion.appendChild(btn);
+                    });
+                    contenedor.appendChild(seccion);
+                }
+            });
+
+            if (!hayAlertas) {
+                const mensaje = document.createElement("p");
+                mensaje.textContent = "No se encontraron anomalías para esta parcela!";
+                mensaje.style.textAlign = "center";
+                mensaje.style.color = "red";
+                mensaje.style.marginTop = "20px";
+                contenedor.appendChild(mensaje);
             }
-            alertasPorParcela[nombre].push(alerta);
-        });
-
-        const parcelaSeleccionada = document.getElementById("selector-parcela").value;
-
-        let hayAlertas = false;
-
-        Object.entries(alertasPorParcela).forEach(([parcela, alertas]) => {
-            if (parcelaSeleccionada && parcela !== parcelaSeleccionada) return;
-
-            if (alertas.length > 0) {
-                hayAlertas = true;
-                const seccion = document.createElement("div");
-                seccion.innerHTML = `<h3>${parcela}</h3>`;
-                alertas.forEach((alerta, i) => {
-                    const btn = document.createElement("button");
-                    btn.className = "btn-alerta";
-                    btn.textContent = `${i + 1}. ${alerta.sensor}`;
-                    btn.onclick = () => mostrarModal(alerta, umbrales);
-                    seccion.appendChild(btn);
-                });
-                contenedor.appendChild(seccion);
-            }
-        });
-
-        //Mostrar mensaje si no hay alertas para la parcela seleccionada
-        if (!hayAlertas) {
-            const mensaje = document.createElement("p");
-            mensaje.textContent = "No se encontraron anomalías para esta parcela!";
-            mensaje.style.textAlign = "center";
-            mensaje.style.color = "red";
-            mensaje.style.marginTop = "20px";
-            contenedor.appendChild(mensaje);
-        }
-
-    } catch (error) {
-        console.error("Error al cargar alertas:", error);
-        document.getElementById("alertas-parcelas").innerHTML = `
+        } catch (error) {
+            console.error("Error al cargar alertas:", error);
+            document.getElementById("alertas-parcelas").innerHTML = `
             <p style="color: red;">Error al cargar las alertas.</p>
         `;
-    }
-}
-
-function mostrarModal(alerta, umbrales) {
-    const modal = document.getElementById("modal-alerta");
-    const modalBox = modal.querySelector(".modal-content");
-    const contenido = document.getElementById("contenido-modal");
-
-    contenido.style.borderRadius = "10%";
-
-    const ref = umbrales[alerta.sensor] || { min: -1000, max: 1000 };
-    const valorMin = alerta.umbralMinimo ?? ref.min;
-    const valorMax = alerta.umbralMaximo ?? ref.max;
-
-    // ⚠️ Asegúrate que el backend te envía alerta.valor (valor actual del sensor)
-    const valorActual = alerta.valor ?? null;
-
-    const consejos = [];
-
-    let fondo = "#ffffff";
-    let texto = "#000000";
-
-    switch (alerta.sensor) {
-        case "Temperatura del suelo":
-            if (valorActual !== null) {
-                if (valorActual < ref.min) consejos.push("¡El suelo está congelándose!");
-                else if (valorActual > ref.max) consejos.push("¡El suelo está que arde!");
-                else consejos.push("Temperatura dentro del rango ideal.");
-            }
-            fondo = "#ffe6e6";
-            texto = "#b30000";
-            break;
-
-        case "Humedad del suelo":
-            if (valorActual !== null) {
-                if (valorActual < ref.min) consejos.push("¡Tienes que regar!");
-                else if (valorActual > ref.max) consejos.push("¡Deja de regar!");
-                else consejos.push("Humedad dentro del rango ideal.");
-            }
-            fondo = "#e6f7ff";
-            texto = "#004466";
-            break;
-
-        case "pH del suelo":
-            if (valorActual !== null) {
-                if (valorActual < ref.min) consejos.push("¡pH muy bajo!");
-                else if (valorActual > ref.max) consejos.push("¡pH muy alto!");
-                else consejos.push("pH dentro del rango ideal.");
-            }
-            fondo = "#f0e6ff";
-            texto = "#4b0082";
-            break;
-
-        case "Nivel de nutrientes":
-            if (valorActual !== null) {
-                if (valorActual < ref.min) consejos.push("¡Nivel de nutrientes muy bajo!");
-                else if (valorActual > ref.max) consejos.push("¡Demasiados nutrientes!");
-                else consejos.push("Nutrientes dentro del rango ideal.");
-            }
-            fondo = "#f9ffe6";
-            texto = "#666600";
-            break;
-
-        default:
-            consejos.push("¡Verifica los datos!");
+        }
     }
 
-    modalBox.style.backgroundColor = fondo;
-    modalBox.style.color = texto;
 
-    contenido.innerHTML = `
-        <h3>${alerta.sensor}</h3>
-        <p><strong>Umbral mínimo:</strong> ${valorMin}</p>
-        <p><strong>Umbral máximo:</strong> ${valorMax}</p>
-        <p><strong>Valor actual:</strong> ${valorActual ?? "N/A"}</p>
+    function mostrarModal(alerta, umbrales) {
+        const modal = document.getElementById("modal-alerta");
+        const modalBox = modal.querySelector(".modal-content");
+        const contenido = document.getElementById("contenido-modal");
+
+        contenido.style.borderRadius = "10%";
+
+        // Mapeo de alias para unificar nombres de sensores
+        const aliasSensores = {
+            "ph": "ph del suelo",
+            "ph del suelo": "ph del suelo",
+            "ph": "ph del suelo",
+            "pH": "ph del suelo",
+            "temperatura": "temperatura del suelo",
+            "temperatura del suelo": "temperatura del suelo",
+            "humedad": "humedad del suelo",
+            "humedad del suelo": "humedad del suelo",
+            "nivel de nutrientes": "nivel de nutrientes",
+            "nutrientes": "nivel de nutrientes"
+        };
+
+        const normalize = str => (str || "").toString().trim().toLowerCase();
+        const tipoSensorRaw = normalize(alerta.sensor);
+        const tipoSensor = aliasSensores[tipoSensorRaw] || tipoSensorRaw;
+        const umbralIdeal = umbrales[tipoSensor];
+
+        const consejos = [];
+
+        const valorMin = alerta.umbralMinimo ?? null;
+        const valorMax = alerta.umbralMaximo ?? null;
+
+        let fondo = "#ffffff";
+        let texto = "#000000";
+
+        switch (tipoSensor) {
+            case "temperatura del suelo":
+                fondo = "#ffe6e6";
+                texto = "#b30000";
+                break;
+            case "humedad del suelo":
+                fondo = "#e6f7ff";
+                texto = "#004466";
+                break;
+            case "ph del suelo":
+                fondo = "#f0e6ff";
+                texto = "#4b0082";
+                break;
+            case "nivel de nutrientes":
+                fondo = "#f9ffe6";
+                texto = "#666600";
+                break;
+            default:
+                fondo = "#f0f0f0";
+                texto = "#333";
+        }
+
+        if (umbralIdeal && valorMin !== null && valorMax !== null) {
+            consejos.push(`🔍 Rango ideal: ${umbralIdeal.min} - ${umbralIdeal.max}`);
+            consejos.push(`📊 Umbral mínimo configurado: ${valorMin}`);
+            consejos.push(`📊 Umbral máximo configurado: ${valorMax}`);
+
+            if (valorMin < umbralIdeal.min) {
+                consejos.push("⚠️ El umbral mínimo está por debajo del rango ideal.");
+                if (tipoSensor === "ph del suelo") {
+                    consejos.push("🧪 Un pH bajo puede provocar deficiencia de nutrientes esenciales. Considera aplicar cal agrícola.");
+                }
+            }
+
+            if (valorMax > umbralIdeal.max) {
+                consejos.push("⚠️ El umbral máximo está por encima del rango ideal.");
+                if (tipoSensor === "ph del suelo") {
+                    consejos.push("🧪 Un pH alto puede bloquear la absorción de hierro y fósforo. Evalúa el uso de enmiendas ácidas.");
+                }
+            }
+
+            if (valorMin >= umbralIdeal.min && valorMax <= umbralIdeal.max) {
+                consejos.push("✅ Los umbrales están dentro del rango ideal.");
+            }
+        } else {
+            consejos.push("⚠️ No se encontró un rango ideal para este sensor o faltan datos de umbral.");
+        }
+
+        modalBox.style.backgroundColor = fondo;
+        modalBox.style.color = texto;
+
+        contenido.innerHTML = `
+        <h3>${alerta.sensor || "Sensor desconocido"}</h3>
         <div>${consejos.map(c => `<p>${c}</p>`).join("")}</div>
     `;
 
-    modal.style.display = "block";
-}
+        modal.style.display = "block";
+    }
 
-
-
-    /*
-    * Cierra el modal al hacer clic en la X
-    */
-
+    /* Cierra el modal al hacer clic en la X */
     document.getElementById("cerrar-modal").onclick = function () {
         document.getElementById("modal-alerta").style.display = "none";
     };
 
 
-    /*
-    * Cambia al cambiar de parcela
-     */
+    /* Cambia al cambiar de parcela */
     document.getElementById("selector-parcela").addEventListener("change", mostrarAlertasConVentanaEmergente);
 
-  //-------------------------------------------------------------
+  //-------------------------------------------------------------//
     document.addEventListener("DOMContentLoaded", () => {
         mostrarAlertasConVentanaEmergente();
         verificarAlertasActivas();
