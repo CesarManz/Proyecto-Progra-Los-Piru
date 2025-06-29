@@ -1,227 +1,146 @@
-<html>
+<!DOCTYPE html>
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Pagina de perfil</title>
-    <link rel="stylesheet" href="../CSS-Repetidos/CSSGeneral.css" />
-    <link rel="stylesheet" href="Estilo-per.css">
-    <link rel="icon" href="../Public/EcoSmart%20MiniLogo.png" type="image/png">
+  <meta charset="UTF-8" />
+  <title>Página de Perfil</title>
+  <link rel="stylesheet" href="../CSS-Repetidos/CSSGeneral.css" />
+  <link rel="stylesheet" href="Estilo-per.css">
+  <link rel="icon" href="../Public/EcoSmart%20MiniLogo.png" type="image/png">
 </head>
 <body>
-<header>
+  <header>
     <div class="logo" onclick="window.location.href='../Principales/Pagina-Principal.html'">
-        <img src="../Public/EcoSmart2.png" alt="Logo EcoSmart" class="logo-ecosmart"/>
+      <img src="../Public/EcoSmart2.png" alt="Logo EcoSmart" class="logo-ecosmart"/>
     </div>
 
-  <nav id="menu">
-    <input class="busqueda" type="search" placeholder="Buscar">
-  </nav>
+    <nav id="menu">
+      <input class="busqueda" type="search" placeholder="Buscar">
+    </nav>
 
-  <div class="icono-notificacion" onclick="toggleNotificaciones()">
-    <img src="../Public/campana.png" alt="Notificaciones">
-    <span id="alerta-punto"></span>
-  </div>
-
-  <div class="Fondo-fo-perfil" onclick="toggleMenu(event)">
-    <img class="fo-perfil" id="fotoPerfilHeader" src="../Public/user.png" alt="Foto de perfil">
-    <div id="menuPerfil" class="menu-perfil">
-      <a href="../Perfil/Perfil.html">Perfil</a>
-      <a href="#" onclick="logout()">Cerrar sesión</a>
+    <div class="icono-notificacion" onclick="toggleNotificaciones()">
+      <img src="../Public/campana.png" alt="Notificaciones">
+      <span id="alerta-punto" class="alertapunto"></span>
     </div>
-  </div>
-</header>
 
+    <div class="Fondo-fo-perfil" onclick="toggleMenu(event)">
+      <img class="fo-perfil" id="fotoPerfilHeader" src="../Public/user.png" alt="Foto de perfil">
+      <div id="menuPerfil" class="menu-perfil">
+        <a href="../Perfil/Perfil.html">Perfil</a>
+        <a href="#" onclick="logout()">Cerrar sesión</a>
+      </div>
+    </div>
+  </header>
 
-<div class="Cuadrado-transparente">
+  <div class="Cuadrado-transparente">
     <div class="fotoPerfilContenedor">
-        <div class="Fondo-Foto-perfil">
-            <label for="selectorFoto">
-                <img id= "fotoPerfil" class="Foto-perfil" src="../Public/fotoPerfilDefault.png" alt="Foto De Perfil">
-            </label>
-            <input type="file" id="selectorFoto" accept="image/*" style="display: none;">
-        </div>
+      <div class="Fondo-Foto-perfil">
+        <label for="selectorFoto">
+          <img id="fotoPerfil" class="Foto-perfil" src="../Public/fotoPerfilDefault.png" alt="Foto De Perfil">
+        </label>
+        <input type="file" id="selectorFoto" accept="image/*">
+      </div>
 
-        <div id="resetFoto">
-            <img class="removeImage" src="../Public/remove.png">
-        </div>
+      <div id="resetFoto">
+        <img class="removeImage" src="../Public/remove.png" alt="Eliminar imagen">
+      </div>
     </div>
-    <div id="notificaciones-box" class="notificaciones-box"></div>
-
 
     <div class="datos-usuario">
-        <p id="nombreUsuario">Cargando...</p>
-        <p id="correoUsuario">Cargando...</p>
-        <p id="trabajoUsuario">Cargando...</p>
+      <p id="nombreUsuario">Cargando...</p>
+      <p id="correoUsuario">Cargando...</p>
+      <p id="trabajoUsuario">Cargando...</p>
     </div>
-</div>
-<div id="notificaciones-box " class="notificaciones-box"></div>
-<script>
-  function toggleMenu(event) {
-    event.stopPropagation();
-    const menu = document.getElementById('menuPerfil');
-    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-  }
+  </div>
 
-  document.addEventListener('click', function () {
-    const menu = document.getElementById('menuPerfil');
-    if (menu) menu.style.display = 'none';
-  });
+  <div id="notificaciones-box" class="notificaciones-box"></div>
 
-  document.addEventListener('DOMContentLoaded', () => {
-    const correo = localStorage.getItem('correo');
-    const DEFAULT_IMG = "../public/fotoPerfilDefault.png";
-    const inputFoto = document.getElementById('selectorFoto');
-    const imgPerfil = document.getElementById('fotoPerfil');
-    const btnReset = document.getElementById('resetFoto');
-    const headerImg = document.getElementById('fotoPerfilHeader');
+  <!-- Scripts -->
+  <script src="../notificacion.js"></script>
+  <script src="../js-repetidos/header.js"></script>
 
-    if (!correo) {
-      alert('No se encontró el correo en localStorage');
-      return;
+  <script>
+    function toggleMenu(event) {
+      event.stopPropagation();
+      const menu = document.getElementById('menuPerfil');
+      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
     }
 
-    // Cargar datos del usuario
-    fetch(`http://localhost:5001/api/usuarios/${correo}`)
-      .then(res => {
-        if (!res.ok) throw new Error('Usuario no encontrado');
-        return res.json();
-      })
-      .then(data => {
-        document.getElementById('nombreUsuario').textContent = data.nombre;
-        document.getElementById('correoUsuario').textContent = data.correo;
-        document.getElementById('trabajoUsuario').textContent = data.trabajo;
+    document.addEventListener('click', function () {
+      const menu = document.getElementById('menuPerfil');
+      if (menu) menu.style.display = 'none';
+    });
 
-        // Mostrar imagen si existe
-        if (data.fotoPerfil) {
-          imgPerfil.src = data.fotoPerfil;
-          if (headerImg) headerImg.src = data.fotoPerfil;
-        }
-      })
-      .catch(err => {
-        console.error('Error al obtener datos del usuario:', err);
+    document.addEventListener('DOMContentLoaded', () => {
+      const correo = localStorage.getItem('correo');
+      const DEFAULT_IMG = "../public/fotoPerfilDefault.png";
+      const inputFoto = document.getElementById('selectorFoto');
+      const imgPerfil = document.getElementById('fotoPerfil');
+      const headerImg = document.getElementById('fotoPerfilHeader');
+      const btnReset = document.getElementById('resetFoto');
+
+      if (!correo) {
+        alert('No se encontró el correo en localStorage');
+        return;
+      }
+
+      // Cargar datos del usuario
+      fetch(`http://localhost:5001/api/usuarios/${correo}`)
+        .then(res => {
+          if (!res.ok) throw new Error('Usuario no encontrado');
+          return res.json();
+        })
+        .then(data => {
+          document.getElementById('nombreUsuario').textContent = data.nombre;
+          document.getElementById('correoUsuario').textContent = data.correo;
+          document.getElementById('trabajoUsuario').textContent = data.trabajo;
+
+          if (data.fotoPerfil) {
+            imgPerfil.src = data.fotoPerfil;
+            if (headerImg) headerImg.src = data.fotoPerfil;
+          }
+        })
+        .catch(err => {
+          console.error('Error al obtener datos del usuario:', err);
+        });
+
+      // Subir nueva imagen
+      inputFoto.addEventListener('change', function () {
+        const archivo = this.files[0];
+        if (!archivo) return;
+
+        const lector = new FileReader();
+        lector.onload = function (e) {
+          const base64 = e.target.result;
+          imgPerfil.src = base64;
+          if (headerImg) headerImg.src = base64;
+
+          fetch("http://localhost:5001/api/usuarios/foto", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ correo, fotoPerfil: base64 })
+          })
+            .then(res => res.json())
+            .then(data => console.log("✅ Imagen guardada:", data.mensaje))
+            .catch(err => console.error("❌ Error al guardar imagen:", err));
+        };
+        lector.readAsDataURL(archivo);
       });
 
-    // Subir nueva imagen al backend
-    inputFoto.addEventListener('change', function () {
-      const archivo = this.files[0];
-      if (!archivo) return;
-
-      const lector = new FileReader();
-      lector.onload = function (e) {
-        const base64 = e.target.result;
-        imgPerfil.src = base64;
-        if (headerImg) headerImg.src = base64;
+      // Quitar imagen
+      btnReset.addEventListener('click', function () {
+        imgPerfil.src = DEFAULT_IMG;
+        if (headerImg) headerImg.src = DEFAULT_IMG;
 
         fetch("http://localhost:5001/api/usuarios/foto", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ correo, fotoPerfil: base64 })
+          body: JSON.stringify({ correo, fotoPerfil: '' })
         })
-        .then(res => res.json())
-        .then(data => console.log("✅ Imagen guardada:", data.mensaje))
-        .catch(err => console.error("❌ Error al guardar imagen:", err));
-      };
-      lector.readAsDataURL(archivo);
+          .then(res => res.json())
+          .then(data => console.log("🗑 Imagen eliminada:", data.mensaje))
+          .catch(err => console.error("❌ Error al eliminar imagen:", err));
+      });
     });
-
-    // Quitar imagen (opcional: también podrías notificar al backend)
-    btnReset.addEventListener('click', function () {
-      imgPerfil.src = DEFAULT_IMG;
-      if (headerImg) headerImg.src = DEFAULT_IMG;
-
-      fetch("http://localhost:5001/api/usuarios/foto", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ correo, fotoPerfil: '' })
-      })
-      .then(res => res.json())
-      .then(data => console.log("🗑 Imagen eliminada:", data.mensaje))
-      .catch(err => console.error("❌ Error al eliminar imagen:", err));
-    });
-  });
-</script>
-
-<script src="../notificacion.js"></script>
-<script src="../js-repetidos/header.js"></script>
-
-<script>
-    function toggleMenu(event) {
-        event.stopPropagation();
-        const menu = document.getElementById('menuPerfil');
-        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-    }
-
-    document.addEventListener('click', function () {
-        const menu = document.getElementById('menuPerfil');
-        menu.style.display = 'none';
-    });
-</script>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const correo = localStorage.getItem('correo');
-        if (!correo) {
-            alert('No se encontró correo en el almacenamiento local');
-            return;
-        }
-
-        fetch(`http://localhost:5001/api/usuarios/${correo}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        })
-            .then(res => {
-                if (!res.ok) throw new Error('Usuario no encontrado');
-                return res.json();
-            })
-            .then(data => {
-                document.getElementById('nombreUsuario').textContent = `${data.nombre}`;
-                document.getElementById('correoUsuario').textContent = `${data.correo}`;
-                document.getElementById('trabajoUsuario').textContent = `${data.trabajo}`;
-            })
-            .catch(err => {
-                console.error('Error al obtener datos del usuario:', err);
-            });
-    });
-</script>
-<!-- Script para poder cambiar la imagen de un usuario y que esta se guarde dentro del localstorage de la web, ademas de poder quitarla -->
-<script>
-    const inputFoto = document.getElementById('selectorFoto');
-    const imgPerfil = document.getElementById('fotoPerfil');
-
-    const btnReset = document.getElementById('resetFoto');
-
-    const DEFAULT_IMG = "../public/fotoPerfilDefault.png";
-
-
-    // Si hay una imagen guardada, usarla
-    const imagenGuardada = localStorage.getItem('fotoPerfil');
-    const imgPerfilHeader = document.getElementById('fotoPerfilHeader');
-    if (imagenGuardada && imgPerfilHeader) {
-        imgPerfil.src = imagenGuardada;
-        imgPerfilHeader.src = imagenGuardada;
-    }
-
-    // Cuando el usuario selecciona una nueva imagen
-    inputFoto.addEventListener('change', function () {
-        const archivo = this.files[0];
-        if (archivo) {
-            const lector = new FileReader();
-            lector.onload = function (e) {
-                const base64 = e.target.result;
-                imgPerfil.src = base64; // Actualiza imagen
-                localStorage.setItem('fotoPerfil', base64); // Guarda en localStorage
-            };
-            lector.readAsDataURL(archivo);
-        }
-    });
-
-    btnReset.addEventListener('click', function () {
-        imgPerfil.src = DEFAULT_IMG;
-        localStorage.removeItem('fotoPerfil');
-    });
-</script>
-<script src="../notificacion.js"></script>
-<script src="../js-repetidos/header.js"></script>
+  </script>
 </body>
-
-<html/>
+</html>

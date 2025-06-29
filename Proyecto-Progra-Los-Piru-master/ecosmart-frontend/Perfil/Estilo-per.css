@@ -1,18 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap');
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #fefdf9;
+    margin: 0;
+    padding: 0;
+}
+
+/* Cuadro general */
 .Cuadrado-transparente {
-    background: rgba(240, 242, 189, 0.3); /* #F0F2BD */
-    padding: 20px;
-    width: 70%;
-    height: 15%;
-    border-radius: 12px;
-    margin: 25px auto 25% auto;
+    background: rgba(240, 242, 189, 0.45); /* fondo pastel suave */
+    padding: 30px;
+    width: 90%;
+    max-width: 700px;
+    border-radius: 20px;
+    margin: 40px auto;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 30px;
-    opacity: 0;
-    transform: translateY(20px);
     animation: fadeIn 0.6s ease-out forwards;
 }
 
+/* Fade */
 @keyframes fadeIn {
     to {
         opacity: 1;
@@ -20,84 +30,96 @@
     }
 }
 
+/* Foto y botones */
+.fotoPerfilContenedor {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
 .Fondo-Foto-perfil {
-    background: rgba(202, 120, 66, 0.3); /* #CA7842 */
+    background: rgba(202, 120, 66, 0.3);
     border-radius: 50%;
-    padding: 0.25px;
+    padding: 5px;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: transform 0.3s ease;
+}
+
+.Fondo-Foto-perfil:hover {
+    transform: scale(1.05);
 }
 
 .Foto-perfil {
-    width: 100px;
-    height: 100px;
+    width: 130px;
+    height: 130px;
     object-fit: cover;
     border-radius: 50%;
     cursor: pointer;
-}
-
-#fotoPerfil {
-    cursor: pointer;
+    border: 3px solid #CA7842;
 }
 
 #selectorFoto {
-    width: 100px;
-    height: auto;
-    object-fit: cover;
-    border-radius: 50%;
-    display: none; /* ocultamos input file */
+    display: none;
 }
 
+.removeImage {
+    width: 28px;
+    margin-top: 10px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.removeImage:hover {
+    opacity: 1;
+}
+
+/* Datos usuario */
 .datos-usuario {
-    font-size: 16px;
-    color: #4B352A; /* color principal */
-    text-align: left;
-    padding-bottom: 10px;
-    flex: 1;
+    text-align: center;
+    color: #4B352A;
+    padding: 10px 0;
 }
 
 #nombreUsuario {
-    font-weight: bold;
-    font-size: 25px;
-    color: #CA7842; /* acento */
+    font-size: 26px;
+    font-weight: 700;
+    color: #CA7842;
+    margin: 10px 0 5px;
+}
+
+#correoUsuario, #trabajoUsuario {
+    font-size: 16px;
+    font-weight: 400;
+    color: #5a4438;
+    margin: 3px 0;
 }
 
 .cargando {
     font-style: italic;
-    color: #999;
+    color: #aaa;
 }
 
-.fotoPerfilContenedor {
-    display: flex;
-    align-items: center;
-    gap: 5px;
+/* Notificaciones */
+.notificaciones-box {
+    position: fixed;
+    top: 70px;
+    right: 10px;
+    background: #fff7cd;
+    color: #4B352A;
+    width: 360px;
+    max-height: 500px;
+    overflow-y: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: none;
+    z-index: 9999;
 }
 
-.removeImage {
-    width: 25px;
-    height: auto;
-    margin-top: 75px;
-    margin-right: 0px;
-    cursor: pointer;
-}
-
-.item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border-radius: 30px;
-    width: 150px;
-    color: white;
-    text-align: center;
-    background-color: #CA7842; /* acento */
-}
-
-.item img {
-    width: 100%;
-    height: auto;
-}
-
+/* Punto rojo de alerta */
 .alertapunto {
     position: absolute;
     top: 0px;
@@ -108,19 +130,4 @@
     border-radius: 50%;
     border: 2px solid white;
     display: none;
-}
-
-.notificaciones-box {
-    position: fixed;
-    top: 70px;
-    right: 10px;
-    background: #F0F2BD; /* fondo suave */
-    color: #4B352A; /* texto oscuro */
-    width: 360px;
-    max-height: 500px;
-    overflow-y: auto;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    display: none;
-    z-index: 9999;
 }
