@@ -53,8 +53,10 @@
             <input type="hidden" id="modalCorreoActual" />
             <label for="modalNuevoNombre">Nuevo Nombre:</label>
             <input type="text" id="modalNuevoNombre" required />
+            <br><br/>
             <label for="modalNuevoCorreo">Nuevo Correo:</label>
             <input type="email" id="modalNuevoCorreo" required />
+            <br><br/>
             <div class="modal-buttons">
                 <button type="submit">Guardar</button>
                 <button type="button" onclick="cerrarModal()">Cancelar</button>
@@ -114,10 +116,17 @@
     }
 
     function abrirModal(correo, nombre) {
-        document.getElementById('modalCorreoActual').value = correo;
-        document.getElementById('modalNuevoNombre').value = nombre;
-        document.getElementById('modalNuevoCorreo').value = correo;
-        document.getElementById('modal').style.display = 'block';
+        const modal = document.getElementById('modal');
+        const visible = modal.style.display === 'block';
+
+        if (visible) {
+            modal.style.display = 'none';
+        } else {
+            document.getElementById('modalCorreoActual').value = correo;
+            document.getElementById('modalNuevoNombre').value = nombre;
+            document.getElementById('modalNuevoCorreo').value = correo;
+            modal.style.display = 'flex';
+        }
     }
 
     function cerrarModal() {
