@@ -67,7 +67,6 @@
   margin: 0;
 }
 
-/* Colores específicos */
 .tareas {
   background: #CA7842;
 }
@@ -130,7 +129,6 @@
   border-radius: 8px;
 }
 
-.info-parcela h3,
 .info-parcela p {
   margin: 0;
   color: #4B352A;

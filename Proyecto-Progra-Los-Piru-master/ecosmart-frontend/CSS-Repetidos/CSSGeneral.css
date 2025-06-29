@@ -19,6 +19,7 @@ header {
     box-shadow: 0 2px 8px rgba(0,0,0,0.4);
     color: #CA7842;
     display: flex;
+    gap: 10px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     height: 64px;
     justify-content: space-between;

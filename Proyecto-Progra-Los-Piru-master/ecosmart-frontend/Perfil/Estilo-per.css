@@ -110,17 +110,3 @@
     display: none;
 }
 
-.notificaciones-box {
-    position: fixed;
-    top: 70px;
-    right: 10px;
-    background: #F0F2BD; /* fondo suave */
-    color: #4B352A; /* texto oscuro */
-    width: 360px;
-    max-height: 500px;
-    overflow-y: auto;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    display: none;
-    z-index: 9999;
-}
