@@ -87,7 +87,6 @@
               <div id="alertas-parcelas"></div>
           </div>
 
-          <!-- Modal épico -->
           <div id="modal-alerta" class="modal" style="display:none;">
               <div class="modal-content">
                   <span id="cerrar-modal" class="close">&times;</span>
@@ -202,6 +201,7 @@ Metodos de notificaciones
     /*
     Metodos de anomalias
     */
+
     async function mostrarAlertasConVentanaEmergente() {
     try {
         const [resAlertas, resParcelas] = await Promise.all([
@@ -256,7 +256,7 @@ Metodos de notificaciones
             }
         });
 
-        // 👇 Mostrar mensaje si no hay alertas para la parcela seleccionada
+        //Mostrar mensaje si no hay alertas para la parcela seleccionada
         if (!hayAlertas) {
             const mensaje = document.createElement("p");
             mensaje.textContent = "No se encontraron anomalías para esta parcela!";
@@ -274,113 +274,94 @@ Metodos de notificaciones
     }
 }
 
-    function mostrarModal(alerta, umbrales) {
-        const modal = document.getElementById("modal-alerta");
-        const contenido = document.getElementById("contenido-modal");
+function mostrarModal(alerta, umbrales) {
+    const modal = document.getElementById("modal-alerta");
+    const modalBox = modal.querySelector(".modal-content");
+    const contenido = document.getElementById("contenido-modal");
 
-        const ref = umbrales[alerta.sensor] || { min: -1000, max: 1000 };
-        const valorMin = alerta.umbralMinimo ?? "N/A";
-        const valorMax = alerta.umbralMaximo ?? "N/A";
+    contenido.style.borderRadius = "10%";
 
-        const consejos = [];
+    const ref = umbrales[alerta.sensor] || { min: -1000, max: 1000 };
+    const valorMin = alerta.umbralMinimo ?? ref.min;
+    const valorMax = alerta.umbralMaximo ?? ref.max;
 
-        switch (alerta.sensor) {
-            case "Temperatura del suelo":
-                consejos.push("¡El suelo está congelándose!");
-                consejos.push("¡El suelo está que arde!");
-                break;
-            case "Humedad del suelo":
-                consejos.push("¡Tienes que regar!");
-                consejos.push("¡Deja de regar!");
-                break;
-            case "pH del suelo":
-                consejos.push("¡pH muy bajo!");
-                consejos.push("¡pH muy alto!");
-                break;
-            case "Nivel de nutrientes":
-                consejos.push("¡Nivel de nutrientes muy bajo!");
-                consejos.push("¡Demasiados nutrientes!");
-                break;
-            default:
-                consejos.push("¡Verifica los datos!");
-        }
+    // ⚠️ Asegúrate que el backend te envía alerta.valor (valor actual del sensor)
+    const valorActual = alerta.valor ?? null;
 
-        contenido.innerHTML = `
+    const consejos = [];
+
+    let fondo = "#ffffff";
+    let texto = "#000000";
+
+    switch (alerta.sensor) {
+        case "Temperatura del suelo":
+            if (valorActual !== null) {
+                if (valorActual < ref.min) consejos.push("¡El suelo está congelándose!");
+                else if (valorActual > ref.max) consejos.push("¡El suelo está que arde!");
+                else consejos.push("Temperatura dentro del rango ideal.");
+            }
+            fondo = "#ffe6e6";
+            texto = "#b30000";
+            break;
+
+        case "Humedad del suelo":
+            if (valorActual !== null) {
+                if (valorActual < ref.min) consejos.push("¡Tienes que regar!");
+                else if (valorActual > ref.max) consejos.push("¡Deja de regar!");
+                else consejos.push("Humedad dentro del rango ideal.");
+            }
+            fondo = "#e6f7ff";
+            texto = "#004466";
+            break;
+
+        case "pH del suelo":
+            if (valorActual !== null) {
+                if (valorActual < ref.min) consejos.push("¡pH muy bajo!");
+                else if (valorActual > ref.max) consejos.push("¡pH muy alto!");
+                else consejos.push("pH dentro del rango ideal.");
+            }
+            fondo = "#f0e6ff";
+            texto = "#4b0082";
+            break;
+
+        case "Nivel de nutrientes":
+            if (valorActual !== null) {
+                if (valorActual < ref.min) consejos.push("¡Nivel de nutrientes muy bajo!");
+                else if (valorActual > ref.max) consejos.push("¡Demasiados nutrientes!");
+                else consejos.push("Nutrientes dentro del rango ideal.");
+            }
+            fondo = "#f9ffe6";
+            texto = "#666600";
+            break;
+
+        default:
+            consejos.push("¡Verifica los datos!");
+    }
+
+    modalBox.style.backgroundColor = fondo;
+    modalBox.style.color = texto;
+
+    contenido.innerHTML = `
         <h3>${alerta.sensor}</h3>
         <p><strong>Umbral mínimo:</strong> ${valorMin}</p>
         <p><strong>Umbral máximo:</strong> ${valorMax}</p>
+        <p><strong>Valor actual:</strong> ${valorActual ?? "N/A"}</p>
         <div>${consejos.map(c => `<p>${c}</p>`).join("")}</div>
     `;
 
-        modal.style.display = "block";
-    }
+    modal.style.display = "block";
+}
+
+
 
     /*
     * Cierra el modal al hacer clic en la X
-     */
+    */
+
     document.getElementById("cerrar-modal").onclick = function () {
         document.getElementById("modal-alerta").style.display = "none";
     };
 
-    /*
-    * Cierra el modal al hacer clic fuera del contenido
-     */
-    window.onclick = function (event) {
-        const modal = document.getElementById("modal-alerta");
-        if (event.target === modal) {
-            modal.style.display = "none";
-        }
-    };
-
-    function mostrarInfoSensor(sensor, umbrales) {
-        const contenedorInfo = document.getElementById("info-sensor");
-        const ref = umbrales[sensor] || { min: -1000, max: 1000 };
-
-        const consejos = [];
-
-        switch (sensor) {
-            case "Humedad del suelo":
-                consejos.push("¡Tienes que regar!");
-                consejos.push("¡Deja de regar!");
-                break;
-            case "pH del suelo":
-                consejos.push("¡pH muy bajo!");
-                consejos.push("¡pH muy alto!");
-                break;
-            case "Nivel de nutrientes":
-                consejos.push("¡Nivel de nutrientes muy bajo!");
-                consejos.push("¡Demasiados nutrientes!");
-                break;
-            case "Temperatura del suelo":
-                consejos.push("¡El suelo está congelándose!");
-                consejos.push("¡El suelo está que arde!");
-                break;
-            default:
-                consejos.push("¡Valores fuera del rango ideal!");
-        }
-
-        contenedorInfo.innerHTML = `
-        <div style="
-            background-color: #f8f9fa;
-            border: 1px solid #ccc;
-            padding: 16px;
-            margin-top: 10px;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
-            text-align: center;
-        ">
-            <h3>${sensor}</h3>
-            <p><strong>Umbral mínimo:</strong> ${ref.min}</p>
-            <p><strong>Umbral máximo:</strong> ${ref.max}</p>
-            <div style="margin-top: 10px;">
-                ${consejos.map(c => `<p>${c}</p>`).join("")}
-            </div>
-        </div>
-    `;
-    }
 
     /*
     * Cambia al cambiar de parcela

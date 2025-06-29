@@ -1,12 +1,13 @@
+
 main {
     max-width: 90%;
     margin: 2rem auto;
     padding: 2rem;
-    background-color: rgba(245, 247, 238, 0.9); /* verde muy suave y translúcido */
+    background-color: rgba(245, 247, 238, 0.9);
     border-radius: 16px;
-    box-shadow: 0 12px 24px rgba(21, 38, 10, 0.15); /* sombra verde oscura */
+    box-shadow: 0 12px 24px rgba(21, 38, 10, 0.15);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #1D2A10; /* texto verde bosque */
+    color: #1D2A10;
 }
 
 h2 {
@@ -243,6 +244,9 @@ section.tarjeta {
     transform: scale(1.05);
 }
 
+/*
+Modal de anomalias
+ */
 .modal {
     position: fixed;
     z-index: 9999;
@@ -256,6 +260,7 @@ section.tarjeta {
 
 .modal-content {
     background-color: #fff;
+    left: 32%; top: 20%;
     padding: 30px;
     border-radius: 15px;
     width: 90%;
@@ -280,6 +285,7 @@ section.tarjeta {
 .close:hover {
     color: #d65c5c;
 }
+
 
 .modal-pronostico {
     display: none;
