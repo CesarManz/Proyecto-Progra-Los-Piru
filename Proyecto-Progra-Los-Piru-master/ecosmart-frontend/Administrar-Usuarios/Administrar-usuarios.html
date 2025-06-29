@@ -51,15 +51,13 @@
         <h3>Actualizar Usuario</h3>
         <form id="modalForm">
             <input type="hidden" id="modalCorreoActual" />
-            <label for="modalNuevoNombre">Nuevo Nombre:</label>
-            <input type="text" id="modalNuevoNombre" required />
+            <input type="text" class="email" id="modalNuevoNombre" placeholder="Nuevo Nombre" required />
             <br><br/>
-            <label for="modalNuevoCorreo">Nuevo Correo:</label>
-            <input type="email" id="modalNuevoCorreo" required />
+            <input type="email" class="email" id="modalNuevoCorreo" placeholder="Nuevo Correo" required />
             <br><br/>
             <div class="modal-buttons">
-                <button type="submit">Guardar</button>
-                <button type="button" onclick="cerrarModal()">Cancelar</button>
+                <button class="boton" type="submit">Guardar</button>
+                <button class="boton" type="button" onclick="cerrarModal()">Cancelar</button>
             </div>
         </form>
     </div>

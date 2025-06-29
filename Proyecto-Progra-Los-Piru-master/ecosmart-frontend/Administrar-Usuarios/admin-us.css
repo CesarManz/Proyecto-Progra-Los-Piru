@@ -124,21 +124,29 @@ h2 {
 }
 
 .modal-content {
-    background-color: #fff;
-    padding: 20px 30px;
+    align-items: center;
+    background-color: #f0f2bd;
+    padding: 40px;
     border-radius: 12px;
-    width: 90%;
+    width: 50%;
     max-width: 400px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     animation: aparecer 0.2s ease-out;
 }
 
 .modal-buttons {
-    background-color: #CA7842;
     border-radius: 10px;
     display: flex;
     justify-content: space-between;
     margin-top: 20px;
+}
+.boton{
+    border-radius: 10px;
+    background-color: #ca7842;
+    color: #4b352a;
+    height: 30px;
+    width: 150px;
+    border: none;
 }
 
 @keyframes aparecer {
