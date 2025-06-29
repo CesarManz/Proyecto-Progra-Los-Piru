@@ -7,6 +7,7 @@ function toggleMenu(event) {
   }
 }
 
+//hace que al cerrar sesion se borre el localstorage y envie al usuario al login.
 function logout() {
   localStorage.clear();
   window.location.href = '../Registro-Login/Login.html';
@@ -28,20 +29,17 @@ if (!trabajoUsuario || !correoUsuario) {
 
 const linksPorRol = {
   tecnico: [
-    { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
     { texto: "Parcelas", href: "../Parcelas/listar-parcelas.html" },
     { texto: "Administrar usuarios", href: "../Administrar-Usuarios/Administrar-usuarios.html" },
     { texto: "Deepseek", href: "../Deepseek/chatbot.html" },
   ],
   agronomo: [
-    { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
     { texto: "Parcelas", href: "../Parcelas/listar-parcelas.html" },
     { texto: "Deepseek", href: "../Deepseek/chatbot.html" },
     { texto: "Inventario", href: "../Inventario/Inventario.html" },
     { texto: "Asignar tareas", href: "../Tareas/Asignar-tareas.html" }
   ],
   agricultor: [
-    { texto: "Página principal", href: "../Principales/Pagina-Principal.html" },
     { texto: "Parcelas", href: "../Parcelas/listar-parcelas.html" },
     { texto: "Deepseek", href: "../Deepseek/chatbot.html" }
   ]

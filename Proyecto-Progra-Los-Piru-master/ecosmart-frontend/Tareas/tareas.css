@@ -15,17 +15,32 @@
     font-size: 0.9rem;
     color: #1D2A10;
 }
+.Cuat {
+    background: rgba(202, 120, 66, 0.4);
+    border-radius: 12px;
+    color: #CA7842;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 50px;
+    padding: 10px;
+    text-align: center;
+    width: 70%;
+}
 
 
 .tarea-content {
-    margin: 20px auto;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 50px;
     height: auto;
     max-width: 1000px;
     display: flex;
     border-radius: 16px;
     flex-direction: column;
     gap: 10px;
-    background-color: #cd8a39
+    padding: 20px;
+    background-color: #f0f2bd;
+    color: rgba(202, 120, 66, 0.5);
 }
 
 .tarea-buttons {

@@ -17,7 +17,7 @@ body {
 }
 
 header {
-    background-color: #1D2A10;
+    background-color: #3A271D;
     padding: 20px;
     display: flex;
     justify-content: space-between;
@@ -178,7 +178,7 @@ button {
 
 
 .btn-login {
-    background-color: #1d2a10;
+    background-color: #4b352a;
     color: #CD8A39;
     height: auto;
     width: 150px;

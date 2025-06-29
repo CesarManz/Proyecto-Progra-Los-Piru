@@ -50,14 +50,14 @@
     <div class="modal-content">
         <h3>Actualizar Usuario</h3>
         <form id="modalForm">
-            <input type="hidden" id="modalCorreoActual" />
-            <label for="modalNuevoNombre">Nuevo Nombre:</label>
-            <input type="text" id="modalNuevoNombre" required />
-            <label for="modalNuevoCorreo">Nuevo Correo:</label>
-            <input type="email" id="modalNuevoCorreo" required />
+            <input type="hidden" class="cuadro" id="modalCorreoActual" />
+            <input type="text" class="cuadro" id="modalNuevoNombre" placeholder="Nuevo Nombre" required />
+            <br><br/>
+            <input type="email" class="cuadro" id="modalNuevoCorreo" placeholder="Nuevo Correo" required />
+            <br><br/>
             <div class="modal-buttons">
-                <button type="submit">Guardar</button>
-                <button type="button" onclick="cerrarModal()">Cancelar</button>
+                <button class="boton" type="submit">Guardar</button>
+                <button class="boton" type="button" onclick="cerrarModal()">Cancelar</button>
             </div>
         </form>
     </div>
@@ -114,10 +114,17 @@
     }
 
     function abrirModal(correo, nombre) {
-        document.getElementById('modalCorreoActual').value = correo;
-        document.getElementById('modalNuevoNombre').value = nombre;
-        document.getElementById('modalNuevoCorreo').value = correo;
-        document.getElementById('modal').style.display = 'block';
+        const modal = document.getElementById('modal');
+        const visible = modal.style.display === 'block';
+
+        if (visible) {
+            modal.style.display = 'none';
+        } else {
+            document.getElementById('modalCorreoActual').value = correo;
+            document.getElementById('modalNuevoNombre').value = nombre;
+            document.getElementById('modalNuevoCorreo').value = correo;
+            modal.style.display = 'flex';
+        }
     }
 
     function cerrarModal() {

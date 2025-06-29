@@ -9,6 +9,7 @@ const AlertaActivada = require('./modelos/AlertaActivada');
 const umbrales = {
   'temperatura del suelo': { min: 18, max: 28 },
   'humedad del suelo': { min: 50, max: 70 },
+  'ph': { min: 5.5, max: 7.5 },
   'ph del suelo': { min: 5.5, max: 7.5 },
   'nivel de nutrientes': { min: 200, max: 400 }
 };
@@ -27,7 +28,6 @@ function generarValor(tipo) {
   switch (tipo.toLowerCase()) {
     case 'temperatura del suelo': return +(18 + Math.random() * 10).toFixed(1);
     case 'humedad del suelo': return +(50 + Math.random() * 20).toFixed(1);
-    case 'ph':
     case 'ph del suelo': return +(5.5 + Math.random() * 2).toFixed(2);
     case 'nivel de nutrientes': return Math.floor(200 + Math.random() * 200);
     default:

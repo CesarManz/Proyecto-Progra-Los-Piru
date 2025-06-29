@@ -10,86 +10,108 @@
 <header>
 </header>
 
+<!-- Contenedor principal que organiza columna izquierda + area del chatbot -->
 <div class="principal">
+
+  <!-- Columna izquierda con logo y lista de chats -->
   <div class="columnaIzquierda">
+
     <!--
-    Logo Ecosmart en la columna izquierda
-    Tiene que redireccionar a la pagina principal
+    Logo de EcoSmart (esquina superior izquierda).
+    Al hacer clic, redirige a la página principal del sitio.
     -->
-    <a href= "../Principales/Pagina-Principal.html">
+    <a href="../Principales/Pagina-Principal.html">
       <div class="logo">
-        <img class= "ecosmart" src="../Public/EcoSmart3.png">
+        <img class="ecosmart" src="../Public/EcoAlt.png">
       </div>
     </a>
 
+    <!-- Aquí se renderiza el historial de chats del usuario -->
     <div class="chats">
-
+      <!-- Llenado dinámicamente con JS -->
     </div>
 
   </div>
 
+  <!-- Columna derecha: el área del chatbot -->
   <div class="chatbot">
-    <!-- Header con logo -->
+
+    <!-- Header del chat con el logo de DeepSeek -->
     <div class="chat-header">
       <img class="deepseeklogo" src="../Public/deepseeklogo.png" alt="DeepSeek Logo" />
     </div>
 
-    <!-- Preguntas rápidas para que el usuario seleccione -->
+    <!-- Bloque de preguntas rápidas que el usuario puede elegir para enviar -->
     <div class="fastQuestions">
+
+      <!-- Cada div representa una pregunta precargada.
+           Al hacer clic se envía automáticamente. -->
       <div class="faq-item" onclick="sendMessageAndHide(this)">
         <h3 class="Question">¿Qué factores afectan el rendimiento de un cultivo?</h3>
       </div>
+
       <div class="faq-item" onclick="sendMessageAndHide(this)">
         <h3 class="Question">¿Qué enfermedades y plagas pueden afectar los cultivos?</h3>
       </div>
+
       <div class="faq-item" onclick="sendMessageAndHide(this)">
         <h3 class="Question">¿Qué tan importante es la rotación de cultivos?</h3>
       </div>
+
       <div class="faq-item" onclick="sendMessageAndHide(this)">
         <h3 class="Question">¿Qué tipo de suelo es el más adecuado para cultivar?</h3>
       </div>
     </div>
 
-    <!-- Contenedor de mensajes -->
+    <!-- Aquí se mostrarán los mensajes del usuario y del bot -->
     <div class="chat-messages" id="chatMessages"></div>
 
+    <!-- Entrada de texto para escribir preguntas y botón de nuevo chat -->
     <div class="chat-input">
+
+      <!-- Campo donde el usuario escribe su pregunta -->
       <input type="text" id="chatInput" placeholder="Escribe tu mensaje..." />
+
+      <!-- Botón con ícono para iniciar un nuevo chat -->
       <button onclick="nuevoChat()" title="Nuevo Chat">
         <img class="newChat" src="../Public/nuevoChat.png" alt="Nuevo Chat" />
       </button>
     </div>
-  </div>
 
-</div>
+  </div> <!-- Fin de chatbot -->
+
+</div> <!-- Fin de principal -->
+
 
 
 
 <script>
+  /* ID del chat actualmente activo */
   let chatActualId = null;
 
-  function vanishSquare(){
-
-  }
-
+  /* Obtiene los chats desde localStorage */
   function getChats() {
     return JSON.parse(localStorage.getItem("chats")) || [];
   }
 
+  /* Guarda la lista de chats en localStorage */
   function saveChats(chats) {
     localStorage.setItem("chats", JSON.stringify(chats));
   }
 
+  /* Crea un nuevo chat, lo guarda y lo selecciona */
   function nuevoChat(nombre = "Chat sin título") {
     const chats = getChats();
-    const chatId = `chat-${Date.now()}`;
+    const chatId = `chat-${Date.now()}`; // ID único usando timestamp
     const nuevo = { id: chatId, chatId, nombre, mensajes: [] };
+
     chats.push(nuevo);
     saveChats(chats);
     localStorage.setItem("chatId", chatId);
     cargarListaChats();
     seleccionarChat(chatId);
 
+    /* Mostrar preguntas rápidas si estaban ocultas */
     const preguntas = document.querySelector('.fastQuestions');
     if (preguntas) {
       preguntas.style.display = '';
@@ -98,6 +120,8 @@
     return chatId;
   }
 
+  /* Carga todos los chats del usuario desde el backend
+     y los muestra en la columna lateral */
   async function cargarListaChats() {
     const contenedor = document.querySelector('.chats');
     contenedor.innerHTML = '';
@@ -114,20 +138,20 @@
         div.className = 'chat-preview';
         div.innerText = chat.pregunta || 'Chat sin título';
 
+        /* Al hacer clic se carga la conversación completa */
         div.onclick = async () => {
           localStorage.setItem('chatId', chat.chatId);
           chatActualId = chat.chatId;
 
-          // Ocultar preguntas rápidas al seleccionar un chat previo
+          /* Oculta preguntas rápidas al cargar un chat anterior */
           const preguntas = document.querySelector('.fastQuestions');
-          if (preguntas) {
-            preguntas.style.display = 'none';
-          }
+          if (preguntas) preguntas.style.display = 'none';
 
           try {
             const res = await fetch(`http://localhost:5001/api/chat/conversacion/${chat.chatId}`);
             const mensajes = await res.json();
 
+            /* Arma los mensajes en el formato que usa el frontend */
             const formateados = mensajes.map(m => [
               { sender: 'user', text: m.pregunta },
               { sender: 'bot', text: m.respuesta }
@@ -135,15 +159,16 @@
 
             mostrarMensajesDesdeServidor(formateados);
           } catch (err) {
-            console.error('❌ Error al cargar conversación:', err);
+            console.error('Error al cargar conversación:', err);
           }
         };
 
+        /* Botón para eliminar un chat del historial */
         const eliminar = document.createElement('button');
         eliminar.className = 'eliminar';
         eliminar.innerText = '❌';
         eliminar.onclick = async (e) => {
-          e.stopPropagation();
+          e.stopPropagation(); // Evita activar el div.onclick
           const confirmacion = confirm('¿Eliminar este chat?');
           if (!confirmacion) return;
 
@@ -151,13 +176,15 @@
             await fetch(`http://localhost:5001/api/chat/${chat.chatId}`, {
               method: 'DELETE'
             });
+
             if (localStorage.getItem('chatId') === chat.chatId) {
               localStorage.removeItem('chatId');
               chatActualId = null;
             }
+
             cargarListaChats();
           } catch (err) {
-            console.error('❌ Error al eliminar chat:', err);
+            console.error('Error al eliminar chat:', err);
           }
         };
 
@@ -165,29 +192,34 @@
         contenedor.appendChild(div);
       });
     } catch (err) {
-      console.error('❌ Error al cargar historial:', err);
+      console.error('Error al cargar historial:', err);
     }
   }
 
+  /* Muestra una lista de mensajes ya formateados (user / bot) */
   function mostrarMensajesDesdeServidor(mensajes) {
     const contenedor = document.getElementById('chatMessages');
     contenedor.innerHTML = '';
     mensajes.forEach(msg => appendMessage(msg.sender, msg.text));
   }
 
+  /* Marca el chat actual y carga sus mensajes */
   function seleccionarChat(id) {
     chatActualId = id;
     mostrarMensajes();
   }
 
+  /* Muestra los mensajes de un chat guardado en localStorage */
   function mostrarMensajes() {
     const chat = getChats().find(c => c.id === chatActualId);
     const contenedor = document.getElementById('chatMessages');
     contenedor.innerHTML = '';
     if (!chat) return;
+
     chat.mensajes.forEach(msg => appendMessage(msg.sender, msg.text));
   }
 
+  /* Agrega un mensaje al DOM (estilo user o bot) */
   function appendMessage(sender, text) {
     const chat = document.getElementById('chatMessages');
     const msg = document.createElement('div');
@@ -196,6 +228,7 @@
     chat.appendChild(msg);
   }
 
+  /* Elimina un chat vía API, con manejo de errores */
   async function eliminarChat(id) {
     try {
       const res = await fetch(`http://localhost:5001/api/chat/${id}`, {
@@ -208,6 +241,7 @@
     }
   }
 
+  /* Lista de palabras clave relacionadas con botánica y agricultura */
   const temasPermitidos = [
     'planta', 'cultivo', 'suelo', 'riego', 'fertilizante', 'pesticida',
     'plaga', 'enfermedad', 'rotación', 'compost', 'abonado', 'invernadero',
@@ -221,29 +255,29 @@
     'nutrientes', 'toxinas', 'abono verde', 'carbono orgánico', 'ph suelo',
     'materia orgánica', 'polen', 'agua', 'drenaje', 'sembrar', 'labranza',
     'capullo', 'pétalo', 'estambre', 'estigma', 'carpelo', 'corola', 'inflorescencia',
-    'floración', 'polen', 'nectar', 'jardinería', 'aroma', 'perfume', 'floricultura',
+    'floración', 'nectar', 'jardinería', 'aroma', 'perfume', 'floricultura',
     'rosal', 'jazmín', 'margarita', 'orquídea', 'clavel', 'tulipán', 'geranio',
     'hibisco', 'lavanda', 'alegría', 'petunia', 'dalia', 'azucena', 'girasol',
     'crisantemo', 'anémona', 'azalea', 'gardenia', 'violeta', 'begonia'
   ];
 
-
-
+  /* Verifica si el texto del usuario está dentro del dominio temático */
   function esPreguntaValida(texto) {
     const lower = texto.toLowerCase();
     return temasPermitidos.some(palabra => lower.includes(palabra));
   }
 
+  /* Envía una pregunta al modelo, maneja validación, guarda historial y responde */
   async function sendMessage(questionText = '') {
     const input = document.getElementById('chatInput');
     const userText = questionText || input.value.trim();
     if (userText === '') return;
 
+    /* Oculta preguntas rápidas al enviar */
     const preguntas = document.querySelector('.fastQuestions');
-    if (preguntas) {
-      preguntas.style.display = 'none';
-    }
+    if (preguntas) preguntas.style.display = 'none';
 
+    /* Si la pregunta no es válida, se cancela */
     if (!esPreguntaValida(userText)) {
       appendMessage('user', userText);
       appendMessage('bot', '🌱 Lo siento, solo puedo responder preguntas relacionadas con plantas, agricultura o ecología.');
@@ -251,6 +285,7 @@
       return;
     }
 
+    /* Si no hay chat activo, se crea uno */
     if (!chatActualId) {
       const nombre = userText.length > 30 ? userText.slice(0, 30) + '...' : userText;
       chatActualId = await nuevoChat(nombre);
@@ -259,23 +294,21 @@
     appendMessage('user', userText);
     if (!questionText) input.value = '';
 
+    /* Muestra animación de circulos */
     const chatBox = document.getElementById('chatMessages');
-
-    // Crear burbuja "escribiendo..."
     const loadingBubble = document.createElement('div');
     loadingBubble.className = 'msg bot';
     loadingBubble.id = 'loading-bubble';
     loadingBubble.innerHTML = `
-<div class="typing-container">
-  <div class="typing-dots"><span></span><span></span><span></span></div>
-</div>`;
-
+      <div class="typing-container">
+        <div class="typing-dots"><span></span><span></span><span></span></div>
+      </div>`;
     chatBox.appendChild(loadingBubble);
     chatBox.scrollTop = chatBox.scrollHeight;
 
+    /* Preparar historial para enviar al modelo */
     const chats = getChats();
     const chat = chats.find(c => c.id === chatActualId);
-
     let historialTexto = '';
     chat.mensajes.forEach(msg => {
       historialTexto += `${msg.text}\n`;
@@ -283,25 +316,30 @@
     historialTexto += `${userText}\n`;
 
     try {
+      /* Llama al backend con el historial */
       const botResponse = await askDeepSeek(historialTexto);
 
+      /* Si el chat no tenía nombre, se le asigna */
       if (!chat.nombre || chat.nombre === 'Chat sin título') {
         chat.nombre = userText.length > 30 ? userText.slice(0, 30) + '...' : userText;
       }
 
+      /* Guarda el mensaje en localStorage */
       chat.mensajes.push({ sender: 'user', text: userText });
       chat.mensajes.push({ sender: 'bot', text: botResponse });
       saveChats(chats);
       cargarListaChats();
 
-      // Reemplaza animación con respuesta
+      /* Reemplaza la burbuja de loading por la respuesta real */
       loadingBubble.innerHTML = botResponse;
+
     } catch (err) {
       console.error('❌ Error al obtener respuesta:', err);
       if (loadingBubble) loadingBubble.remove();
       appendMessage('bot', '⚠️ Hubo un problema al generar la respuesta. Intenta de nuevo.');
     }
 
+    /* Guarda el mensaje en MongoDB si hay datos disponibles */
     const correo = localStorage.getItem('correo');
     const chatId = localStorage.getItem('chatId');
 
@@ -324,6 +362,7 @@
     }
   }
 
+  /* Envia una pregunta desde las preguntas rápidas y oculta ese bloque */
   async function sendMessageAndHide(element) {
     const mensaje = element.innerText;
     await sendMessage(mensaje);
@@ -333,6 +372,7 @@
     }
   }
 
+  /* Llama a la API de generación de texto con historial completo */
   async function askDeepSeek(historial) {
     const systemPrompt = `Eres un asistente experto en botánica, agricultura y ecología. Solo debes responder preguntas sobre plantas, cultivos, suelos, fertilizantes, plagas, enfermedades vegetales, riego, técnicas de cultivo o temas ecológicos relacionados. Si el usuario pregunta algo fuera de esos temas, responde amablemente que solo puedes hablar sobre temas botánicos. No hagas roleplay. Sé conciso y claro.`;
 
@@ -352,6 +392,7 @@
     return data.response;
   }
 
+  /* Al cargar la página se inicializa el sistema y se escucha Enter */
   window.onload = () => {
     cargarListaChats();
 
@@ -363,6 +404,7 @@
       }
     });
   };
+
 </script>
 
 
