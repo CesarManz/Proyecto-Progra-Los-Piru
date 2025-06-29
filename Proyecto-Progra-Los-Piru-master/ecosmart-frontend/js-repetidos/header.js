@@ -7,6 +7,7 @@ function toggleMenu(event) {
   }
 }
 
+//hace que al cerrar sesion se borre el localstorage y envie al usuario al login.
 function logout() {
   localStorage.clear();
   window.location.href = '../Registro-Login/Login.html';
