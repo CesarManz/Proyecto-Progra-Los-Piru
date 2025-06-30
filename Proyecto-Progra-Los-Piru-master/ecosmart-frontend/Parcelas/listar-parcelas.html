@@ -9,7 +9,15 @@
   <link rel="stylesheet" href="../Principales/Estilo-prin.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
     <link rel="icon" href="../Public/EcoSmart%20MiniLogo.png" type="image/png">
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js">
+function copiarRecomendacion() {
+  const texto = document.getElementById("recomendacion-sensores").innerText;
+  navigator.clipboard.writeText(texto).then(() => {
+    alert("Recomendación copiada al portapapeles.");
+  });
+}
+
+</script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -103,6 +111,21 @@
 
   <div class="tarjeta">
   <h2 class="titulo-seccion">Gráficos de Sensores</h2>
+  
+<!-- Botón para descargar CSV -->
+<div style="text-align: center; margin-top: 1rem;">
+  <button onclick="descargarCSV()" class="boton-descarga">
+     Descargar datos en CSV
+  </button>
+</div>
+
+<!-- Botón para analizar sensores con IA -->
+<div style="text-align: center; margin-top: 1rem;">
+  <button onclick="analizarSensoresConIA()" class="boton-descarga">
+     Analizar sensores con IA
+  </button>
+</div>
+
   <div id="contenedor-graficos">
 
 </div>
@@ -654,7 +677,7 @@
     <div class="modal-contenido">
         <button onclick="cerrarModal()" class="modal-cerrar">×</button>
 
-        <h2 class="modal-titulo">🔍 Análisis Climático y Recomendaciones</h2>
+        <h2 class="modal-titulo"> Análisis Climático y Recomendaciones</h2>
 
         <p id="info-pronostico" class="modal-info"></p>
 
@@ -787,6 +810,107 @@ document.getElementById("ver-detalles-pronostico").addEventListener("click", () 
 </script>
 
 <script src="../js-repetidos/header.js" defer></script>
+
+
+
+</div>
+</div>
+
+
+<script>
+async function analizarSensoresConIA() {
+  const nombre = document.getElementById("selector-parcela").value;
+  if (!nombre) return alert("Selecciona una parcela primero.");
+
+  document.getElementById("spinner-ia").style.display = "block";
+  document.getElementById("recomendacion-sensores").innerText = "";
+  const nombreParcelaEl = document.getElementById("nombre-parcela-ia");
+  if (nombreParcelaEl) nombreParcelaEl.innerText = nombre;
+
+  try {
+    const res = await fetch(`http://localhost:5001/api/lecturas/historial/nombre/${encodeURIComponent(nombre)}`);
+    const datos = await res.json();
+    if (!datos.length) {
+      document.getElementById("spinner-ia").style.display = "none";
+      return alert("No hay datos de sensores disponibles.");
+    }
+
+const ultimos = datos.slice(-5).map(d => `• ${d.tipo}: ${d.valor} (${new Date(d.fecha).toLocaleString()})`).join("\n");
+
+    const cultivoRaw = parcelasGlobal.find(p => p.nombre === nombre)?.cultivos;
+    const cultivo = (typeof cultivoRaw === "string" ? cultivoRaw : JSON.stringify(cultivoRaw)).trim() || "cultivo desconocido";
+
+    const prompt = `Los últimos valores de sensores para una parcela con cultivo de ${cultivo} son:
+${ultimos}
+
+Basado en estos datos, ¿qué acciones recomendarías tomar para el agricultor? Sé concreto y técnico.`;
+
+    const resIA = await fetch("http://localhost:5000/api/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt })
+    });
+
+    const data = await resIA.json();
+    const respuesta = data.response || "No se pudo obtener una recomendación.";
+
+    document.getElementById("recomendacion-sensores").innerText = respuesta;
+    document.getElementById("modalRecomendacionSensores").style.display = "flex";
+
+  } catch (err) {
+    console.error("❌ Error al analizar sensores con IA:", err);
+    alert("Ocurrió un error al consultar la IA.");
+  } finally {
+    document.getElementById("spinner-ia").style.display = "none";
+  }
+}
+</script>
+<script>
+function descargarCSV() {
+  const nombreParcela = document.getElementById("selector-parcela").value;
+  if (!nombreParcela) {
+    alert("Selecciona una parcela primero.");
+    return;
+  }
+
+  fetch(`http://localhost:5001/api/csv?nombre=${encodeURIComponent(nombreParcela)}`)
+    .then(response => {
+      if (!response.ok) throw new Error("Error al descargar CSV");
+      return response.blob();
+    })
+    .then(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `datos_${nombreParcela}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    })
+    .catch(error => {
+      console.error("Error:", error);
+      alert("Ocurrió un error al descargar el CSV.");
+    });
+}
+</script>
+
+
+
+<!-- Modal para recomendaciones de IA basadas en sensores -->
+<div id="modalRecomendacionSensores" style="display: none;">
+  <div class="modal-content-recomendacion">
+    <span class="close" onclick="document.getElementById('modalRecomendacionSensores').style.display='none'">&times;</span>
+    <h3> Recomendación para la parcela: <span id="nombre-parcela-ia"></span></h3>
+
+    <div id="spinner-ia" style="display: none; text-align: center; margin-top: 10px;">
+      <img src="../Public/spinner.gif" alt="Cargando..." width="48" height="48" />
+      <p style="font-family: Rubik;">Analizando sensores con IA...</p>
+    </div>
+
+    <div id="recomendacion-sensores"></div>
+    <button onclick="copiarRecomendacion()" style="margin-top: 10px;">📋 Copiar texto</button>
+  </div>
+</div>
 
 </body>
 </html>

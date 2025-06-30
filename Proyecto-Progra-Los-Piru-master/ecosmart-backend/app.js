@@ -26,7 +26,7 @@ const rutaPronostico = require('./Rutas/rutaPronosticos');    // Pronóstico
 const rutaChat = require('./Rutas/chat');
 const rutaTareas = require('./Rutas/tareas');
 const productosRuta = require('./Rutas/productos');
-
+const rutaExportarCSV = require('./Rutas/exportarCSV');
 const lecturaController = require('./Controllers/lecturaController');
 const alertaRoutes = require('./Controllers/alertaController');
 const alertaActivadaRoutes = require('./Controllers/alertaActivadaController');
@@ -48,6 +48,8 @@ app.use('/api/tareas', rutaTareas);
 app.use('/productos', productosRuta);
 app.use('/api/productos', productosRuta);
 app.use("/api", correoRoutes);
+app.use('/api/csv', rutaExportarCSV);
+
 
 
 // Ejecutar simulador de sensores
