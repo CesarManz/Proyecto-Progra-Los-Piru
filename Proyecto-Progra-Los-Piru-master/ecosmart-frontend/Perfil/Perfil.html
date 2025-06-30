@@ -94,8 +94,8 @@
       }
 
       // Cargar datos del usuario
-      fetch(`http://localhost:5001/api/usuarios/${correo}`)
-        .then(res => {
+      fetch(`http://localhost:5001/api/usuarios/correo/${encodeURIComponent(correo)}`)
+              .then(res => {
           if (!res.ok) throw new Error('Usuario no encontrado');
           return res.json();
         })

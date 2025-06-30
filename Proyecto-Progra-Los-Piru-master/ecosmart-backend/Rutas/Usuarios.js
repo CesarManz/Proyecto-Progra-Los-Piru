@@ -118,7 +118,6 @@ router.get('/correo/:correo', async (req, res) => {
   try {
     const usuario = await Usuario.findOne({ correo });
 
-
     if (!usuario) {
       return res.status(404).json({ mensaje: 'Usuario no encontrado' });
     }
@@ -159,13 +158,7 @@ router.put('/foto', async (req, res) => {
     res.status(500).json({ mensaje: 'Error al actualizar foto de perfil' });
   }
 });
-
-
-
-
 // ✅ Login de usuario
 router.post('/login', verificarUsuario);
-
-
 
 module.exports = router;
