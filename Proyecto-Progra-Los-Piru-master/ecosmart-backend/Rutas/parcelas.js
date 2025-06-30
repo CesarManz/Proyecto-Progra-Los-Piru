@@ -54,7 +54,8 @@ router.put('/:id', async (req, res) => {
     const datos = {
       nombre: req.body.nombre,
       coordenadas: req.body.coordenadas || {},
-      sensores: Array.isArray(req.body.sensores) ? req.body.sensores : []
+      sensores: Array.isArray(req.body.sensores) ? req.body.sensores : [],
+      cultivos: Array.isArray(req.body.cultivos) ? req.body.cultivos :[],
     };
 
     const actualizada = await Parcela.findByIdAndUpdate(req.params.id, datos, { new: true });
