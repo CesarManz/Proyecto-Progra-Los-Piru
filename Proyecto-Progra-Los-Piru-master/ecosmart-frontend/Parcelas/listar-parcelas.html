@@ -10,7 +10,8 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
     <link rel="icon" href="../Public/EcoSmart%20MiniLogo.png" type="image/png">
   <script src="https://unpkg.com/leaflet/dist/leaflet.js">
-function copiarRecomendacion() {
+
+      function copiarRecomendacion() {
   const texto = document.getElementById("recomendacion-sensores").innerText;
   navigator.clipboard.writeText(texto).then(() => {
     alert("Recomendación copiada al portapapeles.");
