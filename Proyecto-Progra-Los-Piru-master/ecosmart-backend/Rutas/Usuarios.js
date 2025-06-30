@@ -109,12 +109,15 @@ router.get('/por-trabajo', async (req, res) => {
     res.status(500).json({ mensaje: 'Error al obtener usuarios por trabajo' });
   }
 });
+
 // Obtener usuario específico por correo
-router.get('/:correo', async (req, res) => {
+
+router.get('/correo/:correo', async (req, res) => {
   const correo = req.params.correo;
 
   try {
     const usuario = await Usuario.findOne({ correo });
+
 
     if (!usuario) {
       return res.status(404).json({ mensaje: 'Usuario no encontrado' });
@@ -124,13 +127,14 @@ router.get('/:correo', async (req, res) => {
       nombre: usuario.nombre,
       correo: usuario.correo,
       trabajo: usuario.trabajo,
-      fotoPerfil: usuario.fotoPerfil || '',
+      fotoPerfil: usuario.fotoPerfil || ''
     });
   } catch (err) {
-    console.error('❌ Error al obtener usuario por correo:', err.message);
+    console.error('❌ Error al obtener usuario:', err.message);
     res.status(500).json({ mensaje: 'Error al obtener usuario' });
   }
 });
+
 // Actualizar foto de perfil de un usuario
 router.put('/foto', async (req, res) => {
   const { correo, fotoPerfil } = req.body;

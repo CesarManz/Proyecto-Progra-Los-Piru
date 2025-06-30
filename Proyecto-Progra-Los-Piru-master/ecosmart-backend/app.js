@@ -34,7 +34,7 @@ const correoRoutes = require("./Controllers/correoController");
 
 
 // Usar rutas
-app.use('/api/usuarios', rutaUsuarios);
+app.use('/api/usuarios', require('./Rutas/Usuarios'));
 app.use('/api/parcelas', rutaParcelas);
 app.use('/api/lecturas', rutaLecturas);
 app.use('/api/clima', rutaClimaCiudad);      // ejemplo: /api/clima/santiago
