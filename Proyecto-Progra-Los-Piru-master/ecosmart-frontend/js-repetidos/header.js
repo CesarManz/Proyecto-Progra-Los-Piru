@@ -58,17 +58,19 @@ if (menu && linksPorRol[trabajoUsuario]) {
 
 // === CARGAR IMAGEN DE PERFIL EN HEADER ===
 if (correoUsuario) {
-  fetch(`http://localhost:5001/api/usuarios/${correoUsuario}`)
-    .then(res => {
-      if (!res.ok) throw new Error("Usuario no encontrado");
-      return res.json();
-    })
-    .then(data => {
-      if (data.fotoPerfil && document.getElementById("fotoPerfilHeader")) {
-        document.getElementById("fotoPerfilHeader").src = data.fotoPerfil;
-      }
-    })
-    .catch(err => {
-      console.error("Error al cargar foto de perfil:", err);
-    });
+  fetch(`http://localhost:5001/api/usuarios/correo/${encodeURIComponent(correoUsuario)}`)
+      .then(res => {
+        if (!res.ok) throw new Error("Usuario no encontrado");
+        return res.json();
+      })
+      .then(data => {
+        const headerImg = document.getElementById("fotoPerfilHeader");
+        if (data.fotoPerfil && headerImg) {
+          headerImg.src = data.fotoPerfil;
+        }
+      })
+      .catch(err => {
+        console.error("Error al cargar foto de perfil:", err);
+      });
 }
+
